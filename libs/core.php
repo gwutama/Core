@@ -64,7 +64,7 @@ class Controller {
     }
     
     public function __destruct() {
-        $tpl = strtolower($this->name.".".$this->action.".tpl");
+        $tpl = strtolower($this->name.".".$this->action);
         echo $this->template->render($tpl);
     }    
 }
@@ -92,6 +92,10 @@ class Template {
         $helperName = lcfirst($helper->getName());
         $this->templateHelpers[$helperName] = $helper;
     }
+    
+    public function setLayout($layout) {
+    	$this->layout = $layout;
+    }
 
     private function renderBuffer($tpl, $file, $vars, $type="template") {
         if( !file_exists($file) ) {
@@ -107,11 +111,14 @@ class Template {
         include($file);
         return ob_get_clean();
     }
+
+    public function renderPartial($tpl) {
+    	$path = $this->baseDir.$tpl.".tpl";
+    	return $this->renderBuffer($tpl, $path, $this->vars);
+    }    
     
     public function render($tpl) {    	 
-        $path = $this->baseDir . $tpl;        
-        $content = $this->renderBuffer($tpl, $path, $this->vars);        
-        
+        $content = $this->renderPartial($tpl, $path, $this->vars);        
         $tpl2 = $this->layout.".tpl";
         $path = $this->baseDir."layouts".DS.$tpl2;
         $page = $this->renderBuffer($tpl2, $path, array("layoutContent" => $content), "layout");
@@ -130,7 +137,7 @@ class CoreException extends Exception {
         $template = new Template("..".DS."views".DS);
         $template->message = $this->message;
         $template->exceptionClass = get_class($this);
-        echo $template->render("core.exception.tpl");
+        echo $template->render("core.exception");
     }
 }
 
