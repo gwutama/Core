@@ -4,6 +4,8 @@
 <head>
     <title><?php echo $layoutTitle ?></title>
     <link type="text/css" rel="stylesheet" media="all" href="/ssf/css/default.css" />
+    <?php echo $layoutStyles ?>
+    <?php echo $layoutScripts ?>
 </head>
 <body>
     <div id="container">

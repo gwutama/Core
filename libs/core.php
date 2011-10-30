@@ -78,6 +78,8 @@ class Template {
     private $title;
     private $controller;
     private $action;
+    private $styles;
+    private $scripts;
     
     public function __construct($controller, $action, $baseDir) {
     	$this->controller = $controller;
@@ -104,6 +106,24 @@ class Template {
 
     public function setTitle($title) {
     	$this->title = $title;
+    }
+    
+    public function includeStyle($file, $attributes) {
+    	$attributes = $this->buildAttributes($attributes);
+    	$this->styles .= "<link type=\"text/css\" rel=\"stylesheet\" href=\"".RELATIVE_URL."/css/$file\" $attributes/>";
+    }
+    
+    public function includeScript($file) {
+    	$attributes = $this->buildAttributes($attributes);
+    	$this->scripts .= "<script type=\"text/javascript\" src=\"".RELATIVE_URL."/js/$file\" $attributes></script>";
+    }    
+    
+    private function buildAttributes($attributes) {
+    	$str = "";
+    	foreach($attributes as $key => $value) {
+    		$str .= "$key=\"$value\" ";
+    	}
+    	return $str;
     }
     
     public function registerHelper(TemplateHelper $helper) {
@@ -141,7 +161,9 @@ class Template {
         $path = $this->baseDir."layouts".DS.$tpl2;
         $vars = array(
         	"layoutContent" => $content,
-        	"layoutTitle" => $this->title
+        	"layoutTitle" => $this->title,
+        	"layoutStyles" => $this->styles,
+        	"layoutScripts" => $this->scripts
         );
         $page = $this->renderBuffer($tpl2, $path, $vars, "layout");
         return $page;
