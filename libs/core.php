@@ -41,7 +41,7 @@ class Controller {
     public function __construct($name, $action) {
         $this->name = $name;
         $this->action = $action;
-        $this->template = new Template("..".DS."views".DS);
+        $this->template = new Template($name, $action, "..".DS."views".DS);
         foreach( (array) $this->templateHelpers as $helper) {
             $file = "..".DS."libs".DS.$helper.".php";
             if( !file_exists($file) ) {
@@ -75,9 +75,15 @@ class Template {
     private $vars = array();
     private $templateHelpers = array();
     private $layout = "default";
+    private $title;
+    private $controller;
+    private $action;
     
-    public function __construct($baseDir) {
+    public function __construct($controller, $action, $baseDir) {
+    	$this->controller = $controller;
+    	$this->action = $action;
         $this->baseDir = $baseDir;
+        $this->title = "SSF &gt; $controller &gt; ".ucfirst($action);
     }
 
     public function __set($var, $value) {
@@ -86,6 +92,18 @@ class Template {
     
     public function __get($var) {
         return $this->templateHelpers[$var];
+    }
+    
+    public function getController() {
+    	return $this->controller;
+    }
+    
+    public function getAction() {
+    	return $this->action;
+    }
+
+    public function setTitle($title) {
+    	$this->title = $title;
     }
     
     public function registerHelper(TemplateHelper $helper) {
@@ -121,7 +139,11 @@ class Template {
         $content = $this->renderPartial($tpl, $path, $this->vars);        
         $tpl2 = $this->layout.".tpl";
         $path = $this->baseDir."layouts".DS.$tpl2;
-        $page = $this->renderBuffer($tpl2, $path, array("layoutContent" => $content), "layout");
+        $vars = array(
+        	"layoutContent" => $content,
+        	"layoutTitle" => $this->title
+        );
+        $page = $this->renderBuffer($tpl2, $path, $vars, "layout");
         return $page;
     }
 }
@@ -134,7 +156,8 @@ interface TemplateHelper {
 
 class CoreException extends Exception {
     public function renderHtml() {
-        $template = new Template("..".DS."views".DS);
+    	$exception = get_class($this);
+        $template = new Template("Error", $exception, "..".DS."views".DS);
         $template->message = $this->message;
         $template->exceptionClass = get_class($this);
         echo $template->render("core.exception");

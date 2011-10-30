@@ -1,6 +1,7 @@
         	<h2>Something's Wrong</h2>
             <p class="notice error">
-                <?php echo $message ?>
+            Exception <em><?php echo $exceptionClass ?></em> thrown:                         
+            <?php echo $message ?>
             </p>
             <?php if($exceptionClass == "TemplateNotFoundException") : ?>
                 <p>Please create the template file in <em>views/</em>.</p>
