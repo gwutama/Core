@@ -16,7 +16,7 @@
 <p>
 	In essence, SSF is not really a framework. It is actually more of a very simple
 	project layout structure that can be understood by everyone, even by a
-	novice PHP programmer. I try to keep the core file small, preferably under 5 KB.
+	novice PHP programmer. I try to keep the core file small, preferably under 10 KB.
 	Despite of its small kernel, it is aimed to be able to achieve as much functions
 	as possible.
 </p>
