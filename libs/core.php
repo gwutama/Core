@@ -138,10 +138,10 @@ class Template {
     private function renderBuffer($tpl, $file, $vars, $type="template") {
         if( !file_exists($file) ) {
         	if($type == "template") {
-	            throw new TemplateNotFoundException("Template <em>$tpl</em> not found in <em>views/</em>.");
+	            throw new TemplateNotFoundException("Template <em>$tpl.tpl</em> not found in <em>views/</em>.");
         	}
         	elseif($type == "layout") {
-        		throw new LayoutNotFoundException("Layout <em>$tpl</em> not found in <em>views/layouts/</em>.");
+        		throw new LayoutNotFoundException("Layout <em>$tpl.tpl</em> not found in <em>views/layouts/</em>.");
         	}        	
         }    	
         extract($vars);
