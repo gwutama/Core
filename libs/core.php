@@ -156,7 +156,7 @@ class Template {
     }    
     
     public function render($tpl) {    	 
-        $content = $this->renderPartial($tpl, $path, $this->vars);        
+        $content = $this->renderPartial($tpl);        
         $tpl2 = $this->layout.".tpl";
         $path = $this->baseDir."layouts".DS.$tpl2;
         $vars = array(
