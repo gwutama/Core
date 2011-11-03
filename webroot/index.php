@@ -11,7 +11,7 @@ try {
     Route::dispatch(@$_GET["url"], DEFAULT_CONTROLLER, DEFAULT_ACTION);
 }
 catch(CoreException $e) {
-    $e->renderHtml();
+    $e->render();
 }
 
 ?>

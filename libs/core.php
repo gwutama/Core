@@ -23,11 +23,17 @@ class Route {
         if( !class_exists($controllerClass) ) {
             throw new ControllerNotFoundException("Controller class <em>$controllerClass</em> not found in <em>controllers/</em>.");
         }        
-        $app = new $controllerClass($controller, $action);
-        if( !method_exists($app, $action) ) {
-            throw new ActionNotFoundException("Action <em>$action</em> not found in class <em>$controller</em>.");
+        try {
+	        $app = new $controllerClass($controller, $action);
+	        if( !method_exists($app, $action) ) {
+    	        throw new ActionNotFoundException("Action <em>$action</em> not found in class <em>$controller</em>.");
+        	}
+        	$app->$action();
+        	$app->renderTemplate();
         }
-        $app->$action();
+        catch(CoreException $e) {
+        	$e->render();
+        }
     }
 }
 
@@ -37,11 +43,17 @@ class Controller {
     protected $name;
     protected $action;
     protected $templateHelpers = array();
+    protected $output = "html";
     
     public function __construct($name, $action) {
         $this->name = $name;
         $this->action = $action;
-        $this->template = new Template($name, $action, "..".DS."views".DS);
+        try {
+	        $this->template = new Template($name, $action, "..".DS."views".DS);
+        }
+        catch(CoreException $e) {
+        	$e->render();
+        }
         foreach( (array) $this->templateHelpers as $helper) {
             $file = "..".DS."libs".DS.$helper.".php";
             if( !file_exists($file) ) {
@@ -63,9 +75,18 @@ class Controller {
     	return $this->template->$var;
     }
     
-    public function __destruct() {
-        $tpl = strtolower($this->name.".".$this->action);
-        echo $this->template->render($tpl);
+    public function setOutput($output) {
+    	$this->output = $output;
+    }
+    
+    public function renderTemplate() {
+    	if($this->output == "html") {
+	        $tpl = strtolower($this->name.".".$this->action);
+	        echo $this->template->render($tpl);
+    	}
+    	elseif($this->output == "json") {
+    		echo json_encode($this->template->getVars());
+    	}
     }    
 }
 
@@ -92,10 +113,6 @@ class Template {
         $this->vars[$var] = $value;
     }
     
-    public function __get($var) {
-        return $this->templateHelpers[$var];
-    }
-    
     public function getController() {
     	return $this->controller;
     }
@@ -104,23 +121,27 @@ class Template {
     	return $this->action;
     }
 
+    public function getVars() {
+    	return $this->vars;
+    }
+    
     public function setTitle($title) {
     	$this->title = $title;
     }
     
-    public function includeStyle($file, $attributes) {
+    public function includeStyle($file, $attributes = array()) {
     	$attributes = $this->buildAttributes($attributes);
-    	$this->styles .= "<link type=\"text/css\" rel=\"stylesheet\" href=\"".RELATIVE_URL."/css/$file\" $attributes/>";
+    	$this->styles .= "<link type=\"text/css\" rel=\"stylesheet\" href=\"".RELATIVE_URL."/css/$file\" $attributes/>\n";
     }
     
-    public function includeScript($file) {
+    public function includeScript($file, $attributes = array()) {
     	$attributes = $this->buildAttributes($attributes);
-    	$this->scripts .= "<script type=\"text/javascript\" src=\"".RELATIVE_URL."/js/$file\" $attributes></script>";
+    	$this->scripts .= "<script type=\"text/javascript\" src=\"".RELATIVE_URL."/js/$file\" $attributes></script>\n";
     }    
     
     private function buildAttributes($attributes) {
     	$str = "";
-    	foreach($attributes as $key => $value) {
+    	foreach((array) $attributes as $key => $value) {
     		$str .= "$key=\"$value\" ";
     	}
     	return $str;
@@ -129,6 +150,10 @@ class Template {
     public function registerHelper(TemplateHelper $helper) {
         $helperName = lcfirst($helper->getName());
         $this->templateHelpers[$helperName] = $helper;
+    }
+    
+    public function __get($var) {
+    	return $this->templateHelpers[$var];
     }
     
     public function setLayout($layout) {
@@ -177,7 +202,7 @@ interface TemplateHelper {
 
 
 class CoreException extends Exception {
-    public function renderHtml() {
+    public function render() {
     	$exception = get_class($this);
         $template = new Template("Error", $exception, "..".DS."views".DS);
         $template->message = $this->message;
