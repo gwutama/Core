@@ -1,7 +1,7 @@
 <?php
 
 /**
-* <b>Class Template</b>
+* <h1>Class Template</h1>
 *
 * <p>
 * This class represents the "VIEW" part of the MVC approach. It is a fairly
