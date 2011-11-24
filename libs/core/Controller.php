@@ -2,7 +2,7 @@
 
 /**
 * Class Controller
-* Enter description here ...
+* This class represents the "CONTROLLER" part of the MVC approach.
 * @author Galuh Utama
 *
 */

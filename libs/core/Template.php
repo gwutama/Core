@@ -12,7 +12,7 @@
 * fast and requires no template compilation.
 * </p>
 *
-* <p>Usage example:</p>
+* @example
 * <code>
 * // initialize template object
 * $template = new Template("controllerName", "actionName", "views/");
@@ -115,39 +115,71 @@ class Template {
 	private $title;
 
 	/**
-	 * Each template
+	 * Each template refers to a controller. This is set in constructor.
+	 * 
+	 * @see Template::__construct()
 	 * @var string
 	 */
 	private $controller;
 
 	/**
-	 *
-	 * Enter description here ...
+	 * Each template refers to an action, which is a part of a controller.
+	 * This is set in constructor.
+	 * 
+	 * @see Template::__construct()
 	 * @var string
 	 */
 	private $action;
 
 	/**
-	 *
-	 * Enter description here ...
+	 * <p>Contains html tags to include stylesheets to be used in the layout.
+	 * In the actual template file, one can do this to include specific
+	 * stylesheet for a specific action:</p>
+	 * <code>
+	 * $this->includeStyle("somestyle.css");
+	 * </code>
+	 * 
+	 * <p>This will be translated into</p>
+	 * <code>
+	 * <link type="text/css" rel="stylsheet" href="/css/somestyle.css" />
+	 * </code>
+	 * <p>in the layout file.</p>
+	 * 
+	 * @see Template::includeStyle()
 	 * @var string
 	 */
 	private $styles;
 
 	/**
-	 *
-	 * Enter description here ...
+	 * <p>Contains html tags to include javascripts to be used in the layout.
+	 * In the actual template file, one can do this to include specific
+	 * javascript for a specific action:</p>
+	 * <code>
+	 * $this->includeScript("somescript.js");
+	 * </code>
+	 * 
+	 * <p>This will be translated into</p>
+	 * <code>
+	 * <script type="text/javascript" src="/js/somescript.js" />
+	 * </code>
+	 * <p>in the layout file.</p>
+	 * 
+	 * @see Template::includeScript()
 	 * @var string
 	 */
 	private $scripts;
 
-
+	
 	/**
-	 *
-	 * Enter description here ...
-	 * @param unknown_type $controller
-	 * @param unknown_type $action
-	 * @param unknown_type $baseDir
+	 * The constructor sets the controller name, action name
+	 * and the base directory of the views. By default, it sets the
+	 * page title to "SSF > {controller_name} > {action_name}". 
+	 * This however can be omitted by setting the layout title with setTitle().
+	 * 
+	 * @see 	Template::setTitle()
+	 * @param 	string 		$controller		The controller name.
+	 * @param 	string 		$action			The action name.
+	 * @param 	string 		$baseDir		The base directory for views.
 	 */
 	public function __construct($controller, $action, $baseDir) {
 		$this->controller = $controller;
@@ -158,10 +190,12 @@ class Template {
 
 
 	/**
-	 *
-	 * Enter description here ...
-	 * @param unknown_type $var
-	 * @param unknown_type $value
+	 * Magic methods to set the template variables, which can be called
+	 * in the template file using $variableName.
+	 * 
+	 * @see		Template::vars
+	 * @param 	string 		$var		Variable name.
+	 * @param 	string 		$value		The value.
 	 */
 	public function __set($var, $value) {
 		$this->vars[$var] = $value;
@@ -169,9 +203,9 @@ class Template {
 
 
 	/**
-	 *
-	 * Enter description here ...
-	 * @return string
+	 * Returns the controller name.
+	 * 
+	 * @return 	string
 	 */
 	public function getController() {
 		return $this->controller;
@@ -179,8 +213,9 @@ class Template {
 
 
 	/**
-	 *
-	 * Enter description here ...
+	 * Returns the action name.
+	 * 
+	 * @return	string
 	 */
 	public function getAction() {
 		return $this->action;
@@ -188,9 +223,9 @@ class Template {
 
 
 	/**
-	 *
-	 * Enter description here ...
-	 * @return multitype:
+	 * Returns the template variables.
+	 * 
+	 * @return 	array:
 	 */
 	public function getVars() {
 		return $this->vars;
@@ -198,9 +233,9 @@ class Template {
 
 
 	/**
-	 *
-	 * Enter description here ...
-	 * @param unknown_type $title
+	 * Sets the layout title.
+	 * 
+	 * @param	String		$title		The page title.
 	 */
 	public function setTitle($title) {
 		$this->title = $title;
@@ -208,10 +243,18 @@ class Template {
 
 
 	/**
-	 *
-	 * Enter description here ...
-	 * @param unknown_type $file
-	 * @param unknown_type $attributes
+	 * Includes a stylesheet from the webroot/css/ directory. This method
+	 * should be called in the template file. Extra attributes is by default
+	 * empty.
+	 * 
+	 * @example
+	 * <code>
+	 * $this->includeStyle("somestyle.css", array("media" => "all"));
+	 * </code>
+	 * 
+	 * @see		Template::styles
+	 * @param	string 		$file		The style file name.
+	 * @param	array		$attributes	Extra attributes.
 	 */
 	public function includeStyle($file, $attributes = array()) {
 		$attributes = $this->buildAttributes($attributes);
@@ -221,10 +264,18 @@ class Template {
 
 
 	/**
-	 *
-	 * Enter description here ...
-	 * @param unknown_type $file
-	 * @param unknown_type $attributes
+	 * Includes a javascript from the webroot/js/ directory. This method
+	 * should be called in the template file. Extra attributes is by default 
+	 * empty.
+	 * 
+	 * @example
+	 * <code>
+	 * $this->includeStyle("somescript.js", array("encoding" => "UTF-8"));
+	 * </code>
+	 * 
+	 * @see		Template::scripts
+	 * @param	string 		$file		The script file name.
+	 * @param	array		$attributes	Extra attributes.
 	 */
 	public function includeScript($file, $attributes = array()) {
 		$attributes = $this->buildAttributes($attributes);
@@ -234,10 +285,11 @@ class Template {
 
 
 	/**
+	 * A private method to build attributes from an array using the
+	 * key and value data.
 	 *
-	 * Enter description here ...
-	 * @param unknown_type $attributes
-	 * @return string
+	 * @param	array		$attributes	The attributes.
+	 * @return 	string
 	 */
 	private function buildAttributes($attributes) {
 		$str = "";
@@ -249,9 +301,11 @@ class Template {
 
 
 	/**
-	 *
-	 * Enter description here ...
-	 * @param TemplateHelper $helper
+	 * Registers a template helper into the template object, so it can be 
+	 * used/called in the template file.
+	 * 
+	 * @see		Template::templateHelpers
+	 * @param 	TemplateHelper	$helper		The template helper.
 	 */
 	public function registerHelper(TemplateHelper $helper) {
 		$helperName = lcfirst($helper->getName());
@@ -260,9 +314,11 @@ class Template {
 
 
 	/**
-	 *
-	 * Enter description here ...
-	 * @param unknown_type $var
+	 * Magic method, which returns the template variables.
+	 * 
+	 * @see		Template::vars
+	 * @param	mixed		$var		Anything.
+	 * @return	mixed
 	 */
 	public function __get($var) {
 		return $this->templateHelpers[$var];
@@ -270,9 +326,11 @@ class Template {
 
 
 	/**
-	 *
-	 * Enter description here ...
-	 * @param unknown_type $layout
+	 * Sets the template's layout name. Layout should be exists under
+	 * /views/layouts/ directory.
+	 * 
+	 * @see		Template::layout
+	 * @param	string		$layout		Layout name.
 	 */
 	public function setLayout($layout) {
 		$this->layout = $layout;
@@ -280,14 +338,15 @@ class Template {
 
 
 	/**
-	 *
-	 * Enter description here ...
-	 * @param unknown_type $tpl
-	 * @param unknown_type $file
-	 * @param unknown_type $vars
-	 * @param unknown_type $type
-	 * @throws TemplateNotFoundException
-	 * @throws LayoutNotFoundException
+	 * A private method to render a template file.
+	 * 
+	 * @param	string	$tpl	Template name.
+	 * @param	string	$file	Template file.
+	 * @param	array	$vars	Variables to be parsed.
+	 * @param	string	$type	Template types. Either "template" or "layout".
+	 * @throws 	TemplateNotFoundException
+	 * @throws 	LayoutNotFoundException
+	 * @retun	string
 	 */
 	private function renderBuffer($tpl, $file, $vars, $type="template") {
 		if( !file_exists($file) ) {
@@ -308,10 +367,20 @@ class Template {
 
 
 	/**
+	 * Renders a template within a template.
 	 *
-	 * Enter description here ...
-	 * @param unknown_type $tpl
-	 * @return string
+	 * @example
+	 * In the template file:
+	 * <code>
+	 * echo $this->renderPartial("sidebar.tpl");
+	 * </code>
+	 * This will render sidebar.tpl into the current template. Very useful
+	 * to include template parts and sections.
+	 * 
+	 * @see		Template::renderBuffer()
+	 * @see		Template::render()
+	 * @param	string	$tpl	Template name.
+	 * @return 	string
 	 */
 	public function renderPartial($tpl) {
 		$path = $this->baseDir.$tpl.".tpl";
@@ -320,10 +389,22 @@ class Template {
 
 
 	/**
-	 *
-	 * Enter description here ...
-	 * @param unknown_type $tpl
-	 * @return string
+	 * Renders the whole view, including the layout and templates in that
+	 * layout. A layout consists of $layoutContent, $layoutTitle, $layoutStyles
+	 * and $layoutScripts. These should be echoed in the layout file.
+	 * See views/layouts/default.tpl for an example.
+	 * 
+	 * @example
+	 * In a controller file:
+	 * <code>
+	 * $template = new Template("ControllerName", "ActionName", "views/");
+	 * echo $template->render("controllerName.actionName.tpl");
+	 * </code>
+	 * 
+	 * @see		Template::renderBuffer()
+	 * @see		Template::renderPartial()
+	 * @param	string	$tpl	Template name.
+	 * @return 	string
 	 */
 	public function render($tpl) {
 		$content = $this->renderPartial($tpl);
