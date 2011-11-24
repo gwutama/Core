@@ -1,6 +1,11 @@
 <?php 
 
-include "../libs/core.php";
+include "../libs/core/Controller.php";
+include "../libs/core/exceptions.php";
+include "../libs/core/Request.php";
+include "../libs/core/Route.php";
+include "../libs/core/Template.php";
+include "../libs/core/TemplateHelper.php";
 
 define("DEFAULT_CONTROLLER", "Home");
 define("DEFAULT_ACTION", "index");
