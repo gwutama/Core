@@ -23,8 +23,8 @@
 *
 */
 interface TemplateHelper {
-	// Must return a string as the helper name.
-	public function getName();
+    // Must return a string as the helper name.
+    public function getName();
 }
 
 ?>

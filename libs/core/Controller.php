@@ -1,128 +1,166 @@
 <?php
 
 /**
-* Class Controller
-* This class represents the "CONTROLLER" part of the MVC approach.
-* @author Galuh Utama
+* <h1>Class Controller</h1>
+* 
+* <p>
+* This class represents the "CONTROLLER" part of the MVC approach. This class
+* is an abstract class and should be inherited by implementing controllers.
+* </p>
+* 
+* @example
+* <code>
+* try {
+*	$app = new $controllerClass($controller, $action);
 *
+*	if( !method_exists($app, $action) ) {
+*		throw new ActionNotFoundException("Action <em>$action</em>
+*          	not found in class <em>$controller</em>.");
+*	}
+*			 
+*	$app->$action();
+*	$app->renderTemplate();
+* }
+* catch(CoreException $e) {
+* 	$e->render();
+* }
+* </code>
+* 
+* @author Galuh Utama
 */
-class Controller {
-	/**
-	 * 
-	 * Enter description here ...
-	 * @var unknown_type
-	 */
-	protected $template;
-	
-	/**
-	 * 
-	 * Enter description here ...
-	 * @var unknown_type
-	 */
-	protected $name;
-	
-	/**
-	 * 
-	 * Enter description here ...
-	 * @var unknown_type
-	 */
-	protected $action;
-	
-	/**
-	 * 
-	 * Enter description here ...
-	 * @var unknown_type
-	 */
-	protected $templateHelpers = array();
-	
-	/**
-	 * 
-	 * Enter description here ...
-	 * @var unknown_type
-	 */
-	protected $output = "html";
+abstract class Controller {
+    /**
+     * Defines which template this controller uses.
+     *
+     * @var string
+     */
+    protected $template;
 
-	
-	/**
-	 * Builds the
-	 *
-	 * @param unknown_type $name
-	 * @param unknown_type $action
-	 * @throws TemplateHelperNotFoundException
-	 */
-	public function __construct($name, $action) {
-		$this->name = $name;
-		$this->action = $action;
-		try {
-			$this->template = new Template($name, $action, "..".DS."views".DS);
-		}
-		catch(CoreException $e) {
-			$e->render();
-		}
-		foreach( (array) $this->templateHelpers as $helper) {
-			$file = "..".DS."libs".DS."helpers".DS.$helper.".php";
-			if( !file_exists($file) ) {
-				throw new TemplateHelperNotFoundException("Template helper
-                	<em>$helper</em> not found in <em>libs/</em>.");        
-			}
-			include($file);
-			$obj = new $helper();
-			$this->template->registerHelper($obj);
-		}
-	}
+    /**
+     * The name of this controller.
+     *
+     * @var string
+     */
+    protected $name;
+
+    /**
+     * Called or requested action.
+     *
+     * Enter description here ...
+     * @var unknown_type
+     */
+    protected $action;
+
+    /**
+     * Used template helpers. Template helper classes should be available
+     * under libs/.
+     *
+     * @var array
+     */
+    protected $templateHelpers = array();
+
+    /**
+     * Defines the output type. Can be one of "html", "json" or "xml".
+     *
+     * @var string
+     */
+    protected $output = "html";
 
 
-	/**
-	 * Enter description here ...
-	 */
-	public function index() {
-		 
-	}
+    /**
+     * Sets the member values and template object.
+     *
+     * @param string $name		The name of this controller.
+     * @param string $action	Called/Requested action.
+     * @throws TemplateHelperNotFoundException
+     */
+    public function __construct($name, $action) {
+        $this->name = $name;
+        $this->action = $action;
+
+        // Initialize template object. Render error if it cannot be initialized.
+        try {
+            $this->template = new Template($name, $action, "..".DS."views".DS);
+        }
+        catch(CoreException $e) {
+            $e->render();
+        }
+
+        // Loads and registers each template helpers. Throws exception
+        // if helper cannot be found. Helper's file name should be
+        // somewhat like "TemplateHelper" and should reside in libs/.
+        foreach( (array) $this->templateHelpers as $helper) {
+            $file = "..".DS."libs".DS."helpers".DS.$helper.".php";
+            if( !file_exists($file) ) {
+                throw new TemplateHelperNotFoundException("Template helper
+                    <em>$helper</em> not found in <em>libs/</em>.");
+            }
+            include($file);
+            $obj = new $helper();
+            $this->template->registerHelper($obj);
+        }
+    }
 
 
-	/**
-	 *
-	 * @param unknown_type $var
-	 * @param unknown_type $value
-	 */
-	public function set($var, $value) {
-		$this->template->$var = $value;
-	}
+    /**
+     * Default action.
+     */
+    public function index() {
+    }
 
 
-	/**
-	 *
-	 * Enter description here ...
-	 * @param unknown_type $var
-	 */
-	public function get($var) {
-		return $this->template->$var;
-	}
+    /**
+     * Sets the template variable so it can be used in the template file.
+     *
+     * @param string 	$var	Variable name
+     * @param mixed 	$value	Variable value
+     * @see Controller::get()
+     * @see Controller::template
+     */
+    public function set($var, $value) {
+        $this->template->$var = $value;
+    }
 
-	
-	/**
-	 * 
-	 * Enter description here ...
-	 * @param unknown_type $output
-	 */
-	public function setOutput($output) {
-		$this->output = $output;
-	}
 
-	
-	/**
-	 * 
-	 * Enter description here ...
-	 */
-	public function renderTemplate() {
-		if($this->output == "html") {
-			$tpl = strtolower($this->name.".".$this->action);
-			echo $this->template->render($tpl);
-		}
-		elseif($this->output == "json") {
-			echo json_encode($this->template->getVars());
-		}
-	}
+    /**
+     * Returns the template variable. Might not be used.
+     *
+     * @param string $var	Variable name
+     * @see Controller::set()
+     * @see Controller::template
+     * @return mixed
+     */
+    public function get($var) {
+        return $this->template->$var;
+    }
+
+
+    /**
+     * Method to set the output type. Output type must be one of "html" or
+     * "json".
+     *
+     * @param string $output	Output type. "html" or "json"
+     * @see Controller::output
+     */
+    public function setOutput($output) {
+        $this->output = $output;
+    }
+
+
+    /**
+     * Renders the template object to browser.
+     *
+     * @see Controller::setOutput()
+     */
+    public function renderTemplate() {
+        if($this->output == "html") {
+            $tpl = strtolower($this->name.".".$this->action);
+            echo $this->template->render($tpl);
+        }
+        elseif($this->output == "json") {
+            echo json_encode($this->template->getVars());
+        }
+    }
 }
 
 

@@ -7,12 +7,12 @@
  *
  */
 class CoreException extends Exception {
-	/**
-	 * 
-	 * Enter description here ...
-	 */
+    /**
+     *
+     * Enter description here ...
+     */
     public function render() {
-    	$exception = get_class($this);
+        $exception = get_class($this);
         $template = new Template("Error", $exception, "..".DS."views".DS);
         $template->message = $this->message;
         $template->exceptionClass = get_class($this);

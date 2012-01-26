@@ -11,12 +11,14 @@
  * </p>
  * 
  * @example
+ * <code>
  * $request = new Request();
  * $foo = $request->get("foo");		// Returns $_GET["foo"]
  * $bar = $request->post("bar");	// Returns $_POST["bar"]
  * 
  * echo $foo->toInt();				// Formats the parameter as integer
  * echo $bar->toString();			// Returns the parameter as string
+ * </code>
  * 
  * @see RequestFormat
  * 
@@ -24,40 +26,40 @@
  *
  */
 class Request {
-	/**
-	 * Returns parameters passed by GET methods.
-	 * 
-	 * @param 	mixed $key
-	 * @return 	mixed
-	 */
-	public function get($key) {
-		if(isset($_GET[$key])) return new RequestFormat($_GET[$key]);
-		return new RequestFormat();
-	}
+    /**
+     * Returns parameters passed by GET methods.
+     *
+     * @param 	mixed $key
+     * @return 	mixed
+     */
+    public function get($key) {
+        if(isset($_GET[$key])) return new RequestFormat($_GET[$key]);
+        return new RequestFormat();
+    }
 
-	
-	/**
-	 * Returns parameters passed by POST methods.
-	 *
-	 * @param 	mixed $key
-	 * @return	mixed
-	 */
-	public function post($key) {
-		if(isset($_POST[$key])) return new RequestFormat($_POST[$key]);
-		return new RequestFormat();
-	}	
 
-	
-	/**
-	 * Returns parameters passed by COOKIE  methods.
-	 * 
-	 * @param	mixed $key
-	 * @return	mixed
-	 */
-	public function cookie($key) {
-		if(isset($_COOKIE[$key])) return new RequestFormat($_COOKIE[$key]);
-		return new RequestFormat();
-	}	
+    /**
+     * Returns parameters passed by POST methods.
+     *
+     * @param 	mixed $key
+     * @return	mixed
+     */
+    public function post($key) {
+        if(isset($_POST[$key])) return new RequestFormat($_POST[$key]);
+        return new RequestFormat();
+    }
+
+
+    /**
+     * Returns parameters passed by COOKIE  methods.
+     *
+     * @param	mixed $key
+     * @return	mixed
+     */
+    public function cookie($key) {
+        if(isset($_COOKIE[$key])) return new RequestFormat($_COOKIE[$key]);
+        return new RequestFormat();
+    }
 }
 
 
@@ -73,64 +75,64 @@ class Request {
  *
  */
 class RequestFormat {
-	/**
-	 * Variable value.
-	 * 
-	 * @var unknown_type
-	 */
-	private $var;
+    /**
+     * Variable value.
+     *
+     * @var unknown_type
+     */
+    private $var;
 
-	
-	/**
-	 * Constructor sets the variable value.
-	 * 
-	 * @param unknown_type $var
-	 */
-	public function __construct($var=null) {
-		$this->var = $var;
-	}
-	
-	
-	/**
-	 * Formats value as integer.
-	 * 
-	 * @return integer
-	 */
-	public function toInt() {
-		return (int) $this->var;
-	}
 
-	
-	/**
-	 * Formats value as boolean.
-	 * 
-	 * @return boolean
-	 */
-	public function toBool() {
-		return (bool) $this->var;
-	}
-	
-	
-	/**
-	 * Formats value as string.
-	 * 
-	 * @return string
-	 */	
-	public function toString() {
-		if( empty($this->var) ) return null;
-		// TODO
-		return $this->var;
-	}
+    /**
+     * Constructor sets the variable value.
+     *
+     * @param unknown_type $var
+     */
+    public function __construct($var=null) {
+        $this->var = $var;
+    }
 
-	
-	/**
-	 * Magic method to return value as string. Use this with caution.
-	 * 
-	 * @return string
-	 */
-	public function __toString() {
-		return $this->var;
-	}
+
+    /**
+     * Formats value as integer.
+     *
+     * @return integer
+     */
+    public function toInt() {
+        return (int) $this->var;
+    }
+
+
+    /**
+     * Formats value as boolean.
+     *
+     * @return boolean
+     */
+    public function toBool() {
+        return (bool) $this->var;
+    }
+
+
+    /**
+     * Formats value as string.
+     *
+     * @return string
+     */
+    public function toString() {
+        if( empty($this->var) ) return null;
+        // TODO
+        return $this->var;
+    }
+
+
+    /**
+     * Magic method to return value as string. Use this with caution.
+     *
+     * @return string
+     */
+    public function __toString() {
+        return $this->var;
+    }
 }
 
 ?>
