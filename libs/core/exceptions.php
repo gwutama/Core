@@ -54,4 +54,10 @@ class LayoutNotFoundException extends CoreException {}
  */
 class InvalidConfigKeyException extends CoreException {}
 
+
+/**
+ * Gets thrown when an invalid standard routing URL is found.
+ */
+class InvalidRouteException extends CoreException {}
+
 ?>

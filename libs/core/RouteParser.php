@@ -25,6 +25,8 @@ class RouteParser {
      * Custom routes from configs/routes.php
      */
     private $routes;
+    private $defaultController;
+    private $defaultAction;
 
 
     /**
@@ -32,12 +34,87 @@ class RouteParser {
      *
      * @param $routes	Array of custom routes
      */
-    public function __construct($routes) {
+    public function __construct($routes, $defaultController = "Home", $defaultAction = "index") {
         $this->routes = $routes;
+        $this->defaultController = $defaultController;
+        $this->defaultAction = $defaultAction;
     }
 
 
     /**
+     * Parses non-custom/standard URL into routing object.
+     * Example: /controller/action/param1:value1/param2:value2/param3:value3/
+     * Parameters are always in between slashes and have exact format such as param:value
+     * except for the last parameter, last slash character is optional.
+     *
+     * @param $url  URL
+     * @return RoutingObject
+     */
+    public function parse($url) {
+        // Handles the parameters. Explode $url separated by slashes. Example
+        // url could be /controller/action/param1:value1/param2:value2/param3:value3/.
+        // In this case, "controller" is the controller name, while "action" *could* be the action name
+        // if it is not DEFAULT_ACTION.
+        $tmp = explode("/", $url);
+
+        // Parameter count is the number of exploded strings separated by slashes.
+        // Note there is an empty value at the beginning and end of the array.
+        $count = count($tmp);
+
+        if($count == 2) {
+            // Count == 2 => url must be "/".
+            $controller = $this->defaultController;
+            $action = $this->defaultAction;
+            $parameters = array();
+        }
+        elseif($count == 3) {
+            // Count == 3, means that there are only 1 parameter. This single
+            // parameter must be the controller name.
+            if(!preg_match("/^[a-zA-Z0-9]+$/", $tmp[1])) {
+                throw new InvalidRouteException($url);
+            }
+
+            $controller = ucwords($tmp[1]);
+            $action = $this->defaultAction;
+            $parameters = array();
+        }
+        elseif($count > 3) {
+            // Count > 3, means that there are more than 1 parameters.
+            // The first parameter is the controller name, the second parameter
+            // is the action name. The rest are the request parameters.
+            if(!preg_match("/^[a-zA-Z0-9]+$/", $tmp[1]) || !preg_match("/^[a-zA-Z0-9]+$/", $tmp[2])) {
+                throw new InvalidRouteException($url);
+            }
+
+            $controller = ucwords($tmp[1]);
+            $action = $tmp[2];
+
+            // Parse parameters.
+            // The request parameters are the parameters except the first
+            // and second parameters. Example : /controller/action/param1:value1/param2:value2/param3:value3/
+            // In this case: controller is "controller", action is "action"
+            $parameters = array();
+            for($i = 1; $i < $count; ++$i) {
+                $params = explode(":", $tmp[$i]);
+
+                // valid: foo:bar, foo:
+                // invalid: foo:bar:baz, :foo
+                if(count($params) == 2 && $params[0]) {
+                    $parameters[$params[0]] = $params[1];
+                }
+            }
+        }
+        else {
+            throw new InvalidRouteException($url);
+        }
+
+        // Returns new RoutingObject
+        return new RoutingObject($url, $controller, $action, $parameters);
+    }
+
+
+    /**
+     * Parses custom/non-standard URL into routing object.
      * Identifies whether an URL is a custom URL or not.
      *
      * @param $url	URL
@@ -73,15 +150,14 @@ class RouteParser {
             // step 2.5
             $tmp = $route;
             foreach($params as $key=>$value) {
-                $tmp = str_replace("{$key}", $value, $tmp);
+                $tmp = str_replace("{".$key."}", $value, $tmp);
             }
 
             // step 2.6
             if($tmp == $url) {
-                return new RoutingObject( $routingConfigs["controller"],
-                    $routingConfigs["action"], $params );
+                return new RoutingObject($url, $routingConfigs["controller"],
+                    $routingConfigs["action"], $params);
             }
-            return null;
         }
 
         return null;
@@ -97,11 +173,23 @@ class RouteParser {
      * @return Array of parameters.
      */
     public function parseParamsFromRoute($route, $url) {
+        // 1. Replace words within {} of custom route with regex,
+        //    move the parameter name/key to an array.
+        //    Example above: $params = array("param" => null, "param2" => null);
+        // 2. To check whether $url is actually a custom route:
+        //    2.1. Replace words of custom route within {} with nothing.
+        //         Example above: {param} -> {}, {param2} -> {}
+        //    2.2. Split the custom route based on "{}"
+        //    2.3. Cross check characters of the split arrays with
+        //		   the actual $url. Note where the first and last positions
+        //         of the $url.
+        //    2.4. Based on the first and last positions, fill in the parameter
+        //         values into $params.
         $params = array();
         $len = strlen($route);
         $tokens = array();
 
-        // Get parameter names from routing first
+        // 1. Get parameter names from routing first
         for($i = 0; $i < $len; $i++) {
             // Opening bracket found, now found the closing bracket
             if($route[$i] == "{") {
@@ -112,38 +200,36 @@ class RouteParser {
             }
         }
 
-        // get tokens
-        // find strings between :
-        // 1. "" and "{"
-        // 2. "}" and "{"
-        // 3. "}" and ""
+        // 2.1. Replace words of custom route within {} with nothing.
+        $pattern = "/\{.*\}/U";
+        $new = preg_replace($pattern, "{}", $route);
 
-        // 1. "" and "{"
-        $pattern = "/^(.*){/U";
-        preg_match($pattern, $route, $matches, PREG_OFFSET_CAPTURE);
-        $tokens[] = $matches[1];
+        // 2.2. Split the custom route based on "{}"
+        $splits = explode("{}", $new);
 
-        // 2. "}" and "{"
-        $pattern = "/}(.*){/U";
-        preg_match_all($pattern, $route, $matches, PREG_OFFSET_CAPTURE);
-        foreach($matches[1] as $match) {
-            $tokens[] = $match;
-        }
-
-        // 3. "}" and ""
-        $pattern = "/.*}(.*)$/";
-        preg_match($pattern, $route, $matches, PREG_OFFSET_CAPTURE);
-        $matches[1][0] .= "$";
-        $tokens[] = $matches[1];
-
-        // now fill parameter values
+        //   2.3. Cross check characters of the split arrays with
+        //	      the actual $url. Note where the first and last positions
+        //        of the $url.
         $offset = 0;
-
-        // $tokens[$i][1] = offset position, $tokens[$i][0] = string
         $i = 0;
         foreach($params as &$param) {
-            $param = self::getParamBetween(&$url, &$offset, $tokens[$i], $tokens[$i+1]);
-            $i++;
+            // Define start and end tokens
+            $startToken = $splits[$i];
+            if($i < count($splits)-1) {
+                $endToken = $splits[$i+1];
+            }
+            else {
+                $endToken = "";
+            }
+
+            //    2.4. Based on the first and last positions, fill in the parameter
+            //         values into $params.
+            $param = self::getParamBetween($url, $offset, $startToken, $endToken);
+
+            // increment offset
+            $offset += strlen($startToken) + strlen($param);
+
+            ++$i;
         }
 
         return $params;
@@ -160,15 +246,24 @@ class RouteParser {
      * @param $endToken     Closing character.
      * @return String
      */
-    private static function getParamBetween($str, $offset, $startToken, $endToken) {
-        // $startToken[1] = offset position, $startToken[0] = string
-        // $endToken idem
-        $pattern = "/" . self::escape($startToken[0]) . "(.*)" . self::escape($endToken[0]) . "/U";
+    public static function getParamBetween($str, $offset, $startToken, $endToken) {
+        // empty startToken means in regex "^"
+        if($startToken == "") {
+            $startToken = "^";
+        }
+
+        // empty endToken means in regex "$"
+        if($endToken == "") {
+            $endToken = "$";
+        }
+
+        $pattern = "/" . self::escape($startToken) . "(.*)" . self::escape($endToken) . "/U";
         preg_match($pattern, $str, $matches, PREG_OFFSET_CAPTURE, $offset);
-        $offset = $matches[1][1];
-        //var_dump($pattern, $offset);
-        //var_dump($matches);
-        return $matches[1][0];
+
+        if($matches) {
+            return $matches[1][0];
+        }
+        return null;
     }
 
 
