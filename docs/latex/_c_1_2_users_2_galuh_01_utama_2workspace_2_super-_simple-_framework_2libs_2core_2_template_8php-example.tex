@@ -1,0 +1,21 @@
+\hypertarget{_c_1_2_users_2_galuh_01_utama_2workspace_2_super-_simple-_framework_2libs_2core_2_template_8php-example}{\section{\-C\-:/\-Users/\-Galuh Utama/workspace/\-Super-\/\-Simple-\/\-Framework/libs/core/\-Template.\-php}
+}
+\subsection*{\-Class \hyperlink{class_template}{\-Template}}
+
+\-This class represents the \char`\"{}\-V\-I\-E\-W\char`\"{} part of the \-M\-V\-C approach. \-It is a fairly simple templating system which supports layouts and template helpers. \-Unlike smarty, this uses \-P\-H\-P as a templating language. \-Which means one can use php tags in the template. \-But that doesn't mean that one should mix the application logic with the view/template. \-This approach is simple, fast and requires no template compilation. 
+
+{\ttfamily  // initialize template object \$template = new \hyperlink{class_template}{\-Template}(\char`\"{}controller\-Name\char`\"{}, \char`\"{}action\-Name\char`\"{}, \char`\"{}views/\char`\"{});}
+
+{\ttfamily  // set template variables \$template-\/$>$some\-Variable = \char`\"{}foo\char`\"{}; \$template-\/$>$another\-Variable = \char`\"{}bar\char`\"{};}
+
+{\ttfamily  // set layout title \$template-\/$>$set\-Title = \char`\"{}\-Hello, world! This is the page title.\char`\"{};}
+
+{\ttfamily  // render and output the template file views/controller\-Name.\-action\-Name.\-tpl echo \$template-\/$>$render(\char`\"{}controller\-Name.\-action\-Name.\-tpl\char`\"{}); }
+
+\begin{DoxyAuthor}{\-Author}
+\-Galuh \-Utama
+\end{DoxyAuthor}
+
+\begin{DoxyCodeInclude}
+\end{DoxyCodeInclude}
+ \hyperlink{_template_8php_source}{\-Utama/workspace/\-Super-\/\-Simple-\/\-Framework/libs/core/\-Template.\-php} 

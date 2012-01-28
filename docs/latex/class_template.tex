@@ -1,0 +1,237 @@
+\hypertarget{class_template}{\section{\-Template \-Class \-Reference}
+\label{class_template}\index{\-Template@{\-Template}}
+}
+\subsection*{\-Public \-Member \-Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_template_ac48173c3260cdbf4b386fab14485b89e}{\-\_\-\-\_\-construct} (\$controller, \$action, \$base\-Dir)
+\item 
+\hyperlink{class_template_a80acb31779de572d8186d1cc10c8c9db}{\-\_\-\-\_\-set} (\$var, \$value)
+\item 
+\hyperlink{class_template_aa8b89e0bad51878addc1300cd3e95b5c}{get\-Controller} ()
+\item 
+\hyperlink{class_template_a189a4abe5faf11f4320d5d3f1d3d1715}{get\-Action} ()
+\item 
+\hyperlink{class_template_ab81a1d1cef7f7d6c406e60bd368f94af}{get\-Vars} ()
+\item 
+\hyperlink{class_template_a884ba9bb0d54bde7839e798db7964476}{set\-Title} (\$title)
+\item 
+\hypertarget{class_template_ae3c188ddb33787c74fdaf283c9f5ee16}{{\bfseries include\-Style} (\$file, \$attributes=array())}\label{class_template_ae3c188ddb33787c74fdaf283c9f5ee16}
+
+\item 
+\hypertarget{class_template_a631dfe2fc59259e84f647803acf685fb}{{\bfseries include\-Script} (\$file, \$attributes=array())}\label{class_template_a631dfe2fc59259e84f647803acf685fb}
+
+\item 
+\hyperlink{class_template_acd0ce6eade228a04fb8974811d1056a7}{register\-Helper} (\hyperlink{interface_template_helper}{\-Template\-Helper} \$helper)
+\item 
+\hyperlink{class_template_a8fb2d9cdca17b87400e780b9f9720933}{\-\_\-\-\_\-get} (\$var)
+\item 
+\hyperlink{class_template_a702b3376618a26e6c02c05bae65c6b9e}{set\-Layout} (\$layout)
+\item 
+\hypertarget{class_template_aad732d37f54d4a4315ae2f9d8f92a4d3}{{\bfseries render\-Partial} (\$tpl)}\label{class_template_aad732d37f54d4a4315ae2f9d8f92a4d3}
+
+\item 
+\hypertarget{class_template_a200b07b91933efe213c09aa4ae511679}{{\bfseries render} (\$tpl)}\label{class_template_a200b07b91933efe213c09aa4ae511679}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Detailed \-Description}
+
+
+\-Definition at line 34 of file \-Template.\-php.
+
+
+
+\subsection{\-Constructor \& \-Destructor \-Documentation}
+\hypertarget{class_template_ac48173c3260cdbf4b386fab14485b89e}{\index{\-Template@{\-Template}!\-\_\-\-\_\-construct@{\-\_\-\-\_\-construct}}
+\index{\-\_\-\-\_\-construct@{\-\_\-\-\_\-construct}!Template@{\-Template}}
+\subsubsection[{\-\_\-\-\_\-construct}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-\_\-\-\_\-construct} (
+\begin{DoxyParamCaption}
+\item[{\$}]{controller, }
+\item[{\$}]{action, }
+\item[{\$}]{base\-Dir}
+\end{DoxyParamCaption}
+)}}\label{class_template_ac48173c3260cdbf4b386fab14485b89e}
+\-The constructor sets the controller name, action name and the base directory of the views. \-By default, it sets the page title to \char`\"{}\-S\-S\-F $>$ \{controller\-\_\-name\} $>$ \{action\-\_\-name\}\char`\"{}. \-This however can be omitted by setting the layout title with \hyperlink{class_template_a884ba9bb0d54bde7839e798db7964476}{set\-Title()}.
+
+\begin{DoxySeeAlso}{\-See also}
+\hyperlink{class_template_a884ba9bb0d54bde7839e798db7964476}{\-Template\-::set\-Title()} 
+\end{DoxySeeAlso}
+
+\begin{DoxyParams}[1]{\-Parameters}
+string & {\em \$controller} & \-The controller name. \\
+\hline
+string & {\em \$action} & \-The action name. \\
+\hline
+string & {\em \$base\-Dir} & \-The base directory for views. \\
+\hline
+\end{DoxyParams}
+
+
+\-Definition at line 184 of file \-Template.\-php.
+
+
+
+\subsection{\-Member \-Function \-Documentation}
+\hypertarget{class_template_a8fb2d9cdca17b87400e780b9f9720933}{\index{\-Template@{\-Template}!\-\_\-\-\_\-get@{\-\_\-\-\_\-get}}
+\index{\-\_\-\-\_\-get@{\-\_\-\-\_\-get}!Template@{\-Template}}
+\subsubsection[{\-\_\-\-\_\-get}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-\_\-\-\_\-get} (
+\begin{DoxyParamCaption}
+\item[{\$}]{var}
+\end{DoxyParamCaption}
+)}}\label{class_template_a8fb2d9cdca17b87400e780b9f9720933}
+\-Magic method, which returns the template variables.
+
+\begin{DoxySeeAlso}{\-See also}
+\-Template\-::vars 
+\end{DoxySeeAlso}
+
+\begin{DoxyParams}[1]{\-Parameters}
+mixed & {\em \$var} & \-Anything. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{\-Returns}
+mixed 
+\end{DoxyReturn}
+
+
+\-Definition at line 323 of file \-Template.\-php.
+
+\hypertarget{class_template_a80acb31779de572d8186d1cc10c8c9db}{\index{\-Template@{\-Template}!\-\_\-\-\_\-set@{\-\_\-\-\_\-set}}
+\index{\-\_\-\-\_\-set@{\-\_\-\-\_\-set}!Template@{\-Template}}
+\subsubsection[{\-\_\-\-\_\-set}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-\_\-\-\_\-set} (
+\begin{DoxyParamCaption}
+\item[{\$}]{var, }
+\item[{\$}]{value}
+\end{DoxyParamCaption}
+)}}\label{class_template_a80acb31779de572d8186d1cc10c8c9db}
+\-Magic methods to set the template variables, which can be called in the template file using \$variable\-Name.
+
+\begin{DoxySeeAlso}{\-See also}
+\-Template\-::vars 
+\end{DoxySeeAlso}
+
+\begin{DoxyParams}[1]{\-Parameters}
+string & {\em \$var} & \-Variable name. \\
+\hline
+string & {\em \$value} & \-The value. \\
+\hline
+\end{DoxyParams}
+
+
+\-Definition at line 200 of file \-Template.\-php.
+
+\hypertarget{class_template_a189a4abe5faf11f4320d5d3f1d3d1715}{\index{\-Template@{\-Template}!get\-Action@{get\-Action}}
+\index{get\-Action@{get\-Action}!Template@{\-Template}}
+\subsubsection[{get\-Action}]{\setlength{\rightskip}{0pt plus 5cm}{\bf get\-Action} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{class_template_a189a4abe5faf11f4320d5d3f1d3d1715}
+\-Returns the action name.
+
+\begin{DoxyReturn}{\-Returns}
+string 
+\end{DoxyReturn}
+
+
+\-Definition at line 220 of file \-Template.\-php.
+
+\hypertarget{class_template_aa8b89e0bad51878addc1300cd3e95b5c}{\index{\-Template@{\-Template}!get\-Controller@{get\-Controller}}
+\index{get\-Controller@{get\-Controller}!Template@{\-Template}}
+\subsubsection[{get\-Controller}]{\setlength{\rightskip}{0pt plus 5cm}{\bf get\-Controller} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{class_template_aa8b89e0bad51878addc1300cd3e95b5c}
+\-Returns the controller name.
+
+\begin{DoxyReturn}{\-Returns}
+string 
+\end{DoxyReturn}
+
+
+\-Definition at line 210 of file \-Template.\-php.
+
+\hypertarget{class_template_ab81a1d1cef7f7d6c406e60bd368f94af}{\index{\-Template@{\-Template}!get\-Vars@{get\-Vars}}
+\index{get\-Vars@{get\-Vars}!Template@{\-Template}}
+\subsubsection[{get\-Vars}]{\setlength{\rightskip}{0pt plus 5cm}{\bf get\-Vars} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{class_template_ab81a1d1cef7f7d6c406e60bd368f94af}
+\-Returns the template variables.
+
+\begin{DoxyReturn}{\-Returns}
+array\-: 
+\end{DoxyReturn}
+
+
+\-Definition at line 230 of file \-Template.\-php.
+
+\hypertarget{class_template_acd0ce6eade228a04fb8974811d1056a7}{\index{\-Template@{\-Template}!register\-Helper@{register\-Helper}}
+\index{register\-Helper@{register\-Helper}!Template@{\-Template}}
+\subsubsection[{register\-Helper}]{\setlength{\rightskip}{0pt plus 5cm}{\bf register\-Helper} (
+\begin{DoxyParamCaption}
+\item[{{\bf \-Template\-Helper} \$}]{helper}
+\end{DoxyParamCaption}
+)}}\label{class_template_acd0ce6eade228a04fb8974811d1056a7}
+\-Registers a template helper into the template object, so it can be used/called in the template file.
+
+\begin{DoxySeeAlso}{\-See also}
+\-Template\-::template\-Helpers 
+\end{DoxySeeAlso}
+
+\begin{DoxyParams}[1]{\-Parameters}
+\hyperlink{interface_template_helper}{\-Template\-Helper} & {\em \$helper} & \-The template helper. \\
+\hline
+\end{DoxyParams}
+
+
+\-Definition at line 310 of file \-Template.\-php.
+
+\hypertarget{class_template_a702b3376618a26e6c02c05bae65c6b9e}{\index{\-Template@{\-Template}!set\-Layout@{set\-Layout}}
+\index{set\-Layout@{set\-Layout}!Template@{\-Template}}
+\subsubsection[{set\-Layout}]{\setlength{\rightskip}{0pt plus 5cm}{\bf set\-Layout} (
+\begin{DoxyParamCaption}
+\item[{\$}]{layout}
+\end{DoxyParamCaption}
+)}}\label{class_template_a702b3376618a26e6c02c05bae65c6b9e}
+\-Sets the template's layout name. \-Layout should be exists under /views/layouts/ directory.
+
+\begin{DoxySeeAlso}{\-See also}
+\-Template\-::layout 
+\end{DoxySeeAlso}
+
+\begin{DoxyParams}[1]{\-Parameters}
+string & {\em \$layout} & \-Layout name. \\
+\hline
+\end{DoxyParams}
+
+
+\-Definition at line 335 of file \-Template.\-php.
+
+\hypertarget{class_template_a884ba9bb0d54bde7839e798db7964476}{\index{\-Template@{\-Template}!set\-Title@{set\-Title}}
+\index{set\-Title@{set\-Title}!Template@{\-Template}}
+\subsubsection[{set\-Title}]{\setlength{\rightskip}{0pt plus 5cm}{\bf set\-Title} (
+\begin{DoxyParamCaption}
+\item[{\$}]{title}
+\end{DoxyParamCaption}
+)}}\label{class_template_a884ba9bb0d54bde7839e798db7964476}
+\-Sets the layout title.
+
+
+\begin{DoxyParams}[1]{\-Parameters}
+\-String & {\em \$title} & \-The page title. \\
+\hline
+\end{DoxyParams}
+
+
+\-Definition at line 240 of file \-Template.\-php.
+
+
+
+\-The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+libs/core/\-Template.\-php\end{DoxyCompactItemize}
