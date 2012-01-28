@@ -1,10 +1,8 @@
 <?php
 
 /**
- * 
- * Enter description here ...
- * @author Galuh Utama
- *
+ * Basic exception class. This exception class can be rendered to browser.
+ * It has its own template.
  */
 class CoreException extends Exception {
     /**
@@ -21,53 +19,39 @@ class CoreException extends Exception {
 }
 
 
-
 /**
- * 
- * Enter description here ...
- * @author Galuh Utama
- *
+ * Gets thrown when a controller is not found.
  */
 class ControllerNotFoundException extends CoreException {}
 
 
-
 /**
- * 
- * Enter description here ...
- * @author Galuh Utama
- *
+ * Gets thrown when an action is not found.
  */
 class ActionNotFoundException extends CoreException {}
 
 
-
 /**
- * 
- * Enter description here ...
- * @author Galuh Utama
- *
+ * Gets thrown when a template is not found.
  */
 class TemplateNotFoundException extends CoreException {}
 
 
-
 /**
- * 
- * Enter description here ...
- * @author Galuh Utama
- *
+ * Gets thrown when a template helper is not found.
  */
 class TemplateHelperNotFoundException extends CoreException {}
 
 
-
 /**
- * 
- * Enter description here ...
- * @author Galuh Utama
- *
+ * Gets thrown when layout is not found.
  */
 class LayoutNotFoundException extends CoreException {}
+
+
+/**
+ * Gets thrown when a configuration key is not alphanumerical.
+ */
+class InvalidConfigKeyException extends CoreException {}
 
 ?>
