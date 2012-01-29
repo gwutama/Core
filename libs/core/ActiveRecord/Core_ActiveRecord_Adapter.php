@@ -1,19 +1,19 @@
 <?php
 
 /**
- * <h1>Class Driver</h1>
+ * <h1>Class Core_ActiveRecord_Adapter</h1>
  *
  * <p>
  * This class represents base for active record driver.
  * It implements the singleton pattern.
  * </p>
  */
-abstract class ActiveRecord_Driver {
+abstract class Core_ActiveRecord_Adapter {
 
     /**
      * Database object. PDO or PDO compliant.
      */
-    protected $dbo;
+    protected $dbh;
 
 
     /**
@@ -31,10 +31,10 @@ abstract class ActiveRecord_Driver {
      * @return mixed
      */
     public function instance() {
-        if($this->dbo == null) {
-            $this->dbo = $this->connect();
+        if($this->dbh == null) {
+            $this->dbh = $this->connect();
         }
-        return $this->dbo;
+        return $this->dbh;
     }
 
 
@@ -43,7 +43,7 @@ abstract class ActiveRecord_Driver {
      *
      * @abstract
      */
-    abstract function connect();
+    abstract protected function connect();
 
 
     /**
@@ -51,7 +51,7 @@ abstract class ActiveRecord_Driver {
      *
      * @abstract
      */
-    abstract function disconnect();
+    abstract protected function disconnect();
 
 
     /**
@@ -59,7 +59,7 @@ abstract class ActiveRecord_Driver {
      *
      * @abstract
      */
-    abstract public function create();
+    abstract public function create($data, $options);
 
 
     /**
@@ -67,7 +67,7 @@ abstract class ActiveRecord_Driver {
      *
      * @abstract
      */
-    abstract public function read();
+    abstract public function read($data, $options);
 
 
     /**
@@ -75,7 +75,7 @@ abstract class ActiveRecord_Driver {
      *
      * @abstract
      */
-    abstract public function update();
+    abstract public function update($data, $options);
 
 
     /**
@@ -83,8 +83,15 @@ abstract class ActiveRecord_Driver {
      *
      * @abstract
      */
-    abstract public function delete();
+    abstract public function delete($data, $options);
 
+
+    /**
+     *
+     */
+    protected function getSingular() {
+
+    }
 }
 
 ?>

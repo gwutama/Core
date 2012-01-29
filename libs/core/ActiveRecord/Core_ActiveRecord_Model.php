@@ -8,14 +8,14 @@ define("MODEL_FIND_ONE", "one");
 
 
 /**
- * <h1>Class Model</h1>
+ * <h1>Class Core_ActiveRecord_Model</h1>
  *
  * <p>
  * This class represents a model part in MVC approach. It uses the Fowler's Active Record pattern,
  * or at least mimics it.
  * </p>
  */
-abstract class ActiveRecord_Model {
+abstract class Core_ActiveRecord_Model {
 
     /**
      * Database object. PDO or PDO compliant.
@@ -90,7 +90,7 @@ abstract class ActiveRecord_Model {
      *
      * @static
      * @param $options  An array of options.
-     * @return ActiveRecord_Model object
+     * @return Core_ActiveRecord_Model object
      */
     public static function all($options = array()) {
         return self::instance()->findAll($options);
@@ -102,7 +102,7 @@ abstract class ActiveRecord_Model {
      *
      * @static
      * @param $options  An array of options.
-     * @return ActiveRecord_Model object
+     * @return Core_ActiveRecord_Model object
      */
     public static function first($options = array()) {
         return self::instance()->findFirst($options);
@@ -114,7 +114,7 @@ abstract class ActiveRecord_Model {
      *
      * @static
      * @param $options  An array of options.
-     * @return ActiveRecord_Model object
+     * @return Core_ActiveRecord_Model object
      */
     public static function last($options = array()) {
         return self::instance()->findLast($options);
@@ -126,7 +126,7 @@ abstract class ActiveRecord_Model {
      *
      * @static
      * @param $options  An array of options.
-     * @return ActiveRecord_Model object
+     * @return Core_ActiveRecord_Model object
      */
     public static function one($options = array()) {
         return self::instance()->findOne($options);
