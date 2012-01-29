@@ -1,13 +1,13 @@
 <?php
 
 /**
- * <h1>Class FileIO</h1>
+ * <h1>Class Core_FileIO</h1>
  *
  * <p>
  * This class contains file IO operations.
  * </p>
  */
-class FileIO
+class Core_FileIO
 {
     /**
      * Writes data to a file.

@@ -4,14 +4,14 @@
  * Basic exception class. This exception class can be rendered to browser.
  * It has its own template.
  */
-class CoreException extends Exception {
+class Core_Exception extends Exception {
     /**
      *
      * Enter description here ...
      */
     public function render() {
         $exception = get_class($this);
-        $template = new Template("Error", $exception, "..".DS."views".DS."core".DS);
+        $template = new Core_Template("Error", $exception, "..".DS."views".DS."core".DS);
         $template->message = $this->message;
         $template->exceptionClass = get_class($this);
         echo $template->render("exception");
@@ -22,42 +22,42 @@ class CoreException extends Exception {
 /**
  * Gets thrown when a controller is not found.
  */
-class ControllerNotFoundException extends CoreException {}
+class ControllerNotFoundException extends Core_Exception {}
 
 
 /**
  * Gets thrown when an action is not found.
  */
-class ActionNotFoundException extends CoreException {}
+class ActionNotFoundException extends Core_Exception {}
 
 
 /**
  * Gets thrown when a template is not found.
  */
-class TemplateNotFoundException extends CoreException {}
+class TemplateNotFoundException extends Core_Exception {}
 
 
 /**
  * Gets thrown when a template helper is not found.
  */
-class TemplateHelperNotFoundException extends CoreException {}
+class TemplateHelperNotFoundException extends Core_Exception {}
 
 
 /**
  * Gets thrown when layout is not found.
  */
-class LayoutNotFoundException extends CoreException {}
+class LayoutNotFoundException extends Core_Exception {}
 
 
 /**
  * Gets thrown when a configuration key is not alphanumerical.
  */
-class InvalidConfigKeyException extends CoreException {}
+class InvalidConfigKeyException extends Core_Exception {}
 
 
 /**
  * Gets thrown when an invalid standard routing URL is found.
  */
-class InvalidRouteException extends CoreException {}
+class InvalidRouteException extends Core_Exception {}
 
 ?>

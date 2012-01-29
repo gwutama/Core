@@ -1,7 +1,7 @@
 <?php
 
 /**
-* <h1>Class Template</h1>
+* <h1>Class Core_Template</h1>
 *
 * <p>
 * This class represents the "VIEW" part of the MVC approach. It is a fairly
@@ -15,7 +15,7 @@
 * @example
 * <code>
 * // initialize template object
-* $template = new Template("controllerName", "actionName", "views/");
+* $template = new Core_Template("controllerName", "actionName", "views/");
 *
 * // set template variables
 * $template->someVariable = "foo";
@@ -31,12 +31,12 @@
 * @author Galuh Utama
 *
 */
-class Template {
+class Core_Template {
     /**
      * Template's base directory, where all template files reside.
      * $baseDir will be set by the constructor.
      *
-     * @see Template::__construct()
+     * @see Core_Template::__construct()
      * @var string
      */
     private $baseDir;
@@ -46,7 +46,7 @@ class Template {
      * actual template and can be called as a variable. The array keys
      * can be set with like this:</p>
      * <code>
-     * $template = new Template("controller", "action", "views");
+     * $template = new Core_Template("controller", "action", "views");
      * $template->someVariable = "foo";
      * $template->anotherVariale = "bar";
      * </code>
@@ -63,8 +63,8 @@ class Template {
      * </code>
      * <p>which will print "foo" out.</p>
      *
-     * @see Template::__set()
-     * @see Template::__get()
+     * @see Core_Template::__set()
+     * @see Core_Template::__get()
      * @var array
      */
     private $vars = array();
@@ -83,7 +83,7 @@ class Template {
      * <img src="test.png" />
      * </code>
      *
-     * @see Template::registerHelper()
+     * @see Core_Template::registerHelper()
      * @var array
      */
     private $templateHelpers = array("HtmlHelper");
@@ -96,7 +96,7 @@ class Template {
      * <body> tag. See views/layouts/default.tpl for an overview. A layout
      * should be reside in views/layouts/ directory.</p>
      *
-     * @see Template::setLayout()
+     * @see Core_Template::setLayout()
      * @var string
      */
     private $layout = "default";
@@ -109,7 +109,7 @@ class Template {
      * <title><?php echo $layoutTitle ?></title>
      * </code>
      *
-     * @see Template::setTitle()
+     * @see Core_Template::setTitle()
      * @var string
      */
     private $title;
@@ -117,7 +117,7 @@ class Template {
     /**
      * Each template refers to a controller. This is set in constructor.
      *
-     * @see Template::__construct()
+     * @see Core_Template::__construct()
      * @var string
      */
     private $controller;
@@ -126,7 +126,7 @@ class Template {
      * Each template refers to an action, which is a part of a controller.
      * This is set in constructor.
      *
-     * @see Template::__construct()
+     * @see Core_Template::__construct()
      * @var string
      */
     private $action;
@@ -145,7 +145,7 @@ class Template {
      * </code>
      * <p>in the layout file.</p>
      *
-     * @see Template::includeStyle()
+     * @see Core_Template::includeStyle()
      * @var string
      */
     private $styles;
@@ -164,7 +164,7 @@ class Template {
      * </code>
      * <p>in the layout file.</p>
      *
-     * @see Template::includeScript()
+     * @see Core_Template::includeScript()
      * @var string
      */
     private $scripts;
@@ -176,7 +176,7 @@ class Template {
      * page title to "SSF > {controller_name} > {action_name}".
      * This however can be omitted by setting the layout title with setTitle().
      *
-     * @see 	Template::setTitle()
+     * @see 	Core_Template::setTitle()
      * @param 	string 		$controller		The controller name.
      * @param 	string 		$action			The action name.
      * @param 	string 		$baseDir		The base directory for views.
@@ -193,7 +193,7 @@ class Template {
      * Magic methods to set the template variables, which can be called
      * in the template file using $variableName.
      *
-     * @see		Template::vars
+     * @see		Core_Template::vars
      * @param 	string 		$var		Variable name.
      * @param 	string 		$value		The value.
      */
@@ -252,7 +252,7 @@ class Template {
      * $this->includeStyle("somestyle.css", array("media" => "all"));
      * </code>
      *
-     * @see		Template::styles
+     * @see		Core_Template::styles
      * @param	string 		$file		The style file name.
      * @param	array		$attributes	Extra attributes.
      */
@@ -273,7 +273,7 @@ class Template {
      * $this->includeStyle("somescript.js", array("encoding" => "UTF-8"));
      * </code>
      *
-     * @see		Template::scripts
+     * @see		Core_Template::scripts
      * @param	string 		$file		The script file name.
      * @param	array		$attributes	Extra attributes.
      */
@@ -304,10 +304,10 @@ class Template {
      * Registers a template helper into the template object, so it can be
      * used/called in the template file.
      *
-     * @see		Template::templateHelpers
+     * @see		Core_Template::templateHelpers
      * @param 	TemplateHelper	$helper		The template helper.
      */
-    public function registerHelper(TemplateHelper $helper) {
+    public function registerHelper(Core_TemplateHelper $helper) {
         $helperName = lcfirst($helper->getName());
         $this->templateHelpers[$helperName] = $helper;
     }
@@ -316,7 +316,7 @@ class Template {
     /**
      * Magic method, which returns the template variables.
      *
-     * @see		Template::vars
+     * @see		Core_Template::vars
      * @param	mixed		$var		Anything.
      * @return	mixed
      */
@@ -329,7 +329,7 @@ class Template {
      * Sets the template's layout name. Layout should be exists under
      * /views/layouts/ directory.
      *
-     * @see		Template::layout
+     * @see		Core_Template::layout
      * @param	string		$layout		Layout name.
      */
     public function setLayout($layout) {
@@ -377,8 +377,8 @@ class Template {
      * This will render sidebar.tpl into the current template. Very useful
      * to include template parts and sections.
      *
-     * @see		Template::renderBuffer()
-     * @see		Template::render()
+     * @see		Core_Template::renderBuffer()
+     * @see		Core_Template::render()
      * @param	string	$tpl	Template name.
      * @return 	string
      */
@@ -397,12 +397,12 @@ class Template {
      * @example
      * In a controller file:
      * <code>
-     * $template = new Template("ControllerName", "ActionName", "views/");
+     * $template = new Core_Template("ControllerName", "ActionName", "views/");
      * echo $template->render("controllerName.actionName.tpl");
      * </code>
      *
-     * @see		Template::renderBuffer()
-     * @see		Template::renderPartial()
+     * @see		Core_Template::renderBuffer()
+     * @see		Core_Template::renderPartial()
      * @param	string	$tpl	Template name.
      * @return 	string
      */

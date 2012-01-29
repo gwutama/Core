@@ -1,6 +1,6 @@
 <?php
 
-include "Autoloader.php";
+include "Core_Autoloader.php";
 
 class Core {
 
@@ -18,8 +18,9 @@ class Core {
         include "../libs/core/exceptions.php";
 
         // Registers autoloaded directories
-        $autoload = new Autoloader();
-        $autoload->register("../libs/core");
+        $autoload = new Core_Autoloader();
+        $autoload->register("../libs");
+        $autoload->register("../libs/Core");
 
         // include configs
         include "../configs/global.php";
@@ -28,8 +29,8 @@ class Core {
         // Run application
         try {
             $url = "/".@$_GET["url"];
-            $routeParser = new RouteParser(Config::get("routes"),
-                Config::get("default.controller"), Config::get("default.action"));
+            $routeParser = new Core_RouteParser(Core_Config::get("routes"),
+                Core_Config::get("default.controller"), Core_Config::get("default.action"));
 
             $routingObject = $routeParser->parseCustom($url);
 
@@ -37,9 +38,9 @@ class Core {
                 $routingObject = $routeParser->parse($url);
             }
 
-            Route::dispatch($routingObject);
+            Core_Route::dispatch($routingObject);
         }
-        catch(CoreException $e) {
+        catch(Core_Exception $e) {
             $e->render();
         }
     }

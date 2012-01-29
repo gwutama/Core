@@ -1,13 +1,13 @@
 <?php
 
 /**
- * <h1>Class Autoloader</h1>
+ * <h1>Class Core_Autoloader</h1>
  *
  * <p>
  * A simple autoloader class.
  * </p>
  */
-class Autoloader {
+class Core_Autoloader {
 
     /**
      * An array of directories.
@@ -42,10 +42,17 @@ class Autoloader {
     public function loader($class) {
         // Zend style: treat underscores as slashes (subdirectories).
         // Because php 5.2 is still everywhere.
-        $class = str_replace("_", "/", $class);
+        $path = explode("_", $class);
+
+        $path[count($path)-1] = $class;
+        $path = implode("/", $path);
+
         foreach($this->dirs as $dir) {
             // Finally include the file.
-            include_once $dir."/".$class.".php";
+            $file = $dir . "/" . $path . ".php";
+            if(file_exists($file)) {
+                include_once $file;
+            }
         }
     }
 }

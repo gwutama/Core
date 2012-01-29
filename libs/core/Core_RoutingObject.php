@@ -10,10 +10,10 @@
  * </p>
  *
  * @example
- * $route = new RoutingObject("/foo/bar", "Foo", "index", array("hello" => "bar"));
+ * $route = new Core_RoutingObject("/foo/bar", "Foo", "index", array("hello" => "bar"));
  * $route->setParamsAsGlobalVars();
  */
-class RoutingObject {
+class Core_RoutingObject {
 
     /**
      * The requested URL.

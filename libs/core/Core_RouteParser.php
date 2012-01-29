@@ -1,7 +1,7 @@
 <?php
 
 /**
- * <h1>Class RouteParser</h1>
+ * <h1>Class Core_RouteParser</h1>
  *
  * <p>
  * Custom routes predefined in configs/routes.php
@@ -10,16 +10,16 @@
  *
  * @example
  * $url = "/foo/1/hello/world";
- * $routeParser = new RouteParser($routes);
+ * $routeParser = new Core_RouteParser($routes);
  * if($customRoute = $routeParser->parseCustom($url)) {
- *		Route::dispatchCustom($customRoute);
+ *		Core_Route::dispatchCustom($customRoute);
  * }
  * else {
  * 		$route = new Route($url, $controller, $action);
- * 		Route::dispatch($route);
+ * 		Core_Route::dispatch($route);
  * }
  */
-class RouteParser {
+class Core_RouteParser {
 
     /**
      * Custom routes from configs/routes.php
@@ -109,7 +109,7 @@ class RouteParser {
         }
 
         // Returns new RoutingObject
-        return new RoutingObject($url, $controller, $action, $parameters);
+        return new Core_RoutingObject($url, $controller, $action, $parameters);
     }
 
 
@@ -121,7 +121,7 @@ class RouteParser {
      * @return RoutingObject
      */
     public function parseCustom($url) {
-        // Detects whether this URL is in RouteParser::routes
+        // Detects whether this URL is in Core_RouteParser::routes
         foreach($this->routes as $route=>$routingConfigs) {
             // Routes are in this format /blah/{param}/{param2}/etc
             // Example $url would be /blah/foo/bar/etc
@@ -155,7 +155,7 @@ class RouteParser {
 
             // step 2.6
             if($tmp == $url) {
-                return new RoutingObject($url, $routingConfigs["controller"],
+                return new Core_RoutingObject($url, $routingConfigs["controller"],
                     $routingConfigs["action"], $params);
             }
         }

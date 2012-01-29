@@ -1,20 +1,20 @@
 <?php
 
 /**
- * <h1>Class Config</h1>
+ * <h1>Class Core_Config</h1>
  *
  * <p>
  * This class represents a configuration class.
  * </p>
  *
  * @example
- * Config::set("foo", "bar");
- * Config::set("foo.acme", "blah");
+ * Core_Config::set("foo", "bar");
+ * Core_Config::set("foo.acme", "blah");
  *
- * var_dump(Config::get("foo")); // returns bar
- * var_dump(Config::get("foo.acme")); // returns blah
+ * var_dump(Core_Config::get("foo")); // returns bar
+ * var_dump(Core_Config::get("foo.acme")); // returns blah
  */
-class Config {
+class Core_Config {
 
     /**
      * Configurations are statically saved in an array.
@@ -42,20 +42,20 @@ class Config {
         $tokens = explode(".", $key);
         $count = count($tokens);
         for($i = 0; $i < $count-1; $i++) {
-            if(@$config[$tokens[$i]] instanceof ConfigNode == false) {
-                $config[$tokens[$i]] = new ConfigNode($tokens[$i]);
+            if(@$config[$tokens[$i]] instanceof Core_ConfigNode == false) {
+                $config[$tokens[$i]] = new Core_ConfigNode($tokens[$i]);
             }
             $config = &$config[$tokens[$i]]->children;
         }
 
-        if(@$config[$tokens[$i]] instanceof ConfigNode) {
+        if(@$config[$tokens[$i]] instanceof Core_ConfigNode) {
             $children = $config[$tokens[$i]]->children;
         }
         else {
             $children = array();
         }
 
-        $config[$tokens[$i]] = new ConfigNode($tokens[$i], $value);
+        $config[$tokens[$i]] = new Core_ConfigNode($tokens[$i], $value);
         $config[$tokens[$i]]->children = $children;
     }
 
@@ -116,7 +116,7 @@ class Config {
  *
  * Basic representation of a configuration node.
  */
-class ConfigNode {
+class Core_ConfigNode {
     public $key;
     public $value;
     public $children = array();

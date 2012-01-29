@@ -1,7 +1,7 @@
 <?php
 
 /**
- * <h1>Class Request</h1>
+ * <h1>Class Core_Request</h1>
  * 
  * <p>
  * This class represents HTTP request parameters particularly over GET, POST 
@@ -12,7 +12,7 @@
  * 
  * @example
  * <code>
- * $request = new Request();
+ * $request = new Core_Request();
  * $foo = $request->get("foo");		// Returns $_GET["foo"]
  * $bar = $request->post("bar");	// Returns $_POST["bar"]
  * 
@@ -20,12 +20,12 @@
  * echo $bar->toString();			// Returns the parameter as string
  * </code>
  * 
- * @see RequestFormat
+ * @see Core_RequestFormat
  * 
  * @author Galuh Utama
  *
  */
-class Request {
+class Core_Request {
     /**
      * Returns parameters passed by GET methods.
      *
@@ -33,8 +33,8 @@ class Request {
      * @return 	mixed
      */
     public function get($key) {
-        if(isset($_GET[$key])) return new RequestFormat($_GET[$key]);
-        return new RequestFormat();
+        if(isset($_GET[$key])) return new Core_RequestFormat($_GET[$key]);
+        return new Core_RequestFormat();
     }
 
 
@@ -45,8 +45,8 @@ class Request {
      * @return	mixed
      */
     public function post($key) {
-        if(isset($_POST[$key])) return new RequestFormat($_POST[$key]);
-        return new RequestFormat();
+        if(isset($_POST[$key])) return new Core_RequestFormat($_POST[$key]);
+        return new Core_RequestFormat();
     }
 
 
@@ -57,8 +57,8 @@ class Request {
      * @return	mixed
      */
     public function cookie($key) {
-        if(isset($_COOKIE[$key])) return new RequestFormat($_COOKIE[$key]);
-        return new RequestFormat();
+        if(isset($_COOKIE[$key])) return new Core_RequestFormat($_COOKIE[$key]);
+        return new Core_RequestFormat();
     }
 }
 
@@ -74,7 +74,7 @@ class Request {
  * @author Galuh Utama
  *
  */
-class RequestFormat {
+class Core_RequestFormat {
     /**
      * Variable value.
      *

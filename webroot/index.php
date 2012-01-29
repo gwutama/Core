@@ -1,6 +1,6 @@
 <?php
 
-include "../libs/core/Core.php";
+include "../libs/Core/Core.php";
 Core::init();
 
 ?>

@@ -6,7 +6,7 @@
  * @author Galuh Utama
  *
  */
-class HtmlHelper implements TemplateHelper {
+class HtmlHelper implements Core_TemplateHelper {
 
     /**
      * (non-PHPdoc)
@@ -39,7 +39,7 @@ class HtmlHelper implements TemplateHelper {
         foreach($parameters as $key=>$value) {
             $params .= "$key/$value/";
         }
-        if($action == DEFAULT_ACTION) {
+        if($action == Core_Config::get("default.action")) {
             $link = sprintf("%s/%s/%s", RELATIVE_URL, strtolower($controller), strtolower($params));
         }
         else {

@@ -1,7 +1,7 @@
 <?php
 
 /**
-* <h1>Class Route</h1>
+* <h1>Class Core_Route</h1>
 * 
 * <p>This class represents the routing class to dispatch requests to controllers.
 * Instance of this class is called by the frontend controller (index.php).
@@ -11,13 +11,13 @@
 * @example
 * <p>Simply use the static function dispatch()</p>
 * <code>
-* Route::dispatch("/foo/bar/baz/", "Home", "index");
+* Core_Route::dispatch("/foo/bar/baz/", "Home", "index");
 * </code>
 * 
 * @author Galuh Utama
 *
 */
-class Route {
+class Core_Route {
     /**
      * Dispatches requests to controllers.
      * Each request calls an URL, which consists of a controller name
@@ -26,7 +26,7 @@ class Route {
      * @param $route A routing object containing routing information.
      * @throws ActionNotFoundException
      */
-    public static function dispatch(RoutingObject $route) {
+    public static function dispatch(Core_RoutingObject $route) {
         // Build $controllerClass. Class names in SSF always start with
         // uppercase. Example: class "Hello". We need to include the controller
         // class from /controllers directory. Throw exception if the class

@@ -1,6 +1,6 @@
 <?php
 
-Config::set("default.controller", "Home");
-Config::set("default.action", "index");
+Core_Config::set("default.controller", "Home");
+Core_Config::set("default.action", "index");
 
 ?>

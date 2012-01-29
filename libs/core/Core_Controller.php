@@ -1,7 +1,7 @@
 <?php
 
 /**
-* <h1>Class Controller</h1>
+* <h1>Class Core_Controller</h1>
 * 
 * <p>
 * This class represents the "CONTROLLER" part of the MVC approach. This class
@@ -28,7 +28,7 @@
 * 
 * @author Galuh Utama
 */
-abstract class Controller {
+abstract class Core_Controller {
     /**
      * Defines which template this controller uses.
      *
@@ -87,9 +87,9 @@ abstract class Controller {
 
         // Initialize template object. Render error if it cannot be initialized.
         try {
-            $this->template = new Template($name, $action, "..".DS."views".DS.$this->theme.DS);
+            $this->template = new Core_Template($name, $action, "..".DS."views".DS.$this->theme.DS);
         }
-        catch(CoreException $e) {
+        catch(Core_Exception $e) {
             $e->render();
         }
 
@@ -121,8 +121,8 @@ abstract class Controller {
      *
      * @param string 	$var	Variable name
      * @param mixed 	$value	Variable value
-     * @see Controller::get()
-     * @see Controller::template
+     * @see Core_Controller::get()
+     * @see Core_Controller::template
      */
     public function set($var, $value) {
         $this->template->$var = $value;
@@ -133,8 +133,8 @@ abstract class Controller {
      * Returns the template variable. Might not be used.
      *
      * @param string $var	Variable name
-     * @see Controller::set()
-     * @see Controller::template
+     * @see Core_Controller::set()
+     * @see Core_Controller::template
      * @return mixed
      */
     public function get($var) {
@@ -147,7 +147,7 @@ abstract class Controller {
      * "json".
      *
      * @param string $output	Output type. "html" or "json"
-     * @see Controller::output
+     * @see Core_Controller::output
      */
     public function setOutput($output) {
         $this->output = $output;
@@ -157,7 +157,7 @@ abstract class Controller {
     /**
      * Renders the template object to browser.
      *
-     * @see Controller::setOutput()
+     * @see Core_Controller::setOutput()
      */
     public function renderTemplate() {
         if($this->output == "html") {
