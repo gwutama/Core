@@ -43,7 +43,6 @@ class Autoloader {
         // Zend style: treat underscores as slashes (subdirectories).
         // Because php 5.2 is still everywhere.
         $class = str_replace("_", "/", $class);
-
         foreach($this->dirs as $dir) {
             // Finally include the file.
             include_once $dir."/".$class.".php";

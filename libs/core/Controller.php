@@ -66,6 +66,13 @@ abstract class Controller {
      */
     protected $output = "html";
 
+    /**
+     * A controller must have a theme. Theme folders are located under views/.
+     * If this is not defined, than the default theme will be used.
+     *
+     * @var string
+     */
+    protected $theme = "default";
 
     /**
      * Sets the member values and template object.
@@ -80,7 +87,7 @@ abstract class Controller {
 
         // Initialize template object. Render error if it cannot be initialized.
         try {
-            $this->template = new Template($name, $action, "..".DS."views".DS);
+            $this->template = new Template($name, $action, "..".DS."views".DS.$this->theme.DS);
         }
         catch(CoreException $e) {
             $e->render();
@@ -154,7 +161,8 @@ abstract class Controller {
      */
     public function renderTemplate() {
         if($this->output == "html") {
-            $tpl = strtolower($this->name.".".$this->action);
+            // render file /views/theme/controller/action.tpl
+            $tpl = strtolower($this->name."/".$this->action);
             echo $this->template->render($tpl);
         }
         elseif($this->output == "json") {

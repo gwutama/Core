@@ -14,7 +14,7 @@ class Core {
         define("DS", DIRECTORY_SEPARATOR);
         define("RELATIVE_URL", str_replace("/webroot/index.php", "", $_SERVER['PHP_SELF']));
 
-        // Include exceptions
+        // Include exceptions and config class
         include "../libs/core/exceptions.php";
 
         // Registers autoloaded directories
