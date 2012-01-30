@@ -44,7 +44,6 @@ class Autoloader {
     public function loader($class) {
         foreach($this->dirs as $dir) {
             $file = $dir . "/" . str_replace("\\", "/", $class) . ".php";
-            var_dump($file);
             if(file_exists($file)) {
                 include_once $file;
             }
