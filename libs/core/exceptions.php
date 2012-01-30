@@ -60,4 +60,16 @@ class InvalidConfigKeyException extends Core_Exception {}
  */
 class InvalidRouteException extends Core_Exception {}
 
+
+/**
+ * Gets thrown when model cannot connect to database server.
+ */
+class ActiveRecordAdapterConnectionException extends Core_Exception {}
+
+
+/**
+ * Gets thrown when an adaptor cannot be found.
+ */
+class ActiveRecordAdapterNotFoundException extends Core_Exception {}
+
 ?>

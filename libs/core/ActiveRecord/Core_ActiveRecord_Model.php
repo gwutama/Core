@@ -11,8 +11,8 @@ define("MODEL_FIND_ONE", "one");
  * <h1>Class Core_ActiveRecord_Model</h1>
  *
  * <p>
- * This class represents a model part in MVC approach. It uses the Fowler's Active Record pattern,
- * or at least mimics it.
+ * This class represents a model part in MVC approach. It uses the Fowler's
+ * Active Record pattern, or at least mimics it.
  * </p>
  */
 abstract class Core_ActiveRecord_Model {
@@ -30,7 +30,8 @@ abstract class Core_ActiveRecord_Model {
 
 
     /**
-     * Query values are saved in an array. Can be array of model objects if findAll is called.
+     * Query values are saved in an array. Can be array of model objects
+     * if findAll is called.
      */
     protected $data;
 
@@ -40,18 +41,26 @@ abstract class Core_ActiveRecord_Model {
      */
     private function __construct() {
         $obj = "ActiveRecord_Driver_".$this->driver;
-        $this->db = $obj::instance(); // DBO driver implements singleton pattern.
+        try {
+            // DBO driver implements singleton pattern.
+            $this->dbo = $obj::instance();
+            // Pass the model name to the adapter.
+            $this->dbho->setModel(get_class($this));
+        }
+        catch(FileNotFoundException $e) {
+            throw new ActiveRecordAdapterNotFoundException(
+                "ActiveRecord adapter not found: ".$this->driver);
+        }
     }
 
 
     /**
-     * Returns the model class name.
+     * Returns the model object.
      *
      * @static
      * @return string   Model object.
      */
     protected static function instance() {
-        // Retrieves by primary key id
         $obj = get_class(self);
         return new $obj;
     }

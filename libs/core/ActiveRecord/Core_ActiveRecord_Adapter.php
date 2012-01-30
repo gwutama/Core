@@ -14,12 +14,33 @@ abstract class Core_ActiveRecord_Adapter {
      * Database object. PDO or PDO compliant.
      */
     protected $dbh;
+    protected $model;
 
 
     /**
      * Protected constructor.
      */
     protected function __construct() {
+    }
+
+
+    /**
+     * Sets the model name.
+     *
+     * @param $model    Model name.
+     */
+    public function setModel($model) {
+        $this->model = $model;
+    }
+
+
+    /**
+     * Returns the model name.
+     *
+     * @return Model name.
+     */
+    public function getModel() {
+        return $this->model;
     }
 
 
@@ -85,13 +106,6 @@ abstract class Core_ActiveRecord_Adapter {
      */
     abstract public function delete($data, $options);
 
-
-    /**
-     *
-     */
-    protected function getSingular() {
-
-    }
 }
 
 ?>

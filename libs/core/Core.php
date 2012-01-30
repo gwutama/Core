@@ -2,6 +2,17 @@
 
 include "Core_Autoloader.php";
 
+// Standard constant definitions
+define("DS", DIRECTORY_SEPARATOR);
+define("RELATIVE_URL", str_replace("/webroot/index.php", "", $_SERVER['PHP_SELF']));
+
+/**
+ * <h1>Class Core</h1>
+ *
+ * <p>
+ * This class contains one static method to initialize and run the whole application.
+ * </p>
+ */
 class Core {
 
     /**
@@ -10,21 +21,17 @@ class Core {
      * @static
      */
     public static function init() {
-        // Standard constant definitions
-        define("DS", DIRECTORY_SEPARATOR);
-        define("RELATIVE_URL", str_replace("/webroot/index.php", "", $_SERVER['PHP_SELF']));
-
         // Include exceptions and config class
         include "../libs/core/exceptions.php";
 
         // Registers autoloaded directories
         $autoload = new Core_Autoloader();
         $autoload->register("../libs");
-        $autoload->register("../libs/Core");
 
         // include configs
         include "../configs/global.php";
         include "../configs/routes.php";
+        include "../configs/database.php";
 
         // Run application
         try {
