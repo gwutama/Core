@@ -1,8 +1,8 @@
 <?php
 
-require_once 'C:\Users\Galuh Utama\workspace\Super-Simple-Framework\libs\Core\Core_RouteParser.php';
-require_once 'C:\Users\Galuh Utama\workspace\Super-Simple-Framework\libs\Core\Core_RoutingObject.php';
-require_once 'C:\Users\Galuh Utama\workspace\Super-Simple-Framework\libs\Core\exceptions.php';
+require_once 'C:\Users\Galuh Utama\workspace\Core\libs\Core\Core_RouteParser.php';
+require_once 'C:\Users\Galuh Utama\workspace\Core\libs\Core\Core_RoutingObject.php';
+require_once 'C:\Users\Galuh Utama\workspace\Core\libs\Core\exceptions.php';
 
 /**
  * Test class for RouteParser.

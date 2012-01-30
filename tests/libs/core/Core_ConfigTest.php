@@ -1,7 +1,7 @@
 <?php
 
-require_once 'C:\Users\Galuh Utama\workspace\Super-Simple-Framework\libs\core\Core_Config.php';
-require_once 'C:\Users\Galuh Utama\workspace\Super-Simple-Framework\libs\core\exceptions.php';
+require_once 'C:\Users\Galuh Utama\workspace\Core\libs\core\Core_Config.php';
+require_once 'C:\Users\Galuh Utama\workspace\Core\libs\core\exceptions.php';
 
 /**
  * Test class for Config.
