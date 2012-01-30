@@ -76,11 +76,31 @@ abstract class Core_ActiveRecord_Adapter {
 
 
     /**
+     * Gets executed before inserting new records.
+     *
+     * @abstract
+     * @param $data
+     * @param $options
+     */
+    abstract public function beforeCreate($data, $options);
+
+
+    /**
      * Base for create operation.
      *
      * @abstract
      */
     abstract public function create($data, $options);
+
+
+    /**
+     * Gets executed before selecting records.
+     *
+     * @abstract
+     * @param $data
+     * @param $options
+     */
+    abstract public function beforeRead($data, $options);
 
 
     /**
@@ -92,11 +112,31 @@ abstract class Core_ActiveRecord_Adapter {
 
 
     /**
+     * Gets executed before updating records.
+     *
+     * @abstract
+     * @param $data
+     * @param $options
+     */
+    abstract public function beforeUpdate($data, $options);
+
+
+    /**
      * Base for update operation.
      *
      * @abstract
      */
     abstract public function update($data, $options);
+
+
+    /**
+     * Gets executed before deleting records.
+     *
+     * @abstract
+     * @param $data
+     * @param $options
+     */
+    abstract public function beforeDelete($data, $options);
 
 
     /**
