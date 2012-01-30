@@ -1,6 +1,6 @@
 <?php
 
-class HomeController extends Core_Controller {
+class HomeController extends Core\Controller {
 }
 
 ?>

@@ -1,8 +1,11 @@
 <?php
 
-Core_Config::set("debug", true);
+use Core\Config as Config;
+use Core\InvalidConfigKeyException as InvalidConfigKeyException;
 
-Core_Config::set("default.controller", "Home");
-Core_Config::set("default.action", "index");
+Config::set("debug", true);
+
+Config::set("default.controller", "Home");
+Config::set("default.action", "index");
 
 ?>

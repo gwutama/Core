@@ -10,7 +10,7 @@
 	<br />
 	<div class="code">
 		<code>
-			class ClassNameController extends Core_Controller {<br/>
+			class ClassNameController extends Core\Controller {<br/>
 			&nbsp;&nbsp;&nbsp;&nbsp;public function index() {<br/>
 			&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
 			}<br/>
@@ -21,7 +21,7 @@
 	<br />                
 	<div class="code">
 		<code>
-			class ClassNameController extends Core_Controller {<br/>
+			class ClassNameController extends Core\Controller {<br/>
 			&nbsp;&nbsp;&nbsp;&nbsp;public function someAction() {<br/>
 			&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
 			}<br/>
@@ -32,7 +32,7 @@
 	<br />
 	<div class="code">                
 		<code>
-			class SomeHelper implements Core_TemplateHelper {<br/>
+			class SomeHelper implements Core\TemplateHelper {<br/>
 			&nbsp;&nbsp;&nbsp;&nbsp;public function getName() {<br/>
 			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return "someHelper";<br/>
 			&nbsp;&nbsp;&nbsp;&nbsp;}<br/><br />                    
@@ -40,7 +40,7 @@
 			&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
 			}<br/>
 		</code>                
-	</div>	                
+	</div>
 <?php endif ?>
 <br />
 <h3>Need help?</h3>
