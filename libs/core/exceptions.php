@@ -1,17 +1,19 @@
 <?php
 
+namespace Core;
+
 /**
  * Basic exception class. This exception class can be rendered to browser.
  * It has its own template.
  */
-class Core_Exception extends Exception {
+class Exception extends \Exception {
     /**
      *
      * Enter description here ...
      */
     public function render() {
         $exception = get_class($this);
-        $template = new Core_Template("Error", $exception, "..".DS."views".DS."core".DS);
+        $template = new Template("Error", $exception, "..".DS."views".DS."core".DS);
         $template->message = $this->message;
         $template->exceptionClass = get_class($this);
         echo $template->render("exception");
@@ -22,60 +24,66 @@ class Core_Exception extends Exception {
 /**
  * Gets thrown when a controller is not found.
  */
-class ControllerNotFoundException extends Core_Exception {}
+class ControllerNotFoundException extends Exception {}
 
 
 /**
  * Gets thrown when an action is not found.
  */
-class ActionNotFoundException extends Core_Exception {}
+class ActionNotFoundException extends Exception {}
 
 
 /**
  * Gets thrown when a template is not found.
  */
-class TemplateNotFoundException extends Core_Exception {}
+class TemplateNotFoundException extends Exception {}
 
 
 /**
  * Gets thrown when a template helper is not found.
  */
-class TemplateHelperNotFoundException extends Core_Exception {}
+class TemplateHelperNotFoundException extends Exception {}
 
 
 /**
  * Gets thrown when layout is not found.
  */
-class LayoutNotFoundException extends Core_Exception {}
+class LayoutNotFoundException extends Exception {}
 
 
 /**
  * Gets thrown when a configuration key is not alphanumerical.
  */
-class InvalidConfigKeyException extends Core_Exception {}
+class InvalidConfigKeyException extends Exception {}
 
 
 /**
  * Gets thrown when an invalid standard routing URL is found.
  */
-class InvalidRouteException extends Core_Exception {}
+class InvalidRouteException extends Exception {}
 
 
 /**
  * Gets thrown when model cannot connect to database server.
  */
-class ActiveRecordAdapterConnectionException extends Core_Exception {}
+class ActiveRecordAdapterConnectionException extends Exception {}
 
 
 /**
  * Gets thrown when an adaptor cannot be found.
  */
-class ActiveRecordAdapterNotFoundException extends Core_Exception {}
+class ActiveRecordAdapterNotFoundException extends Exception {}
 
 
 /**
  * Gets thrown when query cannot be successfully executed.
  */
-class ActiveRecordQueryException extends Core_Exception {}
+class ActiveRecordQueryException extends Exception {}
+
+
+/**
+ * Gets thrown when file cannot be found.
+ */
+class FileNotFoundException extends Exception {}
 
 ?>

@@ -1,7 +1,9 @@
 <?php
 
+namespace Core;
+
 /**
- * <h1>Class Core_Flash</h1>
+ * <h1>Class Flash</h1>
  *
  * <p>
  * This class represents flash messages, which are saved
@@ -9,9 +11,8 @@
  * </p>
  *
  * @example
- * TODO
  */
-class Core_Flash {
+class Flash {
     /**
      * Error flash messages.
      */
@@ -43,10 +44,10 @@ class Core_Flash {
             session_start();
         }
 
-        $this->error = $_SESSION["flash"][Core_FlashType::ERROR];
-        $this->warning = $_SESSION["flash"][Core_FlashType::WARNING];
-        $this->success = $_SESSION["flash"][Core_FlashType::SUCCESS];
-        $this->info = $_SESSION["flash"][Core_FlashType::INFO];
+        $this->error = $_SESSION["flash"][FlashType::ERROR];
+        $this->warning = $_SESSION["flash"][FlashType::WARNING];
+        $this->success = $_SESSION["flash"][FlashType::SUCCESS];
+        $this->info = $_SESSION["flash"][FlashType::INFO];
     }
 
 
@@ -55,7 +56,7 @@ class Core_Flash {
      *
      * @param $type	Flash message type, instance of FlashType.
      */
-    public static function clearFromSession(Core_FlashType $type) {
+    public static function clearFromSession(FlashType $type) {
         unset($_SESSION["flash"][$type]);
     }
 
@@ -65,10 +66,10 @@ class Core_Flash {
      * golab session variable.
      */
     private function copyToSession() {
-        $_SESSION["flash"][Core_FlashType::ERROR] = $this->error;
-        $_SESSION["flash"][Core_FlashType::WARNING] = $this->warning;
-        $_SESSION["flash"][Core_FlashType::SUCCESS] = $this->success;
-        $_SESSION["flash"][Core_FlashType::INFO] = $this->info;
+        $_SESSION["flash"][FlashType::ERROR] = $this->error;
+        $_SESSION["flash"][FlashType::WARNING] = $this->warning;
+        $_SESSION["flash"][FlashType::SUCCESS] = $this->success;
+        $_SESSION["flash"][FlashType::INFO] = $this->info;
     }
 
 
@@ -78,18 +79,18 @@ class Core_Flash {
      * @param $msg	Message, should be from type string.
      * @param $type	Flash type. Should be from type FlashType.
      */
-    public function append($msg, Core_FlashType $type) {
+    public function append($msg, FlashType $type) {
         switch($type) {
-            case Core_FlashType::ERROR :
+            case FlashType::ERROR :
                 $this->error[] = $msg;
                 break;
-            case Core_FlashType::WARNING :
+            case FlashType::WARNING :
                 $this->warning[] = $msg;
                 break;
-            case Core_FlashType::SUCCESS :
+            case FlashType::SUCCESS :
                 $this->success[] = $msg;
                 break;
-            case Core_FlashType::INFO :
+            case FlashType::INFO :
                 $this->info[] = $msg;
                 break;
         }
@@ -106,7 +107,7 @@ class Core_Flash {
      * @param $type	Flash message type. Instance of FlashType.
      * @return Array of messages.
      */
-    public static function get(Core_FlashType $type) {
+    public static function get(FlashType $type) {
         $flash = $_SESSION["flash"][$type];
         self::clearFromSession($type);
 
@@ -131,7 +132,7 @@ class Core_Flash {
  * </p>
  *
  */
-class Core_FlashType {
+class FlashType {
     const ERROR = 4;
     const WARNING = 3;
     const SUCCESS = 2;

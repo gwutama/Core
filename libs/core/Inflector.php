@@ -1,6 +1,9 @@
 <?php
+
+namespace Core;
+
 /**
- * <h1>Class Core_Inflector</h1>
+ * <h1>Class Inflector</h1>
  *
  * <p>
  * Utility for modifying format of words. Change singular to plural and vice versa.
@@ -17,7 +20,7 @@
  * @license       http://opensource.org/licenses/mit-license.php The MIT License
  *
  */
-class Core_Inflector {
+class Inflector {
 
     /**
      * Contains a default map of accented and special characters to ASCII characters.  Can be

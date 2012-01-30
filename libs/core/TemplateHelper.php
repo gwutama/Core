@@ -1,7 +1,9 @@
 <?php
 
+namespace Core;
+
 /**
-* <h1>Interface Core_TemplateHelper</h1>
+* <h1>Interface TemplateHelper</h1>
 * 
 * <p>
 * Interface TemplateHelper must be implemented by every template
@@ -10,7 +12,7 @@
 * 
 * @example
 * <code>
-* class SomeHelper implements Core_TemplateHelper {
+* class SomeHelper implements TemplateHelper {
 * 	public function getName() {
 * 		return "someHelper";
 * 	}
@@ -22,7 +24,7 @@
 * @author Galuh Utama
 *
 */
-interface Core_TemplateHelper {
+interface TemplateHelper {
     // Must return a string as the helper name.
     public function getName();
 }

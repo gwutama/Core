@@ -1,7 +1,9 @@
 <?php
 
+namespace Core;
+
 /**
-* <h1>Class Core_Controller</h1>
+* <h1>Class Controller</h1>
 * 
 * <p>
 * This class represents the "CONTROLLER" part of the MVC approach. This class
@@ -28,7 +30,7 @@
 * 
 * @author Galuh Utama
 */
-abstract class Core_Controller {
+abstract class Controller {
     /**
      * Defines which template this controller uses.
      *
@@ -87,9 +89,9 @@ abstract class Core_Controller {
 
         // Initialize template object. Render error if it cannot be initialized.
         try {
-            $this->template = new Core_Template($name, $action, "..".DS."views".DS.$this->theme.DS);
+            $this->template = new Template($name, $action, "..".DS."views".DS.$this->theme.DS);
         }
-        catch(Core_Exception $e) {
+        catch(Exception $e) {
             $e->render();
         }
 

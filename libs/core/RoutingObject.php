@@ -1,5 +1,7 @@
 <?php
 
+namespace Core;
+
 /**
  * <h1>Class RoutingObject</h1>
  *
@@ -10,10 +12,10 @@
  * </p>
  *
  * @example
- * $route = new Core_RoutingObject("/foo/bar", "Foo", "index", array("hello" => "bar"));
+ * $route = new RoutingObject("/foo/bar", "Foo", "index", array("hello" => "bar"));
  * $route->setParamsAsGlobalVars();
  */
-class Core_RoutingObject {
+class RoutingObject {
 
     /**
      * The requested URL.

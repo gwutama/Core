@@ -1,6 +1,8 @@
 <?php
 
-abstract class Core_ActiveRecord_Operations {
+namespace Core\ActiveRecord;
+
+abstract class Operator {
 
     /**
      * @static

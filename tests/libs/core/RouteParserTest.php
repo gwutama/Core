@@ -1,8 +1,11 @@
 <?php
 
-require_once 'C:\Users\Galuh Utama\workspace\Core\libs\Core\Core_RouteParser.php';
-require_once 'C:\Users\Galuh Utama\workspace\Core\libs\Core\Core_RoutingObject.php';
+require_once 'C:\Users\Galuh Utama\workspace\Core\libs\Core\RouteParser.php';
+require_once 'C:\Users\Galuh Utama\workspace\Core\libs\Core\RoutingObject.php';
 require_once 'C:\Users\Galuh Utama\workspace\Core\libs\Core\exceptions.php';
+
+use Core\RouteParser as RouteParser;
+use Core\RoutingObject as RoutingObject;
 
 /**
  * Test class for RouteParser.
@@ -36,7 +39,7 @@ class Core_RouteParserTest extends PHPUnit_Framework_TestCase
             ),
         );
 
-        $this->object = new Core_RouteParser($routes);
+        $this->object = new RouteParser($routes);
     }
 
     /**
@@ -51,54 +54,54 @@ class Core_RouteParserTest extends PHPUnit_Framework_TestCase
     {
         $url = "/";
         $routing = $this->object->parse($url);
-        $this->assertEquals($routing, new Core_RoutingObject($url, "Home", "index"));
+        $this->assertEquals($routing, new RoutingObject($url, "Home", "index"));
 
         $url = "/controller";
         $routing = $this->object->parse($url);
-        $this->assertEquals($routing, new Core_RoutingObject($url, "Home", "index"));
+        $this->assertEquals($routing, new RoutingObject($url, "Home", "index"));
 
         $url = "/controller/";
         $routing = $this->object->parse($url);
-        $this->assertEquals($routing, new Core_RoutingObject($url, "Controller", "index"));
+        $this->assertEquals($routing, new RoutingObject($url, "Controller", "index"));
 
         $url = "/controller/action/";
         $routing = $this->object->parse($url);
-        $this->assertEquals($routing, new Core_RoutingObject($url, "Controller", "action"));
+        $this->assertEquals($routing, new RoutingObject($url, "Controller", "action"));
 
         $url = "/controller/action";
         $routing = $this->object->parse($url);
-        $this->assertEquals($routing, new Core_RoutingObject($url, "Controller", "index"));
+        $this->assertEquals($routing, new RoutingObject($url, "Controller", "index"));
 
         $url = "/controller/action/param1:value1/";
         $routing = $this->object->parse($url);
-        $this->assertEquals($routing, new Core_RoutingObject($url, "Controller", "action",
+        $this->assertEquals($routing, new RoutingObject($url, "Controller", "action",
             array("param1" => "value1")));
 
         $url = "/controller/action/param1:value1/param2:value2/";
         $routing = $this->object->parse($url);
-        $this->assertEquals($routing, new Core_RoutingObject($url, "Controller", "action",
+        $this->assertEquals($routing, new RoutingObject($url, "Controller", "action",
             array("param1" => "value1", "param2" => "value2")));
 
         $url = "/controller/action/param1:value1";
         $routing = $this->object->parse($url);
-        $this->assertEquals($routing, new Core_RoutingObject($url, "Controller", "action",
+        $this->assertEquals($routing, new RoutingObject($url, "Controller", "action",
             array("param1" => "value1")));
 
         // Parameter is omitted because it is invalid
         $url = "/controller/action/param1/";
         $routing = $this->object->parse($url);
-        $this->assertEquals($routing, new Core_RoutingObject($url, "Controller", "action",
+        $this->assertEquals($routing, new RoutingObject($url, "Controller", "action",
             array()));
 
         // Parameters are omitted because they are invalid
         $url = "/controller/action/param1/param2/param3/param4";
         $routing = $this->object->parse($url);
-        $this->assertEquals($routing, new Core_RoutingObject($url, "Controller", "action",
+        $this->assertEquals($routing, new RoutingObject($url, "Controller", "action",
             array()));
     }
 
     /**
-     * @expectedException InvalidRouteException
+     * @expectedException Core\InvalidRouteException
      */
     public function testParse2()
     {
@@ -106,7 +109,7 @@ class Core_RouteParserTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException InvalidRouteException
+     * @expectedException Core\InvalidRouteException
      */
     public function testParse3()
     {
@@ -114,7 +117,7 @@ class Core_RouteParserTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException InvalidRouteException
+     * @expectedException Core\InvalidRouteException
      */
     public function testParse4()
     {
@@ -122,7 +125,7 @@ class Core_RouteParserTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException InvalidRouteException
+     * @expectedException Core\InvalidRouteException
      */
     public function testParse5()
     {
@@ -131,31 +134,31 @@ class Core_RouteParserTest extends PHPUnit_Framework_TestCase
 
     public function testGetParamBetween()
     {
-        $tmp = Core_RouteParser::getParamBetween("test", 0, "", "");
+        $tmp = RouteParser::getParamBetween("test", 0, "", "");
         $this->assertEquals("test", $tmp);
 
-        $tmp = Core_RouteParser::getParamBetween("test", 0, "", "t");
+        $tmp = RouteParser::getParamBetween("test", 0, "", "t");
         $this->assertEquals("", $tmp);
 
-        $tmp = Core_RouteParser::getParamBetween("foobar", 0, "", "b");
+        $tmp = RouteParser::getParamBetween("foobar", 0, "", "b");
         $this->assertEquals("foo", $tmp);
 
-        $tmp = Core_RouteParser::getParamBetween("test", 0, "t", "");
+        $tmp = RouteParser::getParamBetween("test", 0, "t", "");
         $this->assertEquals("est", $tmp);
 
-        $tmp = Core_RouteParser::getParamBetween("test", 0, "t", "t");
+        $tmp = RouteParser::getParamBetween("test", 0, "t", "t");
         $this->assertEquals("es", $tmp);
 
-        $tmp = Core_RouteParser::getParamBetween("/foo/1/2/3", 0, "/", "/");
+        $tmp = RouteParser::getParamBetween("/foo/1/2/3", 0, "/", "/");
         $this->assertEquals("foo", $tmp);
 
-        $tmp = Core_RouteParser::getParamBetween("/foo/1/2/3", 4, "/", "/");
+        $tmp = RouteParser::getParamBetween("/foo/1/2/3", 4, "/", "/");
         $this->assertEquals("1", $tmp);
 
-        $tmp = Core_RouteParser::getParamBetween("/foo/1/2/3", 6, "/", "/");
+        $tmp = RouteParser::getParamBetween("/foo/1/2/3", 6, "/", "/");
         $this->assertEquals("2", $tmp);
 
-        $tmp = Core_RouteParser::getParamBetween("/foo/1/2/3", 8, "/", "");
+        $tmp = RouteParser::getParamBetween("/foo/1/2/3", 8, "/", "");
         $this->assertEquals("3", $tmp);
     }
 
@@ -184,18 +187,18 @@ class Core_RouteParserTest extends PHPUnit_Framework_TestCase
         $url = "/foo/1/2/3";
         $route = $this->object->parseCustom($url);
         $this->assertEquals($route,
-            new Core_RoutingObject($url, "Foobar", "index", array("bar" => 1, "baz" => 2, "blah" => 3)));
+            new RoutingObject($url, "Foobar", "index", array("bar" => 1, "baz" => 2, "blah" => 3)));
 
         $url = "/greetings/bonjour/galuh/fr.html";
         $route = $this->object->parseCustom($url);
         $this->assertEquals($route,
-            new Core_RoutingObject($url, "Greetings", "show", array("hello" => "bonjour",
+            new RoutingObject($url, "Greetings", "show", array("hello" => "bonjour",
                 "name" => "galuh", "country" => "fr")));
 
         $url = "/category/personal/read/123/lorem-ipsum-dolor-sit-amet.html";
         $route = $this->object->parseCustom($url);
         $this->assertEquals($route,
-            new Core_RoutingObject($url, "Blog", "read", array("category" => "personal", "id" => 123,
+            new RoutingObject($url, "Blog", "read", array("category" => "personal", "id" => 123,
                 "slug" => "lorem-ipsum-dolor-sit-amet")));
     }
 }

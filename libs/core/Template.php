@@ -1,7 +1,9 @@
 <?php
 
+namespace Core;
+
 /**
-* <h1>Class Core_Template</h1>
+* <h1>Class Template</h1>
 *
 * <p>
 * This class represents the "VIEW" part of the MVC approach. It is a fairly
@@ -15,7 +17,7 @@
 * @example
 * <code>
 * // initialize template object
-* $template = new Core_Template("controllerName", "actionName", "views/");
+* $template = new Template("controllerName", "actionName", "views/");
 *
 * // set template variables
 * $template->someVariable = "foo";
@@ -31,7 +33,7 @@
 * @author Galuh Utama
 *
 */
-class Core_Template {
+class Template {
     /**
      * Template's base directory, where all template files reside.
      * $baseDir will be set by the constructor.
@@ -46,7 +48,7 @@ class Core_Template {
      * actual template and can be called as a variable. The array keys
      * can be set with like this:</p>
      * <code>
-     * $template = new Core_Template("controller", "action", "views");
+     * $template = new Template("controller", "action", "views");
      * $template->someVariable = "foo";
      * $template->anotherVariale = "bar";
      * </code>
@@ -307,7 +309,7 @@ class Core_Template {
      * @see		Core_Template::templateHelpers
      * @param 	TemplateHelper	$helper		The template helper.
      */
-    public function registerHelper(Core_TemplateHelper $helper) {
+    public function registerHelper(TemplateHelper $helper) {
         $helperName = lcfirst($helper->getName());
         $this->templateHelpers[$helperName] = $helper;
     }
@@ -397,7 +399,7 @@ class Core_Template {
      * @example
      * In a controller file:
      * <code>
-     * $template = new Core_Template("ControllerName", "ActionName", "views/");
+     * $template = new Template("ControllerName", "ActionName", "views/");
      * echo $template->render("controllerName.actionName.tpl");
      * </code>
      *

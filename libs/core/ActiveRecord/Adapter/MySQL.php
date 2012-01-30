@@ -1,6 +1,10 @@
 <?php
 
-class Core_ActiveRecord_Adapter_MySQL extends Core_ActiveRecord_Adapter {
+namespace Core\ActiveRecord\Adapter;
+
+use \Core\ActiveRecord\Adapter as Adapter;
+
+class MySQL extends Adapter {
 
     /**
      * DSN string for PDO connection.
@@ -43,9 +47,9 @@ class Core_ActiveRecord_Adapter_MySQL extends Core_ActiveRecord_Adapter {
      * default to standard configuration in database.php.
      */
     protected function beforeConnect() {
-        $config = Core_Config::get("database");
+        $config = Config::get("database");
 
-        if(Core_Config::get("debug") == true) {
+        if(Config::get("debug") == true) {
             $this->dsn = $config["debug"]["dsn"];
             $this->username = $config["debug"]["username"];
             $this->password = $config["debug"]["password"];
@@ -79,16 +83,16 @@ class Core_ActiveRecord_Adapter_MySQL extends Core_ActiveRecord_Adapter {
      * </p>
      * <code>
      * $options = array(
-     *      "select" => Core_ActiveRecord_Adapter_MySQL::selectQuery("Model", array(
+     *      "select" => MySQL::selectQuery("Model", array(
      *          "fields" => array("Model.foo", "Model.bar", "Model.hello"),
      *          "conditions" => array(
-     *              Core_ActiveRecord_Operations::boolOr(
-     *                  Core_ActiveRecord_Operations::boolAnd(
-     *                      Core_ActiveRecord_Operations::equals("foo", "bar"),
-     *                      Core_ActiveRecord_Operations::notEquals("baz", "blah"),
-     *                      Core_ActiveRecord_Operations::notEquals("hello", "world"),
+     *              Operator::boolOr(
+     *                  Operator::boolAnd(
+     *                      Operator::equals("foo", "bar"),
+     *                      Operator::notEquals("baz", "blah"),
+     *                      Operator::notEquals("hello", "world"),
      *                  ),
-     *                  Core_ActiveRecord_Operations::equals("ThisModel.field", "1")
+     *                  Operator::equals("ThisModel.field", "1")
      *              )
      *          )
      *      )),
@@ -123,7 +127,7 @@ class Core_ActiveRecord_Adapter_MySQL extends Core_ActiveRecord_Adapter {
         }
 
         // Pluralize model name
-        $tableName = Core_Inflector::tableize($model);
+        $tableName = Inflector::tableize($model);
 
         // Build field names based on $data keys
         $fields = implode(", ", array_keys($data));

@@ -1,14 +1,16 @@
 <?php
 
+namespace Core\ActiveRecord;
+
 /**
- * <h1>Class Core_ActiveRecord_Adapter</h1>
+ * <h1>Class Adapter</h1>
  *
  * <p>
  * This class represents base for active record driver.
  * It implements the singleton pattern.
  * </p>
  */
-abstract class Core_ActiveRecord_Adapter {
+abstract class Adapter {
 
     /**
      * Database object. PDO or PDO compliant.

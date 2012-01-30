@@ -1,13 +1,15 @@
 <?php
 
+namespace Core;
+
 /**
- * <h1>Class Core_FileIO</h1>
+ * <h1>Class FileIO</h1>
  *
  * <p>
  * This class contains file IO operations.
  * </p>
  */
-class Core_FileIO
+class FileIO
 {
     /**
      * Writes data to a file.

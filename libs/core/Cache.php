@@ -1,6 +1,8 @@
 <?php
 
-abstract class Core_Cache {
+namespace Core;
+
+abstract class Cache {
 }
 
 /*

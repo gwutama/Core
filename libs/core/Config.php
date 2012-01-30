@@ -1,20 +1,22 @@
 <?php
 
+namespace Core;
+
 /**
- * <h1>Class Core_Config</h1>
+ * <h1>Class Config</h1>
  *
  * <p>
  * This class represents a configuration class.
  * </p>
  *
  * @example
- * Core_Config::set("foo", "bar");
- * Core_Config::set("foo.acme", "blah");
+ * Config::set("foo", "bar");
+ * Config::set("foo.acme", "blah");
  *
- * var_dump(Core_Config::get("foo")); // returns bar
- * var_dump(Core_Config::get("foo.acme")); // returns blah
+ * var_dump(Config::get("foo")); // returns bar
+ * var_dump(Config::get("foo.acme")); // returns blah
  */
-class Core_Config {
+class Config {
 
     /**
      * Configurations are statically saved in an array.
@@ -42,20 +44,20 @@ class Core_Config {
         $tokens = explode(".", $key);
         $count = count($tokens);
         for($i = 0; $i < $count-1; $i++) {
-            if(@$config[$tokens[$i]] instanceof Core_ConfigNode == false) {
-                $config[$tokens[$i]] = new Core_ConfigNode($tokens[$i]);
+            if(@$config[$tokens[$i]] instanceof ConfigNode == false) {
+                $config[$tokens[$i]] = new ConfigNode($tokens[$i]);
             }
             $config = &$config[$tokens[$i]]->children;
         }
 
-        if(@$config[$tokens[$i]] instanceof Core_ConfigNode) {
+        if(@$config[$tokens[$i]] instanceof ConfigNode) {
             $children = $config[$tokens[$i]]->children;
         }
         else {
             $children = array();
         }
 
-        $config[$tokens[$i]] = new Core_ConfigNode($tokens[$i], $value);
+        $config[$tokens[$i]] = new ConfigNode($tokens[$i], $value);
         $config[$tokens[$i]]->children = $children;
     }
 
@@ -107,24 +109,6 @@ class Core_Config {
         return false;
     }
 
-}
-
-
-
-/**
- * <h1>Class ConfigNode</h1>
- *
- * Basic representation of a configuration node.
- */
-class Core_ConfigNode {
-    public $key;
-    public $value;
-    public $children = array();
-
-    public function __construct($key = null, $value = null) {
-        $this->key = $key;
-        $this->value = $value;
-    }
 }
 
 ?>
