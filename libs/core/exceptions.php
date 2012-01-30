@@ -72,4 +72,10 @@ class ActiveRecordAdapterConnectionException extends Core_Exception {}
  */
 class ActiveRecordAdapterNotFoundException extends Core_Exception {}
 
+
+/**
+ * Gets thrown when query cannot be successfully executed.
+ */
+class ActiveRecordQueryException extends Core_Exception {}
+
 ?>

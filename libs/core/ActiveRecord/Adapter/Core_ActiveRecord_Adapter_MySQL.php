@@ -130,7 +130,7 @@ class Core_ActiveRecord_Adapter_MySQL extends Core_ActiveRecord_Adapter {
             $stmt->execute();
         }
         catch(PDOException $e) {
-            throw new ModelDriverException();
+            throw new ActiveRecordQueryException();
         }
     }
 

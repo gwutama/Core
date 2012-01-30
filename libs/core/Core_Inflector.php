@@ -3,360 +3,455 @@
  * <h1>Class Core_Inflector</h1>
  *
  * <p>
- * For pluralizing and singularizing English nouns.
- * Based on AkInflector class for Akelos framework by Bermi Ferrer Martinez <bermi a.t akelos c.om>.
+ * Utility for modifying format of words. Change singular to plural and vice versa.
+ * Under_score a CamelCased word and vice versa. Replace spaces and special characters.
+ * Create a human readable word from the others. Used when consistency in naming
+ * conventions must be enforced.
  * </p>
  *
- * @example
- * AkInflector::pluralize('inglés',null,'es'); // ingleses, see config/inflector/es.yml
+ * <p>
+ * Taken and modified from Lithium framework.
+ * </p>
+ * @copyright     Copyright 2011, Union of RAD (http://union-of-rad.org)
+ *                Copyright 2010, Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * @license       http://opensource.org/licenses/mit-license.php The MIT License
  *
  */
 class Core_Inflector {
 
-    public static function _loadConfig($dictionary) {
-        static $_loaded = array();
-        if (!($return = Ak::getStaticVar('AkInflectorConfig::' . $dictionary))) {
-            $return = Ak::getSettings($dictionary, false);
+    /**
+     * Contains a default map of accented and special characters to ASCII characters.  Can be
+     * extended or added to using `Inflector::rules()`.
+     *
+     * @see lithium\util\Inflector::slug()
+     * @see lithium\util\Inflector::rules()
+     * @var array
+     */
+    protected static $_transliteration = array(
+        '/à|á|å|â/' => 'a',
+        '/è|é|ê|ẽ|ë/' => 'e',
+        '/ì|í|î/' => 'i',
+        '/ò|ó|ô|ø/' => 'o',
+        '/ù|ú|ů|û/' => 'u',
+        '/ç/' => 'c', '/ñ/' => 'n',
+        '/ä|æ/' => 'ae', '/ö/' => 'oe',
+        '/ü/' => 'ue', '/Ä/' => 'Ae',
+        '/Ü/' => 'Ue', '/Ö/' => 'Oe',
+        '/ß/' => 'ss'
+    );
 
-            if ($return !== false) {
-                Ak::setStaticVar('AkInflectorConfig::' . $dictionary, $return);
-                $_loaded[$dictionary] = true;
-            } else {
-                trigger_error(Ak::t('Could not load inflector rules file: %file', array('%file' => 'config' . DS . $dictionary . '.yml')), E_USER_ERROR);
-            }
+    /**
+     * Indexed array of words which are the same in both singular and plural form.  You can add
+     * rules to this list using `Inflector::rules()`.
+     *
+     * @see lithium\util\Inflector::rules()
+     * @var array
+     */
+    protected static $_uninflected = array(
+        'Amoyese', 'bison', 'Borghese', 'bream', 'breeches', 'britches', 'buffalo', 'cantus',
+        'carp', 'chassis', 'clippers', 'cod', 'coitus', 'Congoese', 'contretemps', 'corps',
+        'debris', 'diabetes', 'djinn', 'eland', 'elk', 'equipment', 'Faroese', 'flounder',
+        'Foochowese', 'gallows', 'Genevese', 'Genoese', 'Gilbertese', 'graffiti',
+        'headquarters', 'herpes', 'hijinks', 'Hottentotese', 'information', 'innings',
+        'jackanapes', 'Kiplingese', 'Kongoese', 'Lucchese', 'mackerel', 'Maltese', 'media',
+        'mews', 'moose', 'mumps', 'Nankingese', 'news', 'nexus', 'Niasese', 'People',
+        'Pekingese', 'Piedmontese', 'pincers', 'Pistoiese', 'pliers', 'Portuguese',
+        'proceedings', 'rabies', 'rice', 'rhinoceros', 'salmon', 'Sarawakese', 'scissors',
+        'sea[- ]bass', 'series', 'Shavese', 'shears', 'siemens', 'species', 'swine', 'testes',
+        'trousers', 'trout','tuna', 'Vermontese', 'Wenchowese', 'whiting', 'wildebeest',
+        'Yengeese'
+    );
 
+    /**
+     * Contains the list of pluralization rules.
+     *
+     * @see lithium\util\Inflector::rules()
+     * @var array Contains the following keys:
+     *   - `'rules'`: An array of regular expression rules in the form of `'match' => 'replace'`,
+     *     which specify the matching and replacing rules for the pluralization of words.
+     *   - `'uninflected'`: A indexed array containing regex word patterns which do not get
+     *     inflected (i.e. singular and plural are the same).
+     *   - `'irregular'`: Contains key-value pairs of specific words which are not inflected
+     *     according to the rules. This is populated from `Inflector::$_plural` when the class
+     *     is loaded.
+     */
+    protected static $_singular = array(
+        'rules' => array(
+            '/(s)tatuses$/i' => '\1\2tatus',
+            '/^(.*)(menu)s$/i' => '\1\2',
+            '/(quiz)zes$/i' => '\\1',
+            '/(matr)ices$/i' => '\1ix',
+            '/(vert|ind)ices$/i' => '\1ex',
+            '/^(ox)en/i' => '\1',
+            '/(alias)(es)*$/i' => '\1',
+            '/(alumn|bacill|cact|foc|fung|nucle|radi|stimul|syllab|termin|viri?)i$/i' => '\1us',
+            '/(cris|ax|test)es$/i' => '\1is',
+            '/(shoe)s$/i' => '\1',
+            '/(o)es$/i' => '\1',
+            '/ouses$/' => 'ouse',
+            '/uses$/' => 'us',
+            '/([m|l])ice$/i' => '\1ouse',
+            '/(x|ch|ss|sh)es$/i' => '\1',
+            '/(m)ovies$/i' => '\1\2ovie',
+            '/(s)eries$/i' => '\1\2eries',
+            '/([^aeiouy]|qu)ies$/i' => '\1y',
+            '/([lr])ves$/i' => '\1f',
+            '/(tive)s$/i' => '\1',
+            '/(hive)s$/i' => '\1',
+            '/(drive)s$/i' => '\1',
+            '/([^fo])ves$/i' => '\1fe',
+            '/(^analy)ses$/i' => '\1sis',
+            '/((a)naly|(b)a|(d)iagno|(p)arenthe|(p)rogno|(s)ynop|(t)he)ses$/i' => '\1\2sis',
+            '/([ti])a$/i' => '\1um',
+            '/(p)eople$/i' => '\1\2erson',
+            '/(m)en$/i' => '\1an',
+            '/(c)hildren$/i' => '\1\2hild',
+            '/(n)ews$/i' => '\1\2ews',
+            '/^(.*us)$/' => '\\1',
+            '/s$/i' => ''
+        ),
+        'irregular' => array(),
+        'uninflected' => array(
+            '.*[nrlm]ese', '.*deer', '.*fish', '.*measles', '.*ois', '.*pox', '.*sheep', '.*ss'
+        )
+    );
+
+    /**
+     * Contains a cache map of previously singularized words.
+     *
+     * @var array
+     */
+    protected static $_singularized = array();
+
+    /**
+     * Contains the list of pluralization rules.
+     *
+     * @see lithium\util\Inflector::rules()
+     * @var array Contains the following keys:
+     *   - `'rules'`: An array of regular expression rules in the form of `'match' => 'replace'`,
+     *     which specify the matching and replacing rules for the pluralization of words.
+     *   - `'uninflected'`: A indexed array containing regex word patterns which do not get
+     *     inflected (i.e. singular and plural are the same).
+     *   - `'irregular'`: Contains key-value pairs of specific words which are not inflected
+     *     according to the rules.
+     */
+    protected static $_plural = array(
+        'rules' => array(
+            '/(s)tatus$/i' => '\1\2tatuses',
+            '/(quiz)$/i' => '\1zes',
+            '/^(ox)$/i' => '\1\2en',
+            '/([m|l])ouse$/i' => '\1ice',
+            '/(matr|vert|ind)(ix|ex)$/i'  => '\1ices',
+            '/(x|ch|ss|sh|o)$/i' => '\1es',
+            '/([^aeiouy]|qu)y$/i' => '\1ies',
+            '/(hive)$/i' => '\1s',
+            '/(?:([^f])fe|([lr])f)$/i' => '\1\2ves',
+            '/sis$/i' => 'ses',
+            '/([ti])um$/i' => '\1a',
+            '/(p)erson$/i' => '\1eople',
+            '/(m)an$/i' => '\1en',
+            '/(c)hild$/i' => '\1hildren',
+            '/(buffal|tomat)o$/i' => '\1\2oes',
+            '/(alumn|bacill|cact|foc|fung|nucle|radi|stimul|syllab|termin|vir)us$/i' => '\1i',
+            '/us$/' => 'uses',
+            '/(alias)$/i' => '\1es',
+            '/(ax|cri|test)is$/i' => '\1es',
+            '/s$/' => 's',
+            '/^$/' => '',
+            '/$/' => 's',
+        ),
+        'irregular' => array(
+            'atlas' => 'atlases', 'beef' => 'beefs', 'brother' => 'brothers',
+            'child' => 'children', 'corpus' => 'corpuses', 'cow' => 'cows',
+            'ganglion' => 'ganglions', 'genie' => 'genies', 'genus' => 'genera',
+            'graffito' => 'graffiti', 'hoof' => 'hoofs', 'loaf' => 'loaves', 'man' => 'men',
+            'money' => 'monies', 'mongoose' => 'mongooses', 'move' => 'moves',
+            'mythos' => 'mythoi', 'numen' => 'numina', 'occiput' => 'occiputs',
+            'octopus' => 'octopuses', 'opus' => 'opuses', 'ox' => 'oxen', 'penis' => 'penises',
+            'person' => 'people', 'sex' => 'sexes', 'soliloquy' => 'soliloquies',
+            'testis' => 'testes', 'trilby' => 'trilbys', 'turf' => 'turfs'
+        ),
+        'uninflected' => array(
+            '.*[nrlm]ese', '.*deer', '.*fish', '.*measles', '.*ois', '.*pox', '.*sheep'
+        )
+    );
+
+    /**
+     * Contains a cache map of previously pluralized words.
+     *
+     * @var array
+     */
+    protected static $_pluralized = array();
+
+    /**
+     * Contains a cache map of previously camelized words.
+     *
+     * @var array
+     */
+    protected static $_camelized = array();
+
+    /**
+     * Contains a cache map of previously underscored words.
+     *
+     * @var array
+     */
+    protected static $_underscored = array();
+
+    /**
+     * Contains a cache map of previously humanized words.
+     *
+     * @var array
+     */
+    protected static $_humanized = array();
+
+    /**
+     * Gets or adds inflection and transliteration rules.
+     *
+     * @param string $type Either `'transliteration'`, `'uninflected'`, `'singular'` or `'plural'`.
+     * @param array $config
+     * @return mixed If `$config` is empty, returns the rules list specified
+     *         by `$type`, otherwise returns `null`.
+     */
+    public static function rules($type, $config = array()) {
+        $var = '_' . $type;
+
+        if (!isset(static::${$var})) {
+            return null;
         }
-        return $return;
-    }
-
-
-    public static function _inflect($word, $new_value, $type, $dictionary = null) {
-        static $_cached;
-        static $_loaded;
-
-        if ($dictionary == null || $dictionary == 'inflector') {
-            $dictionary = 'inflector';
-        } else {
-            $dictionary = 'inflector/' . $dictionary;
+        if (empty($config)) {
+            return static::${$var};
         }
-        if (!isset($_loaded[$dictionary])) {
+        switch ($type) {
+            case 'transliteration':
+                $_config = array();
 
-            $_loaded[$dictionary] = true;
-            $_cached[$dictionary] = array('singularize' => array(), 'pluralize' => array());
-        }
-
-        $config = Core_Inflector::_loadConfig($dictionary);
-        if (!in_array($type, array('singularize', 'pluralize'))) {
-            return $word;
-        }
-        if (isset($new_value)) {
-            $_cached[$dictionary][$type][$word] = $new_value;
-            return;
-        }
-        $_original_word = $word;
-        if (!isset($_cached[$dictionary][$type][$_original_word])) {
-            $lowercased_word = strtolower($word);
-            if (in_array($lowercased_word, $config[$type]['uncountable'])) {
-                return $word;
-            }
-            foreach ($config[$type]['irregular'] as $_plural => $_singular) {
-                if ($type == 'singularize') {
-                    if (preg_match('/(' . $_singular . ')$/iu', $word, $arr)) {
-                        $_cached[$dictionary][$type][$_original_word] = preg_replace('/(' . $_singular . ')$/i', substr($arr[0], 0, 1) . substr($_plural, 1), $word);
-                        return $_cached[$dictionary][$type][$_original_word];
+                foreach ($config as $key => $val) {
+                    if ($key[0] != '/') {
+                        $key = '/' . join('|', array_filter(preg_split('//u', $key))) . '/';
                     }
-                } else {
-                    if (preg_match('/(' . $_plural . ')$/iu', $word, $arr)) {
-                        $_cached[$dictionary][$type][$_original_word] = preg_replace('/(' . $_plural . ')$/i', substr($arr[0], 0, 1) . substr($_singular, 1), $word);
-                        return $_cached[$dictionary][$type][$_original_word];
-                    }
+                    $_config[$key] = $val;
                 }
-            }
+                static::$_transliteration = array_merge(
+                    $_config, static::$_transliteration, $_config
+                );
+                break;
+            case 'uninflected':
+                static::$_uninflected = array_merge(static::$_uninflected, (array) $config);
+                static::$_plural['regexUninflected'] = null;
+                static::$_singular['regexUninflected'] = null;
 
-            $replacements = isset($config[$type]['replacements']) ? $config[$type]['replacements'] : false;
-            if ($replacements !== false) {
-                $replacements_keys = array_keys($replacements);
-                foreach ($replacements_keys as $idx => $key) {
-                    $replacements_keys[$idx] = '/' . $key . '/u';
+                foreach ((array) $config as $word) {
+                    unset(static::$_singularized[$word], static::$_pluralized[$word]);
                 }
-                $replacements_values = array_values($replacements);
-            }
-            foreach ($config[$type]['rules'] as $rule => $replacement) {
-                if (preg_match($rule . 'u', $word, $match)) {
-                    if (strstr($replacement, '@') && $replacements) {
-                        foreach ($match as $k => $v) {
-                            $replacement = preg_replace("/(@$k)/u", preg_replace($replacements_keys, $replacements_values, $v), $replacement);
+                break;
+            case 'singular':
+            case 'plural':
+                if (isset(static::${$var}[key($config)])) {
+                    foreach ($config as $rType => $set) {
+                        static::${$var}[$rType] = array_merge($set, static::${$var}[$rType], $set);
+
+                        if ($rType == 'irregular') {
+                            $swap = ($type == 'singular' ? '_plural' : '_singular');
+                            static::${$swap}[$rType] = array_flip(static::${$var}[$rType]);
                         }
                     }
-                    $_cached[$dictionary][$type][$_original_word] = preg_replace($rule . 'u', $replacement, $word);
-                    return $_cached[$dictionary][$type][$_original_word];
+                } else {
+                    static::${$var}['rules'] = array_merge(
+                        $config, static::${$var}['rules'], $config
+                    );
                 }
-            }
-            $_cached[$dictionary][$type][$_original_word] = $word;
-            return $_cached[$dictionary][$type][$_original_word];
+                break;
         }
-        return $_cached[$dictionary][$type][$_original_word];
     }
 
-
     /**
-     * Pluralizes English nouns.
+     * Changes the form of a word from singular to plural.
      *
-     * @access public
-     * @static
-     * @param    string    $word    English noun to pluralize
-     * @return string Plural noun
+     * @param string $word Word in singular form.
+     * @return string Word in plural form.
      */
-    public static function pluralize($word, $new_plural = null, $dictionary = null) {
-        return Core_Inflector::_inflect($word, $new_plural, 'pluralize', $dictionary);
-    }
-
-
-    /**
-     * Singularizes English nouns.
-     *
-     * @access public
-     * @static
-     * @param    string    $word    English noun to singularize
-     * @return string Singular noun.
-     */
-    public static function singularize($word, $new_singular = null, $dictionary = null) {
-        return Core_Inflector::_inflect($word, $new_singular, 'singularize', $dictionary);
-    }
-
-
-    /**
-     * Get the plural form of a word if first parameter is greater than 1
-     *
-     * @param integer $numer_of_records
-     * @param string $word
-     * @return string Pluralized string when number of items is greater than 1
-     */
-    public static function conditionalPlural($numer_of_records, $word) {
-        return $numer_of_records > 1 ? Core_Inflector::pluralize($word) : $word;
-    }
-
-
-    /**
-     * Converts an underscored or CamelCase word into a English
-     * sentence.
-     *
-     * The titleize function converts text like "WelcomePage",
-     * "welcome_page" or  "welcome page" to this "Welcome
-     * Page".
-     * If second parameter is set to 'first' it will only
-     * capitalize the first character of the title.
-     *
-     * @access public
-     * @static
-     * @param    string    $word    Word to format as tile
-     * @param    string    $uppercase    If set to 'first' it will only uppercase the
-     * first character. Otherwise it will uppercase all
-     * the words in the title.
-     * @return string Text formatted as title
-     */
-    public static function titleize($word, $uppercase = '') {
-        $uppercase = $uppercase == 'first' ? 'ucfirst' : 'ucwords';
-        return $uppercase(Core_Inflector::humanize(Core_Inflector::underscore($word)));
-    }
-
-
-    /**
-     * Returns given word as CamelCased
-     *
-     * Converts a word like "send_email" to "SendEmail". It
-     * will remove non alphanumeric character from the word, so
-     * "who's online" will be converted to "WhoSOnline"
-     *
-     * @access public
-     * @static
-     * @see variablize
-     * @param    string    $word    Word to convert to camel case
-     * @return string UpperCamelCasedWord
-     */
-    public static function camelize($word) {
-        static $_cached;
-        if (!isset($_cached[$word])) {
-            if (preg_match_all('/\/(.?)/', $word, $got)) {
-                foreach ($got[1] as $k => $v) {
-                    $got[1][$k] = '::' . strtoupper($v);
-                }
-                $word = str_replace($got[0], $got[1], $word);
-            }
-            $_cached[$word] = str_replace(' ', '', ucwords(preg_replace('/[^A-Z^a-z^0-9^:]+/', ' ', $word)));
+    public static function pluralize($word) {
+        if (isset(static::$_pluralized[$word])) {
+            return static::$_pluralized[$word];
         }
-        return $_cached[$word];
+        extract(static::$_plural);
+
+        if (!isset($regexUninflected) || !isset($regexIrregular)) {
+            $regexUninflected = static::_enclose(join( '|', $uninflected + static::$_uninflected));
+            $regexIrregular = static::_enclose(join( '|', array_keys($irregular)));
+            static::$_plural += compact('regexUninflected', 'regexIrregular');
+        }
+        if (preg_match('/^(' . $regexUninflected . ')$/i', $word, $regs)) {
+            return static::$_pluralized[$word] = $word;
+        }
+        if (preg_match('/(.*)\\b(' . $regexIrregular . ')$/i', $word, $regs)) {
+            $plural = substr($word, 0, 1) . substr($irregular[strtolower($regs[2])], 1);
+            return static::$_pluralized[$word] = $regs[1] . $plural;
+        }
+        foreach ($rules as $rule => $replacement) {
+            if (preg_match($rule, $word)) {
+                return static::$_pluralized[$word] = preg_replace($rule, $replacement, $word);
+            }
+        }
+        return static::$_pluralized[$word] = $word;
     }
 
+    /**
+     * Changes the form of a word from plural to singular.
+     *
+     * @param string $word Word in plural form.
+     * @return string Word in singular form.
+     */
+    public static function singularize($word) {
+        if (isset(static::$_singularized[$word])) {
+            return static::$_singularized[$word];
+        }
+        if (empty(static::$_singular['irregular'])) {
+            static::$_singular['irregular'] = array_flip(static::$_plural['irregular']);
+        }
+        extract(static::$_singular);
+
+        if (!isset($regexUninflected) || !isset($regexIrregular)) {
+            $regexUninflected = static::_enclose(join('|', $uninflected + static::$_uninflected));
+            $regexIrregular = static::_enclose(join('|', array_keys($irregular)));
+            static::$_singular += compact('regexUninflected', 'regexIrregular');
+        }
+        if (preg_match("/(.*)\\b({$regexIrregular})\$/i", $word, $regs)) {
+            $singular = substr($word, 0, 1) . substr($irregular[strtolower($regs[2])], 1);
+            return static::$_singularized[$word] = $regs[1] . $singular;
+        }
+        if (preg_match('/^(' . $regexUninflected . ')$/i', $word, $regs)) {
+            return static::$_singularized[$word] = $word;
+        }
+        foreach ($rules as $rule => $replacement) {
+            if (preg_match($rule, $word)) {
+                return static::$_singularized[$word] = preg_replace($rule, $replacement, $word);
+            }
+        }
+        return static::$_singularized[$word] = $word;
+    }
 
     /**
-     * Converts a word "into_it_s_underscored_version"
+     * Clears local in-memory caches.  Can be used to force a full-cache clear when updating
+     * inflection rules mid-way through request execution.
      *
-     * Convert any "CamelCased" or "ordinary Word" into an
-     * "underscored_word".
+     * @return void
+     */
+    public static function reset() {
+        static::$_singularized = static::$_pluralized = array();
+        static::$_camelized = static::$_underscored = array();
+        static::$_humanized = array();
+
+        static::$_plural['regexUninflected'] = static::$_singular['regexUninflected'] = null;
+        static::$_plural['regexIrregular'] = static::$_singular['regexIrregular'] = null;
+        static::$_transliteration = array(
+            '/à|á|å|â/' => 'a', '/è|é|ê|ẽ|ë/' => 'e',
+            '/ì|í|î/' => 'i', '/ò|ó|ô|ø/' => 'o',
+            '/ù|ú|ů|û/' => 'u', '/ç/' => 'c',
+            '/ñ/' => 'n', '/ä|æ/' => 'ae', '/ö/' => 'oe',
+            '/ü/' => 'ue', '/Ä/' => 'Ae',
+            '/Ü/' => 'Ue', '/Ö/' => 'Oe',
+            '/ß/' => 'ss'
+        );
+    }
+
+    /**
+     * Takes a under_scored word and turns it into a CamelCased or camelBack word
      *
-     * This can be really useful for creating friendly URLs.
+     * @param string $word An under_scored or slugged word (i.e. `'red_bike'` or `'red-bike'`).
+     * @param boolean $cased If false, first character is not upper cased
+     * @return string CamelCased version of the word (i.e. `'RedBike'`).
+     */
+    public static function camelize($word, $cased = true) {
+        $_word = $word;
+
+        if (isset(static::$_camelized[$_word]) && $cased) {
+            return static::$_camelized[$_word];
+        }
+        $word = str_replace(" ", "", ucwords(str_replace(array("_", '-'), " ", $word)));
+
+        if (!$cased) {
+            return lcfirst($word);
+        }
+        return static::$_camelized[$_word] = $word;
+    }
+
+    /**
+     * Takes a CamelCased version of a word and turns it into an under_scored one.
      *
-     * @access public
-     * @static
-     * @param    string    $word    Word to underscore
-     * @return string Underscored word
+     * @param string $word CamelCased version of a word (i.e. `'RedBike'`).
+     * @return string Under_scored version of the workd (i.e. `'red_bike'`).
      */
     public static function underscore($word) {
-        static $_cached;
-        if (!isset($_cached[$word])) {
-            $_cached[$word] = strtolower(preg_replace(
-                array('/[^A-Z^a-z^0-9^\/]+/', '/([a-z\d])([A-Z])/', '/([A-Z]+)([A-Z][a-z])/'),
-                array('_', '\1_\2', '\1_\2'), $word));
+        if (isset(static::$_underscored[$word])) {
+            return static::$_underscored[$word];
         }
-        return $_cached[$word];
+        return static::$_underscored[$word] = strtolower(static::slug($word, '_'));
     }
 
-
     /**
-     * Returns a human-readable string from $word
+     * Returns a string with all spaces converted to given replacement and
+     * non word characters removed.  Maps special characters to ASCII using
+     * `Inflector::$_transliteration`, which can be updated using `Inflector::rules()`.
      *
-     * Returns a human-readable string from $word, by replacing
-     * underscores with a space, and by upper-casing the initial
-     * character by default.
-     *
-     * If you need to uppercase all the words you just have to
-     * pass 'all' as a second parameter.
-     *
-     * @access public
-     * @static
-     * @param    string    $word    String to "humanize"
-     * @param    string    $uppercase    If set to 'all' it will uppercase all the words
-     * instead of just the first one.
-     * @return string Human-readable word
+     * @see lithium\util\Inflector::rules()
+     * @param string $string An arbitrary string to convert.
+     * @param string $replacement The replacement to use for spaces.
+     * @return string The converted string.
      */
-    public static function humanize($word, $uppercase = '') {
-        $uppercase = $uppercase == 'all' ? 'ucwords' : 'ucfirst';
-        return $uppercase(str_replace('_', ' ', preg_replace('/_id$/', '', $word)));
+    public static function slug($string, $replacement = '-') {
+        $map = static::$_transliteration + array(
+            '/[^\w\s]/' => ' ', '/\\s+/' => $replacement,
+            '/(?<=[a-z])([A-Z])/' => $replacement . '\\1',
+            str_replace(':rep', preg_quote($replacement, '/'), '/^[:rep]+|[:rep]+$/') => ''
+        );
+        return preg_replace(array_keys($map), array_values($map), $string);
     }
 
-
     /**
-     * Same as camelize but first char is lowercased
+     * Takes an under_scored version of a word and turns it into an human- readable form
+     * by replacing underscores with a space, and by upper casing the initial character.
      *
-     * Converts a word like "send_email" to "sendEmail". It
-     * will remove non alphanumeric character from the word, so
-     * "who's online" will be converted to "whoSOnline"
-     *
-     * @access public
-     * @static
-     * @see camelize
-     * @param    string    $word    Word to lowerCamelCase
-     * @return string Returns a lowerCamelCasedWord
+     * @param string $word Under_scored version of a word (i.e. `'red_bike'`).
+     * @param string $separator The separator character used in the initial string.
+     * @return string Human readable version of the word (i.e. `'Red Bike'`).
      */
-    public static function variablize($word) {
-        $word = Core_Inflector::camelize($word);
-        return strtolower($word[0]) . substr($word, 1);
-    }
-
-
-    /**
-     * Converts a class name to its table name according to rails
-     * naming conventions.
-     *
-     * Converts "Person" to "people"
-     *
-     * @access public
-     * @static
-     * @see classify
-     * @param    string    $class_name    Class name for getting related table_name.
-     * @return string plural_table_name
-     */
-    public static function tableize($class_name) {
-        return Core_Inflector::pluralize(Core_Inflector::underscore($class_name));
-    }
-
-
-    /**
-     * Converts a table name to its class name according to Akelos
-     * naming conventions.
-     *
-     * Converts "people" to "Person"
-     *
-     * @access public
-     * @static
-     * @see tableize
-     * @param    string    $table_name    Table name for getting related ClassName.
-     * @return string SingularClassName
-     */
-    public static function classify($table_name) {
-        return Core_Inflector::camelize(Core_Inflector::singularize($table_name));
-    }
-
-
-    /**
-     * Converts number to its ordinal English form.
-     *
-     * This method converts 13 to 13th, 2 to 2nd ...
-     *
-     * @access public
-     * @static
-     * @param    integer    $number    Number to get its ordinal value
-     * @return string Ordinal representation of given string.
-     */
-    public static function ordinalize($number) {
-        if (in_array(($number % 100), range(11, 13))) {
-            return $number . 'th';
-        } else {
-            switch (($number % 10)) {
-                case 1:
-                    return $number . 'st';
-                    break;
-                case 2:
-                    return $number . 'nd';
-                    break;
-                case 3:
-                    return $number . 'rd';
-                default:
-                    return $number . 'th';
-                    break;
-            }
+    public static function humanize($word, $separator = '_') {
+        if (isset(static::$_humanized[$key = $word . ':' . $separator])) {
+            return static::$_humanized[$key];
         }
+        return static::$_humanized[$key] = ucwords(str_replace($separator, " ", $word));
     }
-
 
     /**
-     * Transforms a string to its unaccented version.
-     * This might be useful for generating "friendly" URLs
+     * Takes a CamelCased class name and returns corresponding under_scored table name.
+     *
+     * @param string $className CamelCased class name (i.e. `'Post'`).
+     * @return string Under_scored and plural table name (i.e. `'posts'`).
      */
-    public static function unaccent($text) {
-        $map = array(
-            'À' => 'A', 'Á' => 'A', 'Â' => 'A', 'Ã' => 'A', 'Ä' => 'A', 'Å' => 'A', 'Æ' => 'A', 'Ç' => 'C',
-            'È' => 'E', 'É' => 'E', 'Ê' => 'E', 'Ë' => 'E', 'Ì' => 'I', 'Í' => 'I', 'Î' => 'I', 'Ï' => 'I',
-            'Ð' => 'D', 'Ñ' => 'N', 'Ò' => 'O', 'Ó' => 'O', 'Ô' => 'O', 'Õ' => 'O', 'Ö' => 'O', 'Ø' => 'O',
-            'Ù' => 'U', 'Ú' => 'U', 'Û' => 'U', 'Ü' => 'U', 'Ý' => 'Y', 'Þ' => 'T', 'ß' => 's', 'à' => 'a',
-            'á' => 'a', 'â' => 'a', 'ã' => 'a', 'ä' => 'a', 'å' => 'a', 'æ' => 'a', 'ç' => 'c', 'è' => 'e',
-            'é' => 'e', 'ê' => 'e', 'ë' => 'e', 'ì' => 'i', 'í' => 'i', 'î' => 'i', 'ï' => 'i', 'ð' => 'e',
-            'ñ' => 'n', 'ò' => 'o', 'ó' => 'o', 'ô' => 'o', 'õ' => 'o', 'ö' => 'o', 'ø' => 'o', 'ù' => 'u',
-            'ú' => 'u', 'û' => 'u', 'ü' => 'u', 'ý' => 'y', 'þ' => 't', 'ÿ' => 'y');
-        return str_replace(array_keys($map), array_values($map), $text);
+    public static function tableize($className) {
+        return static::pluralize(static::underscore($className));
     }
 
-
-    public static function urlize($text) {
-        return trim(Core_Inflector::underscore(Core_Inflector::unaccent($text)), '_');
+    /**
+     * Takes a under_scored table name and returns corresponding class name.
+     *
+     * @param string $tableName Under_scored and plural table name (i.e. `'posts'`).
+     * @return string CamelCased class name (i.e. `'Post'`).
+     */
+    public static function classify($tableName) {
+        return static::camelize(static::singularize($tableName));
     }
 
-
-    public static function slugize($text) {
-        return str_replace('_', '-', Core_Inflector::urlize($text));
+    /**
+     * Enclose a string for preg matching.
+     *
+     * @param string $string String to enclose
+     * @return string Enclosed string
+     */
+    protected static function _enclose($string) {
+        return '(?:' . $string . ')';
     }
-
-
-    public static function isSingular($singular) {
-        return Core_Inflector::singularize(Core_Inflector::pluralize($singular)) == $singular;
-    }
-
-
-    public static function isPlural($plural) {
-        return Core_Inflector::pluralize(Core_Inflector::singularize($plural)) == $plural;
-    }
-
 }
 
 ?>
