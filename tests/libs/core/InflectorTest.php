@@ -2,7 +2,7 @@
 
 require_once 'C:\Users\Galuh Utama\workspace\Core\libs\Core\Inflector.php';
 
-use Core\Inflector as Inflector;
+use Core\Inflector;
 
 /**
  * Test class for RouteParser.

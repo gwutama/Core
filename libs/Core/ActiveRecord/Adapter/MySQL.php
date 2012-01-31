@@ -2,7 +2,7 @@
 
 namespace Core\ActiveRecord\Adapter;
 
-use \Core\ActiveRecord\Adapter as Adapter;
+use \Core\ActiveRecord\Adapter;
 
 class MySQL extends Adapter {
 
