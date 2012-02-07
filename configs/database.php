@@ -8,13 +8,15 @@ Config::set("database", array(
         "dsn" => "mysql:host=localhost;dbname=production",
         "username" => "root",
         "password" => "",
-        "persistent" => false
+        "persistent" => false,
+        "driver" => "MySQL"
     ),
     "debug" => array(
         "dsn" => "mysql:host=localhost;dbname=debug",
         "username" => "root",
         "password" => "",
-        "persistent" => false
+        "persistent" => false,
+        "driver" => "MySQL",
     )
 ));
 

@@ -6,7 +6,7 @@ namespace Core;
  * Basic exception class. This exception class can be rendered to browser.
  * It has its own template.
  */
-class Exception extends \Exception {
+abstract class Exception extends \Exception {
     /**
      *
      * Enter description here ...

@@ -81,10 +81,8 @@ abstract class Adapter {
      * Gets executed before inserting new records.
      *
      * @abstract
-     * @param $data
-     * @param $options
      */
-    abstract public function beforeCreate($data, $options);
+    abstract public function beforeCreate();
 
 
     /**
@@ -99,10 +97,8 @@ abstract class Adapter {
      * Gets executed before selecting records.
      *
      * @abstract
-     * @param $data
-     * @param $options
      */
-    abstract public function beforeRead($data, $options);
+    abstract public function beforeRead();
 
 
     /**
@@ -117,10 +113,8 @@ abstract class Adapter {
      * Gets executed before updating records.
      *
      * @abstract
-     * @param $data
-     * @param $options
      */
-    abstract public function beforeUpdate($data, $options);
+    abstract public function beforeUpdate();
 
 
     /**
@@ -135,10 +129,8 @@ abstract class Adapter {
      * Gets executed before deleting records.
      *
      * @abstract
-     * @param $data
-     * @param $options
      */
-    abstract public function beforeDelete($data, $options);
+    abstract public function beforeDelete();
 
 
     /**
@@ -146,7 +138,7 @@ abstract class Adapter {
      *
      * @abstract
      */
-    abstract public function delete($data, $options);
+    abstract public function delete($options);
 
 }
 

@@ -3,6 +3,12 @@
 namespace Core\ActiveRecord\Adapter;
 
 use \Core\ActiveRecord\Adapter;
+use \Core\Config;
+use \Core\ActiveRecordAdapterConnectionException;
+use \Core\ActiveRecordQueryException;
+use \Core\Inflector;
+use \PDO;
+use \PDOException;
 
 class MySQL extends Adapter {
 
@@ -104,7 +110,7 @@ class MySQL extends Adapter {
      * @param $options  Options. See example above.
      * @return string   SQL Query (prepared statement).
      */
-    public static function insertQuery($model, $data, $options) {
+    public static function insertQuery($model, $data, $options = array()) {
         // Determine query format.
         // Lowercase all $options keys then find for "select" option.
         $insertWithSelect = in_array(strtolower("select"), array_map("strtolower", array_keys($options)));
@@ -165,10 +171,10 @@ class MySQL extends Adapter {
 
         // Refer to first and second cases above.
         if($insertWithSelect == false) {
-            return sprintf($query, $tableName, $fields, $binds, $onDuplicateKeyUpdate);
+            return trim(sprintf($query, $tableName, $fields, $binds, $onDuplicateKeyUpdate));
         }
         else {
-            return sprintf($query, $tableName, $select);
+            return trim(sprintf($query, $tableName, $select));
         }
     }
 
@@ -179,7 +185,7 @@ class MySQL extends Adapter {
      * @param $data
      * @param $options
      */
-    public function beforeCreate($data, $options) {
+    public function beforeCreate() {
     }
 
 
@@ -190,6 +196,8 @@ class MySQL extends Adapter {
      * @param $options
      */
     public function create($data, $options) {
+        $this->beforeCreate();
+
         // Build query
         $query = self::insertQuery($this->model, $data, $options);
 
@@ -244,11 +252,8 @@ class MySQL extends Adapter {
 
     /**
      * Gets executed before selecting records.
-     *
-     * @param $data
-     * @param $options
      */
-    public function beforeRead($data, $options) {
+    public function beforeRead() {
     }
 
 
@@ -259,6 +264,7 @@ class MySQL extends Adapter {
      * @param $options
      */
     public function read($data, $options) {
+        $this->beforeRead();
     }
 
 
@@ -276,11 +282,8 @@ class MySQL extends Adapter {
 
     /**
      * Gets executed before updating records.
-     *
-     * @param $data
-     * @param $options
      */
-    public function beforeUpdate($data, $options) {
+    public function beforeUpdate() {
     }
 
 
@@ -291,6 +294,7 @@ class MySQL extends Adapter {
      * @param $options
      */
     public function update($data, $options) {
+        $this->beforeUpdate();
     }
 
 
@@ -301,28 +305,72 @@ class MySQL extends Adapter {
      * @param $options
      * @return string
      */
-    public static function deleteQuery($model, $data, $options) {
-        return "";
+    public static function deleteQuery($model, $options) {
+        // DELETE [LOW_PRIORITY] [QUICK] [IGNORE] FROM tbl_name
+        // [WHERE where_condition]
+        // [ORDER BY ...]
+        // [LIMIT row_count]
+        //
+        // 1st %s : Table name
+        // 2nd %s : WHERE condition
+        // 3rd %s : ORDER condition
+        // 4st %s : LIMIT
+        $query = "DELETE FROM %s %s %s %s";
+
+        // Build condition
+        if( isset($options["conditions"]) ) {
+            $conditions = "WHERE ".$options["conditions"];
+        }
+        else {
+            $conditions = "";
+        }
+
+        // Build order
+        if( isset($options["order"]) ) {
+            $order = "ORDER BY " . $options["order"][0] . " ";
+        }
+        else {
+            $order = "";
+        }
+
+        // Build limit
+        if( isset($options["limit"]) ) {
+            $limit = "LIMIT " . $options["limit"];
+        }
+        else {
+            $limit = "";
+        }
+
+        return sprintf($query, $model, $conditions, $order, $limit);
     }
 
 
     /**
      * Gets executed before deleting records.
-     *
-     * @param $data
-     * @param $options
      */
-    public function beforeDelete($data, $options) {
+    public function beforeDelete() {
     }
 
 
     /**
      * Deletes records from database.
      *
-     * @param $data
      * @param $options
      */
-    public function delete($data, $options) {
+    public function delete($options) {
+        $this->beforeDelete();
+
+        // Build query
+        $query = self::deleteQuery($this->model, $options);
+
+        // Execute query with prepared statement
+        try {
+            $stmt = $this->dbh->prepare($query);
+            $stmt->execute();
+        }
+        catch(PDOException $e) {
+            throw new ActiveRecordQueryException();
+        }
     }
 
 }
