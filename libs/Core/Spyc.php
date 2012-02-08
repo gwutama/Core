@@ -22,6 +22,9 @@
  * </code>
  * @package Spyc
  */
+
+namespace Core;
+
 class Spyc
 {
 
