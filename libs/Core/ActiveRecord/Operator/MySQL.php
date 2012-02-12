@@ -7,6 +7,54 @@ use \Core\ActiveRecord\Operator;
 class MySQL implements Operator {
 
     /**
+     * The binds array contains binds values
+     * from the operator methods in this class.
+     *
+     * @var array
+     */
+    protected static $binds = array();
+
+
+    /**
+     * Get the binds array.
+     *
+     * @static
+     * @return array
+     */
+    public static function getBinds() {
+        return self::$binds;
+    }
+
+
+    /**
+     * Sets values of an array to the bind variable.
+     *
+     * @static
+     * @param $data Array
+     */
+    public static function setBinds($data) {
+        foreach((array)$data as $key=>$value) {
+            if($key) {
+                self::$binds[":$key"] = $value;
+            }
+            else {
+                throw new \Core\ActiveRecordOperatorException("Operator key cannot be empty.");
+            }
+        }
+    }
+
+
+    /**
+     * Resets the binds array.
+     *
+     * @static
+     */
+    public static function clearBinds() {
+        self::$binds = array();
+    }
+
+
+    /**
      * Boolean AND operator.
      *
      * @static
@@ -76,7 +124,12 @@ class MySQL implements Operator {
      * @param $array
      */
     public static function bNot($first, $second) {
-        return "NOT $first = '$second' ";
+        if(!$first) {
+            throw new \Core\ActiveRecordOperatorException("Operator key cannot be empty.");
+        }
+
+        self::$binds[":$first"] = $second;
+        return "NOT $first = :$first";
     }
 
 
@@ -89,7 +142,12 @@ class MySQL implements Operator {
      * @param $second
      */
     public static function eq($first, $second) {
-        return "$first = '$second' ";
+        if(!$first) {
+            throw new \Core\ActiveRecordOperatorException("Operator key cannot be empty.");
+        }
+
+        self::$binds[":$first"] = $second;
+        return "$first = :$first";
     }
 
 
@@ -102,7 +160,12 @@ class MySQL implements Operator {
      * @param $second
      */
     public static function neq($first, $second) {
-        return "$first != '$second'";
+        if(!$first) {
+            throw new \Core\ActiveRecordOperatorException("Operator key cannot be empty.");
+        }
+
+        self::$binds[":$first"] = $second;
+        return "$first != :$first";
     }
 
 
@@ -115,7 +178,12 @@ class MySQL implements Operator {
      * @param $second
      */
     public static function lt($first, $second) {
-        return "$first < '$second'";
+        if(!$first) {
+            throw new \Core\ActiveRecordOperatorException("Operator key cannot be empty.");
+        }
+
+        self::$binds[":$first"] = $second;
+        return "$first < :$first";
     }
 
 
@@ -128,7 +196,12 @@ class MySQL implements Operator {
      * @param $second
      */
     public static function gt($first, $second) {
-        return "$first > '$second'";
+        if(!$first) {
+            throw new \Core\ActiveRecordOperatorException("Operator key cannot be empty.");
+        }
+
+        self::$binds[":$first"] = $second;
+        return "$first > :$first";
     }
 
 
@@ -141,7 +214,12 @@ class MySQL implements Operator {
      * @param $second
      */
     public static function lte($first, $second) {
-        return "$first <= '$second'";
+        if(!$first) {
+            throw new \Core\ActiveRecordOperatorException("Operator key cannot be empty.");
+        }
+
+        self::$binds[":$first"] = $second;
+        return "$first <= :$first";
     }
 
 
@@ -154,7 +232,12 @@ class MySQL implements Operator {
      * @param $second
      */
     public static function gte($first, $second) {
-        return "$first >= '$second'";
+        if(!$first) {
+            throw new \Core\ActiveRecordOperatorException("Operator key cannot be empty.");
+        }
+
+        self::$binds[":$first"] = $second;
+        return "$first >= :$first";
     }
 
 
@@ -167,6 +250,10 @@ class MySQL implements Operator {
      * @param $array
      */
     public static function in($field, $array) {
+        if(!$field) {
+            throw new \Core\ActiveRecordOperatorException("Operator key cannot be empty.");
+        }
+
         $tmp = implode(", ", $array);
         return "$field IN($tmp)";
     }
@@ -181,9 +268,14 @@ class MySQL implements Operator {
      * @param $array
      */
     public static function nin($field, $array) {
+        if(!$field) {
+            throw new \Core\ActiveRecordOperatorException("Operator key cannot be empty.");
+        }
+
         $tmp = implode(", ", $array);
         return "$field NOT IN($tmp)";
     }
+
 }
 
 ?>

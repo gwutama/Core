@@ -82,6 +82,12 @@ class ActiveRecordQueryException extends Exception {}
 
 
 /**
+ * Gets thrown on operator errors.
+ */
+class ActiveRecordOperatorException extends Exception {}
+
+
+/**
  * Gets thrown when file cannot be found.
  */
 class FileNotFoundException extends Exception {}
