@@ -90,7 +90,7 @@ abstract class Adapter {
      *
      * @abstract
      */
-    abstract public function create($data, $options);
+    abstract public function create($data, $options = array());
 
 
     /**
@@ -106,7 +106,7 @@ abstract class Adapter {
      *
      * @abstract
      */
-    abstract public function read($data, $options);
+    abstract public function read($data, $options = array());
 
 
     /**
@@ -122,7 +122,7 @@ abstract class Adapter {
      *
      * @abstract
      */
-    abstract public function update($data, $options);
+    abstract public function update($data, $options = array());
 
 
     /**
@@ -138,7 +138,7 @@ abstract class Adapter {
      *
      * @abstract
      */
-    abstract public function delete($options);
+    abstract public function delete($options = array());
 
 }
 

@@ -200,7 +200,8 @@ class MySQL extends Adapter {
      * @param $data
      * @param $options
      */
-    public function create($data, $options) {
+    public function create($data, $options = array()) {
+        Op::clearBinds();
         $this->beforeCreate();
 
         // Build query
@@ -210,10 +211,11 @@ class MySQL extends Adapter {
         try {
             $stmt = $this->dbh->prepare($query);
             // bind parameters
-            for($i = 1; $i < count($data); ++$i) {
-                $stmt->bindParam($i, $data[$i]);
+            foreach(Op::getBinds() as $key=>$value) {
+                $stmt->bindParam($key, $value);
             }
             $stmt->execute();
+            Op::clearBinds();
         }
         catch(PDOException $e) {
             throw new ActiveRecordQueryException();
@@ -224,11 +226,34 @@ class MySQL extends Adapter {
     /**
      * Builds select query.
      *
+     * see http://dev.mysql.com/doc/refman/5.0/en/select.html
+     *
+     * SELECT
+     * [ALL | DISTINCT | DISTINCTROW ]
+     * select_expr [, select_expr ...]
+     * [FROM table_references
+     * [WHERE where_condition]
+     * [GROUP BY {col_name | expr | position}
+     * [ASC | DESC], ... [WITH ROLLUP]]
+     * [HAVING where_condition]
+     * [ORDER BY {col_name | expr | position}
+     * [ASC | DESC], ...]
+     * [LIMIT {[offset,] row_count | row_count OFFSET offset}]
+     *
      * @param $data
      * @param $options
      * @return string
      */
-    public static function selectQuery($model, $options) {
+    public static function selectQuery($model, $options = array()) {
+        /*
+        if(isset($options["join"])) {
+            $query = "SELECT %s FROM %s%s%s%s%s%s";
+        }
+        else {
+
+        }
+        */
+
         // Build query
         // 1. Build (field1, field2, ..) and (?, ?, ..)
         if( isset($options["fields"]) ) {
@@ -238,14 +263,20 @@ class MySQL extends Adapter {
             $fields = "*";
         }
 
+        // Build condition
+
         // Build order
         if( isset($options["order"]) ) {
-            $order = "ORDER BY " . $options["order"][0] . " ";
+            $order = "ORDER BY " . $options["order"] . " ";
+        }
+        else {
+            $order = "";
         }
 
         // Build limit
         if( isset($options["limit"]) ) {
-            $limit = "LIMIT " . $options["limit"];
+            $limit = "LIMIT :core_query_limit";
+            Op::setBind("core_query_limit", (int) $options["limit"]);
         }
         else {
             $limit = "";
@@ -268,8 +299,26 @@ class MySQL extends Adapter {
      * @param $data
      * @param $options
      */
-    public function read($data, $options) {
+    public function read($data, $options = array()) {
+        Op::clearBinds();
         $this->beforeRead();
+
+        // Build query
+        $query = self::selectQuery($this->model, $data, $options);
+
+        // Execute query with prepared statement
+        try {
+            $stmt = $this->dbh->prepare($query);
+            // bind parameters
+            foreach(Op::getBinds() as $key=>$value) {
+                $stmt->bindParam($key, $value);
+            }
+            $stmt->execute();
+            Op::clearBinds();
+        }
+        catch(PDOException $e) {
+            throw new ActiveRecordQueryException();
+        }
     }
 
 
@@ -289,7 +338,7 @@ class MySQL extends Adapter {
      * @param $options
      * @return string
      */
-    public static function updateQuery($model, $data, $options) {
+    public static function updateQuery($model, $data, $options = array()) {
         // Set $data to prepared statement bind variables
         Op::setBinds($data);
 
@@ -298,7 +347,7 @@ class MySQL extends Adapter {
         // 3rd %s : where conditions
         // 4th %s : order conditions
         // 5th %s : limit
-        $query = "UPDATE %s SET %s %s %s %s";
+        $query = "UPDATE %s SET %s%s%s%s";
 
         // Pluralize model name
         $tableName = Inflector::tableize($model);
@@ -312,14 +361,14 @@ class MySQL extends Adapter {
                 $sets .= "$key = :$key, ";
             }
             else {
-                $sets .= "$key = :$key";
+                $sets .= "$key = :$key ";
             }
             ++$i;
         }
 
         // Build condition
         if( isset($options["conditions"]) ) {
-            $conditions = "WHERE ".$options["conditions"];
+            $conditions = "WHERE ".$options["conditions"]." ";
         }
         else {
             $conditions = "";
@@ -327,7 +376,7 @@ class MySQL extends Adapter {
 
         // Build order
         if( isset($options["order"]) ) {
-            $order = "ORDER BY " . $options["order"][0] . " ";
+            $order = "ORDER BY " . $options["order"] . " ";
         }
         else {
             $order = "";
@@ -335,7 +384,8 @@ class MySQL extends Adapter {
 
         // Build limit
         if( isset($options["limit"]) ) {
-            $limit = "LIMIT " . $options["limit"];
+            $limit = "LIMIT :core_query_limit";
+            Op::setBind("core_query_limit", (int) $options["limit"]);
         }
         else {
             $limit = "";
@@ -358,7 +408,8 @@ class MySQL extends Adapter {
      * @param $data
      * @param $options
      */
-    public function update($data, $options) {
+    public function update($data, $options = array()) {
+        Op::clearBinds();
         $this->beforeUpdate();
 
         // Build query
@@ -367,7 +418,12 @@ class MySQL extends Adapter {
         // Execute query with prepared statement
         try {
             $stmt = $this->dbh->prepare($query);
+            // bind parameters
+            foreach(Op::getBinds() as $key=>$value) {
+                $stmt->bindParam($key, $value);
+            }
             $stmt->execute();
+            Op::clearBinds();
         }
         catch(PDOException $e) {
             throw new ActiveRecordQueryException();
@@ -390,7 +446,7 @@ class MySQL extends Adapter {
      * @param $options
      * @return string
      */
-    public static function deleteQuery($model, $options) {
+    public static function deleteQuery($model, $options = array()) {
         // [WHERE where_condition]
         // [ORDER BY ...]
         // [LIMIT row_count]
@@ -399,14 +455,14 @@ class MySQL extends Adapter {
         // 2nd %s : WHERE condition
         // 3rd %s : ORDER condition
         // 4st %s : LIMIT
-        $query = "DELETE FROM %s %s %s %s";
+        $query = "DELETE FROM %s %s%s%s";
 
         // Pluralize model name
         $tableName = Inflector::tableize($model);
 
         // Build condition
         if( isset($options["conditions"]) ) {
-            $conditions = "WHERE ".$options["conditions"];
+            $conditions = "WHERE ".$options["conditions"]." ";
         }
         else {
             $conditions = "";
@@ -414,7 +470,7 @@ class MySQL extends Adapter {
 
         // Build order
         if( isset($options["order"]) ) {
-            $order = "ORDER BY " . $options["order"][0] . " ";
+            $order = "ORDER BY " . $options["order"] . " ";
         }
         else {
             $order = "";
@@ -422,7 +478,8 @@ class MySQL extends Adapter {
 
         // Build limit
         if( isset($options["limit"]) ) {
-            $limit = "LIMIT " . $options["limit"];
+            $limit = "LIMIT :core_query_limit";
+            Op::setBind("core_query_limit", (int) $options["limit"]);
         }
         else {
             $limit = "";
@@ -444,7 +501,8 @@ class MySQL extends Adapter {
      *
      * @param $options
      */
-    public function delete($options) {
+    public function delete($options = array()) {
+        Op::clearBinds();
         $this->beforeDelete();
 
         // Build query
@@ -453,7 +511,12 @@ class MySQL extends Adapter {
         // Execute query with prepared statement
         try {
             $stmt = $this->dbh->prepare($query);
+            // bind parameters
+            foreach(Op::getBinds() as $key=>$value) {
+                $stmt->bindParam($key, $value);
+            }
             $stmt->execute();
+            Op::clearBinds();
         }
         catch(PDOException $e) {
             throw new ActiveRecordQueryException();

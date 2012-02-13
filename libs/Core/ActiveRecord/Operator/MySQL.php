@@ -26,6 +26,16 @@ class MySQL implements Operator {
     }
 
 
+    public static function setBind($key, $value) {
+        if($key) {
+            self::$binds[":$key"] = $value;
+        }
+        else {
+            throw new \Core\ActiveRecordOperatorException("Operator key cannot be empty.");
+        }
+    }
+
+
     /**
      * Sets values of an array to the bind variable.
      *
