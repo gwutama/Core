@@ -81,60 +81,60 @@ class MySQLOperatorTest extends PHPUnit_Framework_TestCase
 
     public function testNot()
     {
-        $this->assertEquals("NOT foo = :foo", Op::bNot("foo", 2));
+        $this->assertEquals("NOT `foo` = :foo", Op::bNot("foo", 2));
         $this->assertEquals(array(":foo" => 2), Op::getBinds());
         Op::clearBinds();
 
-        $this->assertEquals("NOT _foo = :_foo", Op::bNot("_foo", "bar"));
+        $this->assertEquals("NOT `_foo` = :_foo", Op::bNot("_foo", "bar"));
         $this->assertEquals(array(":_foo" => "bar"), Op::getBinds());
         Op::clearBinds();
 
-        $this->assertEquals("NOT 123foo = :123foo", Op::bNot("123foo", "bar"));
+        $this->assertEquals("NOT `123foo` = :123foo", Op::bNot("123foo", "bar"));
         $this->assertEquals(array(":123foo" => "bar"), Op::getBinds());
         Op::clearBinds();
     }
 
     public function testEq()
     {
-        $this->assertEquals("foo = :foo", Op::eq("foo", 2));
+        $this->assertEquals("`foo` = :foo", Op::eq("foo", 2));
         $this->assertEquals(array(":foo" => 2), Op::getBinds());
         Op::clearBinds();
 
-        $this->assertEquals("_foo = :_foo", Op::eq("_foo", "bar"));
+        $this->assertEquals("`_foo` = :_foo", Op::eq("_foo", "bar"));
         $this->assertEquals(array(":_foo" => "bar"), Op::getBinds());
         Op::clearBinds();
 
-        $this->assertEquals("123foo = :123foo", Op::eq("123foo", "bar"));
+        $this->assertEquals("`123foo` = :123foo", Op::eq("123foo", "bar"));
         $this->assertEquals(array(":123foo" => "bar"), Op::getBinds());
         Op::clearBinds();
     }
 
     public function testNeq()
     {
-        $this->assertEquals("foo != :foo", Op::neq("foo", 2));
+        $this->assertEquals("`foo` != :foo", Op::neq("foo", 2));
         $this->assertEquals(array(":foo" => 2), Op::getBinds());
         Op::clearBinds();
 
-        $this->assertEquals("_foo != :_foo", Op::neq("_foo", "bar"));
+        $this->assertEquals("`_foo` != :_foo", Op::neq("_foo", "bar"));
         $this->assertEquals(array(":_foo" => "bar"), Op::getBinds());
         Op::clearBinds();
 
-        $this->assertEquals("123foo != :123foo", Op::neq("123foo", "bar"));
+        $this->assertEquals("`123foo` != :123foo", Op::neq("123foo", "bar"));
         $this->assertEquals(array(":123foo" => "bar"), Op::getBinds());
         Op::clearBinds();
     }
 
     public function testLt()
     {
-        $this->assertEquals("foo < :foo", Op::lt("foo", 2));
+        $this->assertEquals("`foo` < :foo", Op::lt("foo", 2));
         $this->assertEquals(array(":foo" => 2), Op::getBinds());
         Op::clearBinds();
 
-        $this->assertEquals("_foo < :_foo", Op::lt("_foo", "bar"));
+        $this->assertEquals("`_foo` < :_foo", Op::lt("_foo", "bar"));
         $this->assertEquals(array(":_foo" => "bar"), Op::getBinds());
         Op::clearBinds();
 
-        $this->assertEquals("123foo < :123foo", Op::lt("123foo", "bar"));
+        $this->assertEquals("`123foo` < :123foo", Op::lt("123foo", "bar"));
         $this->assertEquals(array(":123foo" => "bar"), Op::getBinds());
         Op::clearBinds();
     }

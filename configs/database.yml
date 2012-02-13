@@ -1,13 +1,14 @@
 database:
-	production:
-		dsn: mysql:host=localhost;dbname=production
-		username: root
-		password:
-		persistent: false
-		driver: MySQL
-	debug:
-		dsn: mysql:host=localhost;dbname=debug
-		username: root
-		password:
-		persistent: false
-		driver: MySQL
+	MySQL:
+		production:
+			dsn: mysql:host=localhost;dbname=production
+			username: root
+			password:
+			persistent: false
+			driver: MySQL
+		debug:
+			dsn: mysql:host=localhost;dbname=debug
+			username: root
+			password:
+			persistent: false
+			driver: MySQL

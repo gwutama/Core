@@ -2,11 +2,11 @@
 
 namespace Core\ActiveRecord;
 
-define("MODEL_FIND_BY_ID", "id");
-define("MODEL_FIND_ALL", "all");
-define("MODEL_FIND_FIRST", "first");
-define("MODEL_FIND_LAST", "last");
-define("MODEL_FIND_ONE", "one");
+const FIND_BY_ID = "id";
+const FIND_ALL = "all";
+const FIND_FIRST = "first";
+const FIND_LAST = "last";
+const FIND_ONE = "one";
 
 
 /**
@@ -42,7 +42,7 @@ abstract class Model {
      * Loads the driver DBO object.
      */
     private function __construct() {
-        $obj = "ActiveRecord_Driver_".$this->driver;
+        $obj = "\\Core\\ActiveRecord\\Driver\\".$this->driver;
         try {
             // DBO driver implements singleton pattern.
             $this->dbo = $obj::instance();
@@ -79,16 +79,16 @@ abstract class Model {
         if(is_int($pos)) {
             return self::instance()->findById($pos, $options);
         }
-        elseif($pos == MODEL_FIND_ALL) {
+        elseif($pos == FIND_ALL) {
             return self::instance()->findAll($options);
         }
-        elseif($pos == MODEL_FIND_FIRST) {
+        elseif($pos == FIND_FIRST) {
             return self::instance()->findFirst($options);
         }
-        elseif($pos == MODEL_FIND_LAST) {
+        elseif($pos == FIND_LAST) {
             return self::instance()->findLast($options);
         }
-        elseif($pos == MODEL_FIND_ONE) {
+        elseif($pos == FIND_ONE) {
             return self::instance()->findOne($options);
         }
 
@@ -153,7 +153,7 @@ abstract class Model {
     public function findById($pos, $options = array()) {
         if(is_array($this->data)) {
             throw new CannotChainModelFindersException(
-                "Cannot chain object with this finder: \"" .MODEL_FIND_BY_ID . "\".");
+                "Cannot chain object with this finder: \"" .FIND_BY_ID . "\".");
         }
 
         $this->data = $this->dbo->findById($pos, $options);
@@ -169,7 +169,7 @@ abstract class Model {
     public function findAll($options = array()) {
         if(is_array($this->data)) {
             throw new CannotChainModelFindersException(
-                "Cannot chain object with this finder: \"" .MODEL_FIND_ALL . "\".");
+                "Cannot chain object with this finder: \"" .FIND_ALL . "\".");
         }
 
         $this->data = $this->dbo->findAll($options); // returns array of model objects
@@ -185,7 +185,7 @@ abstract class Model {
     public function findFirst($options = array()) {
         if(is_array($this->data)) {
             throw new CannotChainModelFindersException(
-                "Cannot chain object with this finder: \"" .MODEL_FIND_FIRST . "\".");
+                "Cannot chain object with this finder: \"" .FIND_FIRST . "\".");
         }
 
         $this->data = $this->dbo->findFirst($options);
@@ -201,7 +201,7 @@ abstract class Model {
     public function findLast($options = array()) {
         if(is_array($this->data)) {
             throw new CannotChainModelFindersException(
-                "Cannot chain object with this finder: \"" .MODEL_FIND_LAST . "\".");
+                "Cannot chain object with this finder: \"" .FIND_LAST . "\".");
         }
 
         $this->data = $this->dbo->findLast($options);
@@ -217,7 +217,7 @@ abstract class Model {
     public function findOne($options = array()) {
         if(is_array($this->data)) {
             throw new CannotChainModelFindersException(
-                "Cannot chain object with this finder: \"" .MODEL_FIND_ONE . "\".");
+                "Cannot chain object with this finder: \"" .FIND_ONE . "\".");
         }
 
         $this->data = $this->dbo->findOne($options);

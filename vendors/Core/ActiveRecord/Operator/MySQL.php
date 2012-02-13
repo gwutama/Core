@@ -139,7 +139,7 @@ class MySQL implements Operator {
         }
 
         self::$binds[":$first"] = $second;
-        return "NOT $first = :$first";
+        return "NOT `$first` = :$first";
     }
 
 
@@ -157,7 +157,7 @@ class MySQL implements Operator {
         }
 
         self::$binds[":$first"] = $second;
-        return "$first = :$first";
+        return "`$first` = :$first";
     }
 
 
@@ -175,7 +175,7 @@ class MySQL implements Operator {
         }
 
         self::$binds[":$first"] = $second;
-        return "$first != :$first";
+        return "`$first` != :$first";
     }
 
 
@@ -193,7 +193,7 @@ class MySQL implements Operator {
         }
 
         self::$binds[":$first"] = $second;
-        return "$first < :$first";
+        return "`$first` < :$first";
     }
 
 
@@ -211,7 +211,7 @@ class MySQL implements Operator {
         }
 
         self::$binds[":$first"] = $second;
-        return "$first > :$first";
+        return "`$first` > :$first";
     }
 
 
@@ -229,7 +229,7 @@ class MySQL implements Operator {
         }
 
         self::$binds[":$first"] = $second;
-        return "$first <= :$first";
+        return "`$first` <= :$first";
     }
 
 
@@ -247,7 +247,7 @@ class MySQL implements Operator {
         }
 
         self::$binds[":$first"] = $second;
-        return "$first >= :$first";
+        return "`$first` >= :$first";
     }
 
 

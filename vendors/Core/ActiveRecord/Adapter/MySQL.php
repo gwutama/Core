@@ -117,14 +117,13 @@ class MySQL extends Adapter {
 
         // Determine query format.
         // Lowercase all $options keys then find for "select" option.
-        $insertWithSelect = in_array(strtolower("select"), array_map("strtolower", array_keys($options)));
-        if($insertWithSelect == false) {
+        if(isset($options["select"]) == false) {
             // First case: Standard insert query
             // 1st %s => table name
             // 2nd %s => fields
             // 3rd %s => Binding parameters (series of question marks "?")
             // 4th %s => INSERT ... ON DUPLICATE KEY UPDATE syntax. See link to manual above.
-            $query = "INSERT INTO %s(%s) VALUES(%s) %s";
+            $query = "INSERT INTO `%s`(%s) VALUES(%s) %s";
         }
         else {
             // Second case: Insert query with select.
@@ -133,7 +132,7 @@ class MySQL extends Adapter {
             // 1st %s => table name
             // 2nd %s => fields
             // 3rd %s => SELECT statement
-            $query = "INSERT INTO %s(%s) %s";
+            $query = "INSERT INTO `%s`(%s) %s";
         }
 
         // Pluralize model name
@@ -143,6 +142,7 @@ class MySQL extends Adapter {
         $keys = array_keys($data);
         $fields = implode(", ", $keys);
         $fields = strtolower($fields);
+        $fields = preg_replace("/([\w0-9_]+)/", "`$1`", $fields);
 
         // Statements are bound with bind variables
         $binds = implode(", ", $keys);
@@ -152,21 +152,17 @@ class MySQL extends Adapter {
         $onDuplicateKeyUpdate = "";
         $select = "";
 
-        // Work on the passed options
-        $updateOnDuplicate = in_array(strtolower("on duplicate key update"),
-            array_map("strtolower", array_keys($options)));
-
         // Check for "INSERT ... SELECT"
-        if($insertWithSelect) {
+        if(isset($options["select"])) {
             $select = $options["select"];
         }
 
-        if($updateOnDuplicate) {
+        if(isset($options["on duplicate key update"])) {
             // Check for "INSERT ... ON DUPLICATE KEY UPDATE"
             // If value is an array, then build: col_name=expr, col_name2=expr2, ...
             // Otherwise just append the value.
             $onDuplicateKeyUpdate = "ON DUPLICATE KEY UPDATE ";
-            if( is_array($options["on duplicate key update"]) ) {
+            if(is_array($options["on duplicate key update"])) {
                 $onDuplicateKeyUpdate .= implode(", ", $options["on duplicate key update"]);
             }
             else {
@@ -175,7 +171,7 @@ class MySQL extends Adapter {
         }
 
         // Refer to first and second cases above.
-        if($insertWithSelect == false) {
+        if(isset($options["select"]) == false) {
             return trim(sprintf($query, $tableName, $fields, $binds, $onDuplicateKeyUpdate));
         }
         else {
@@ -254,10 +250,10 @@ class MySQL extends Adapter {
         // 5th %s: having condition
         // 6th %s: ordering
         // 7th %s: limit
-        $query = "SELECT %s FROM %s %s%s%s%s%s";
+        $query = "SELECT %s FROM `%s` %s%s%s%s%s";
 
         // Check for join key and build special query if it has been found.
-        if( isset($options["join"]) ) {
+        if(isset($options["join"])) {
             // 1st %s: fields list
             // 2nd %s: table name
             // 3rd %s: join statement
@@ -266,7 +262,7 @@ class MySQL extends Adapter {
             // 6th %s: having condition
             // 7th %s: ordering
             // 8th %s: limit
-            $query = "SELECT %s FROM %s %s%s%s%s%s%s";
+            $query = "SELECT %s FROM `%s` %s%s%s%s%s%s";
 
             // Set join types, if not set then defaults to natural join
             if(isset($options["join"]["type"])) {
@@ -307,15 +303,17 @@ class MySQL extends Adapter {
 
         // Build query
         // 1. Build (field1, field2, ..) and (?, ?, ..)
-        if( isset($options["fields"]) ) {
+        if(isset($options["fields"])) {
             $fields = implode(",", $options["fields"]);
+            $fields = strtolower($fields);
+            $fields = preg_replace("/([\w0-9_]+)/", "`$1`", $fields);
         }
         else {
             $fields = "*";
         }
 
         // Build WHERE condition
-        if( isset($options["conditions"]) ) {
+        if(isset($options["conditions"])) {
             $conditions = "WHERE ".$options["conditions"]." ";
         }
         else {
@@ -323,15 +321,15 @@ class MySQL extends Adapter {
         }
 
         // Build grouping
-        if( isset($options["group"]) ) {
-            $group = "GROUP BY " . $options["group"] . " ";
+        if(isset($options["group"])) {
+            $group = "GROUP BY `" . $options["group"] . "` ";
         }
         else {
             $group = "";
         }
 
         // Build having clause
-        if( isset($options["having"]) ) {
+        if(isset($options["having"])) {
             $having = "HAVING " . $options["having"] . " ";
         }
         else {
@@ -339,7 +337,7 @@ class MySQL extends Adapter {
         }
 
         // Build order
-        if( isset($options["order"]) ) {
+        if(isset($options["order"])) {
             $order = "ORDER BY " . $options["order"] . " ";
         }
         else {
@@ -347,7 +345,7 @@ class MySQL extends Adapter {
         }
 
         // Build limit
-        if( isset($options["limit"]) ) {
+        if(isset($options["limit"])) {
             $limit = "LIMIT :core_query_limit";
             Op::setBind("core_query_limit", (int) $options["limit"]);
         }
@@ -426,7 +424,7 @@ class MySQL extends Adapter {
         // 3rd %s : where conditions
         // 4th %s : order conditions
         // 5th %s : limit
-        $query = "UPDATE %s SET %s%s%s%s";
+        $query = "UPDATE `%s` SET %s%s%s%s";
 
         // Pluralize model name
         $tableName = Inflector::tableize($model);
@@ -437,16 +435,16 @@ class MySQL extends Adapter {
         $i = 0;
         foreach((array) $data as $key=>$value) {
             if($i < $count-1) {
-                $sets .= "$key = :$key, ";
+                $sets .= "`$key` = :$key, ";
             }
             else {
-                $sets .= "$key = :$key ";
+                $sets .= "`$key` = :$key ";
             }
             ++$i;
         }
 
         // Build condition
-        if( isset($options["conditions"]) ) {
+        if(isset($options["conditions"])) {
             $conditions = "WHERE ".$options["conditions"]." ";
         }
         else {
@@ -454,7 +452,7 @@ class MySQL extends Adapter {
         }
 
         // Build order
-        if( isset($options["order"]) ) {
+        if(isset($options["order"])) {
             $order = "ORDER BY " . $options["order"] . " ";
         }
         else {
@@ -462,7 +460,7 @@ class MySQL extends Adapter {
         }
 
         // Build limit
-        if( isset($options["limit"]) ) {
+        if(isset($options["limit"])) {
             $limit = "LIMIT :core_query_limit";
             Op::setBind("core_query_limit", (int) $options["limit"]);
         }
@@ -534,13 +532,13 @@ class MySQL extends Adapter {
         // 2nd %s : WHERE condition
         // 3rd %s : ORDER condition
         // 4st %s : LIMIT
-        $query = "DELETE FROM %s %s%s%s";
+        $query = "DELETE FROM `%s` %s%s%s";
 
         // Pluralize model name
         $tableName = Inflector::tableize($model);
 
         // Build condition
-        if( isset($options["conditions"]) ) {
+        if(isset($options["conditions"])) {
             $conditions = "WHERE ".$options["conditions"]." ";
         }
         else {
@@ -548,7 +546,7 @@ class MySQL extends Adapter {
         }
 
         // Build order
-        if( isset($options["order"]) ) {
+        if(isset($options["order"])) {
             $order = "ORDER BY " . $options["order"] . " ";
         }
         else {
@@ -556,7 +554,7 @@ class MySQL extends Adapter {
         }
 
         // Build limit
-        if( isset($options["limit"]) ) {
+        if(isset($options["limit"])) {
             $limit = "LIMIT :core_query_limit";
             Op::setBind("core_query_limit", (int) $options["limit"]);
         }
