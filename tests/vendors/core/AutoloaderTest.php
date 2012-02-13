@@ -48,7 +48,7 @@ class AutoloaderTest extends PHPUnit_Framework_TestCase
     public function testLoader()
     {
         $foo = new Core\Config;
-        $foo = new \Controllers\Home("Foo", "bar");
+        //$foo = new \Controllers\Home("Foo", "bar");
         $foo = new Core\Template("foo", "bar", "baz");
     }
 

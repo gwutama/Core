@@ -25,15 +25,18 @@ class RouteParserTest extends PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $routes = array(
-            "/foo/{bar}/{baz}/{blah}" => array(
+            array(
+                "pattern" => "/foo/{bar}/{baz}/{blah}",
                 "controller" => "Foobar",
                 "action" => "index"
             ),
-            "/greetings/{hello}/{name}/{country}.html" => array(
+            array(
+                "pattern" => "/greetings/{hello}/{name}/{country}.html",
                 "controller" => "Greetings",
                 "action" => "show"
             ),
-            "/category/{category}/read/{id}/{slug}.html" => array(
+            array(
+                "pattern" => "/category/{category}/read/{id}/{slug}.html",
                 "controller" => "Blog",
                 "action" => "read"
             ),
