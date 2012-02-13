@@ -29,33 +29,21 @@ class Route {
      * @throws ActionNotFoundException
      */
     public static function dispatch(RoutingObject $route) {
-        // Build $controllerClass. Class names in SSF always start with
-        // uppercase. Example: class "Hello". We need to include the controller
-        // class from /controllers directory. Throw exception if the class
-        // cannot be found.
-        $controller = ucfirst( strtolower($route->controller) );
-        $controllerClass = $controller."Controller";
-        $action = $route->action;
-        $file = "..".DS."controllers".DS.$controllerClass.".php";
-
-        if( !file_exists($file) ) {
-            throw new ControllerNotFoundException("Controller file
-                <em>$controllerClass</em> not found in <em>controllers/</em>.");
-        }
-
-        include($file);
-
-        if( !class_exists($controllerClass) ) {
-            throw new ControllerNotFoundException("Controller class
-                <em>$controllerClass</em> not found in <em>controllers/</em>.");
-        }
-
         // Assuming the class exists. Build an instance of this controller.
         // Then try to call the action method of this controller.
         // In any case of exceptions, render the user friendly error
         // message into screen.
         try {
+            $controller = $route->controller;
+            $action = $route->action;
+
+            $controllerClass = "\\Controllers\\".$controller;
             $app = new $controllerClass($controller, $action);
+
+            if( !class_exists($controllerClass) ) {
+                throw new ControllerNotFoundException("Controller class
+                <em>$controllerClass</em> not found in <em>Controllers/</em>.");
+            }
 
             if( !method_exists($app, $route->action) ) {
                 throw new ActionNotFoundException("Action <em>$action</em>
@@ -66,6 +54,10 @@ class Route {
 
             // Finally, render the template to be echoed by index.php.
             $app->renderTemplate();
+        }
+        catch(FileNotFoundException $e) {
+            throw new ControllerNotFoundException("Controller file
+                <em>$controllerClass</em> not found in <em>Controllers/</em>.");
         }
         catch(CoreException $e) {
             $e->render();

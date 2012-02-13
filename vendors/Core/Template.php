@@ -43,6 +43,10 @@ class Template {
      */
     private $baseDir;
 
+
+    private $overrideBaseDir;
+
+
     /**
      * <p>Template variables. Each key of this array will be passed to the
      * actual template and can be called as a variable. The array keys
@@ -183,10 +187,11 @@ class Template {
      * @param 	string 		$action			The action name.
      * @param 	string 		$baseDir		The base directory for views.
      */
-    public function __construct($controller, $action, $baseDir) {
+    public function __construct($controller, $action, $baseDir, $overrideBaseDir = "") {
         $this->controller = $controller;
         $this->action = $action;
         $this->baseDir = $baseDir;
+        $this->overrideBaseDir = $overrideBaseDir;
         $this->title = "SSF &gt; $controller &gt; ".ucfirst($action);
     }
 
@@ -353,11 +358,11 @@ class Template {
     private function renderBuffer($tpl, $file, $vars, $type="template") {
         if( !file_exists($file) ) {
             if($type == "template") {
-                throw new TemplateNotFoundException("Template <em>$tpl.tpl</em>
+                throw new TemplateNotFoundException("Template <em>$tpl</em>
                      not found in <em>views/</em>.");
             }
             elseif($type == "layout") {
-                throw new LayoutNotFoundException("Layout <em>$tpl.tpl</em>
+                throw new LayoutNotFoundException("Layout <em>$tpl</em>
                      not found in <em>views/layouts/</em>.");
             }
         }
@@ -386,6 +391,11 @@ class Template {
      */
     public function renderPartial($tpl) {
         $path = $this->baseDir.$tpl.".tpl";
+
+        if(!file_exists($path)) {
+            $path = $this->overrideBaseDir.$tpl.".tpl";
+        }
+
         return $this->renderBuffer($tpl, $path, $this->vars);
     }
 
@@ -412,6 +422,11 @@ class Template {
         $content = $this->renderPartial($tpl);
         $tpl2 = $this->layout.".tpl";
         $path = $this->baseDir."layouts".DS.$tpl2;
+
+        if(!file_exists($path)) {
+            $path = $this->overrideBaseDir."layouts".DS.$tpl2;
+        }
+
         $vars = array(
             "layoutContent" => $content,
             "layoutTitle" => $this->title,

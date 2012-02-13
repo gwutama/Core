@@ -89,7 +89,9 @@ abstract class Controller {
 
         // Initialize template object. Render error if it cannot be initialized.
         try {
-            $this->template = new Template($name, $action, "..".DS."views".DS.$this->theme.DS);
+            $this->template = new Template($name, $action,
+                "..".DS."views".DS.$this->theme.DS,
+                "..".DS."..".DS."vendors".DS."app".DS."views".DS.$this->theme.DS);
         }
         catch(Exception $e) {
             $e->render();
@@ -99,7 +101,7 @@ abstract class Controller {
         // if helper cannot be found. Helper's file name should be
         // somewhat like "TemplateHelper" and should reside in libs/.
         foreach( (array) $this->templateHelpers as $helper) {
-            $file = "..".DS."libs".DS."helpers".DS.$helper.".php";
+            $file = "..".DS."libs".DS."Helpers".DS.$helper.".php";
             if( !file_exists($file) ) {
                 throw new TemplateHelperNotFoundException("Template helper
                     <em>$helper</em> not found in <em>libs/</em>.");
@@ -164,7 +166,7 @@ abstract class Controller {
     public function renderTemplate() {
         if($this->output == "html") {
             // render file /views/theme/controller/action.tpl
-            $tpl = strtolower($this->name."/".$this->action);
+            $tpl = strtolower($this->name.DS.$this->action);
             echo $this->template->render($tpl);
         }
         elseif($this->output == "json") {

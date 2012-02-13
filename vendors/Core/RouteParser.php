@@ -124,7 +124,7 @@ class RouteParser {
      */
     public function parseCustom($url) {
         // Detects whether this URL is in RouteParser::routes
-        foreach($this->routes as $route=>$routingConfigs) {
+        foreach($this->routes as $route) {
             // Routes are in this format /blah/{param}/{param2}/etc
             // Example $url would be /blah/foo/bar/etc
             //
@@ -147,18 +147,18 @@ class RouteParser {
             //    2.6. If $tmpVar == $url, build a RoutingObject Object then return it.
             //         Otherwise, this loop will ends after the last $route and this
             //         method will return null instead.
-            $params = $this->parseParamsFromRoute($route, $url); // Steps 1 to 2.4
+            $params = $this->parseParamsFromRoute($route["pattern"], $url); // Steps 1 to 2.4
 
             // step 2.5
-            $tmp = $route;
+            $tmp = $route["pattern"];
             foreach($params as $key=>$value) {
                 $tmp = str_replace("{".$key."}", $value, $tmp);
             }
 
             // step 2.6
             if($tmp == $url) {
-                return new RoutingObject($url, $routingConfigs["controller"],
-                    $routingConfigs["action"], $params);
+                return new RoutingObject($url, $route["controller"],
+                    $route["action"], $params);
             }
         }
 

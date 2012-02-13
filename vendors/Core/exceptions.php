@@ -13,7 +13,8 @@ abstract class Exception extends \Exception {
      */
     public function render() {
         $exception = get_class($this);
-        $template = new Template("Error", $exception, "..".DS."views".DS."core".DS);
+        $template = new Template("Error", $exception,
+            "..".DS."..".DS."vendors".DS."app".DS."views".DS."core".DS);
         $template->message = $this->message;
         $template->exceptionClass = get_class($this);
         echo $template->render("exception");

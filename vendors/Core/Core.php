@@ -22,22 +22,26 @@ class Core {
      */
     public static function init() {
         // Include exceptions and config class
-        include "../libs/core/exceptions.php";
+        include "../../vendors/core/exceptions.php";
 
         // Registers autoloaded directories
         $autoload = new Autoloader();
-        $autoload->register("../libs");
+        $autoload->register("../../vendors/");
+        $autoload->register("../");
 
-        // include configs
-        include "../configs/global.php";
-        include "../configs/routes.php";
-        include "../configs/database.php";
+        // load configs from yaml files
+        $config = Spyc::YAMLLoad("../../configs/global.yml");
+        Config::setArray($config);
+        $config = Spyc::YAMLLoad("../../configs/database.yml");
+        Config::setArray($config);
+        $config = Spyc::YAMLLoad("../../configs/routes.yml");
+        Config::setArray($config, true);
 
         // Run application
         try {
             $url = "/".@$_GET["url"];
             $routeParser = new RouteParser(Config::get("routes"),
-                Config::get("default.controller"), Config::get("default.action"));
+                Config::get("global.defaultController"), Config::get("global.defaultAction"));
 
             $routingObject = $routeParser->parseCustom($url);
 

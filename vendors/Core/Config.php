@@ -25,6 +25,40 @@ class Config {
 
 
     /**
+     * Sets the configuration based on an array with keys.
+     *
+     * @static
+     * @param $array
+     */
+    public static function setArray($array, $keepArrayAsArray = false, $parent = "") {
+        foreach((array) $array as $key=>$value) {
+            if( !is_array($value) ) {
+                if($parent) {
+                    $key = "$parent.$key";
+                }
+                self::set($key, $value);
+            }
+            else {
+                if($keepArrayAsArray) {
+                    self::set($key, $value);
+                }
+                else {
+                    $tmp = $parent;
+                    if($parent) {
+                        $parent .= ".$key";
+                    }
+                    else {
+                        $parent = $key;
+                    }
+                    self::setArray($value, $keepArrayAsArray, $parent);
+                    $parent = $tmp;
+                }
+            }
+        }
+    }
+
+
+    /**
      * Sets the configuration based on key.
      * Key could be in format parent.child.child etc.
      * Thus a key can have unlimited sub keys.
@@ -109,6 +143,15 @@ class Config {
         return false;
     }
 
+
+    /**
+     * Clears configuration.
+     *
+     * @static
+     */
+    public static function clear() {
+        self::$configs = array();
+    }
 }
 
 ?>

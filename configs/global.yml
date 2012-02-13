@@ -1,5 +1,4 @@
 global:
 	debug: true
-	defaultApplication: default
 	defaultController: Home
 	defaultAction: index
