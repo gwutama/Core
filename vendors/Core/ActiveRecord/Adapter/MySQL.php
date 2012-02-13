@@ -123,7 +123,7 @@ class MySQL extends Adapter {
             // 1st %s => table name
             // 2nd %s => fields
             // 3rd %s => Binding parameters (series of question marks "?")
-            // 4th &s => INSERT ... ON DUPLICATE KEY UPDATE syntax. See link to manual above.
+            // 4th %s => INSERT ... ON DUPLICATE KEY UPDATE syntax. See link to manual above.
             $query = "INSERT INTO %s(%s) VALUES(%s) %s";
         }
         else {
@@ -153,24 +153,24 @@ class MySQL extends Adapter {
         $select = "";
 
         // Work on the passed options
-        foreach($options as $key=>$value) {
-            $key = strtoupper($key);
+        $updateOnDuplicate = in_array(strtolower("on duplicate key update"),
+            array_map("strtolower", array_keys($options)));
 
-            // Check for "INSERT ... SELECT"
-            if($key = "SELECT") {
-                $select = $value;
+        // Check for "INSERT ... SELECT"
+        if($insertWithSelect) {
+            $select = $options["select"];
+        }
+
+        if($updateOnDuplicate) {
+            // Check for "INSERT ... ON DUPLICATE KEY UPDATE"
+            // If value is an array, then build: col_name=expr, col_name2=expr2, ...
+            // Otherwise just append the value.
+            $onDuplicateKeyUpdate = "ON DUPLICATE KEY UPDATE ";
+            if( is_array($options["on duplicate key update"]) ) {
+                $onDuplicateKeyUpdate .= implode(", ", $options["on duplicate key update"]);
             }
-            else if($key == "ON DUPLICATE KEY UPDATE") {
-                // Check for "INSERT ... ON DUPLICATE KEY UPDATE"
-                // If value is an array, then build: col_name=expr, col_name2=expr2, ...
-                // Otherwise just append the value.
-                $onDuplicateKeyUpdate = "ON DUPLICATE KEY UPDATE ";
-                if( is_array($value) ) {
-                    $onDuplicateKeyUpdate .= implode(", ", $value);
-                }
-                else {
-                    $onDuplicateKeyUpdate .= $value;
-                }
+            else {
+                $onDuplicateKeyUpdate .= $options["on duplicate key update"];
             }
         }
 
@@ -227,6 +227,7 @@ class MySQL extends Adapter {
      * Builds select query.
      *
      * see http://dev.mysql.com/doc/refman/5.0/en/select.html
+     * and http://dev.mysql.com/doc/refman/5.0/en/join.html
      *
      * SELECT
      * [ALL | DISTINCT | DISTINCTROW ]
@@ -245,14 +246,64 @@ class MySQL extends Adapter {
      * @return string
      */
     public static function selectQuery($model, $options = array()) {
-        /*
-        if(isset($options["join"])) {
-            $query = "SELECT %s FROM %s%s%s%s%s%s";
-        }
-        else {
+        // Non join query
+        // 1st %s: fields list
+        // 2nd %s: table name
+        // 3rd %s: where condition
+        // 4th %s: grouping condition
+        // 5th %s: having condition
+        // 6th %s: ordering
+        // 7th %s: limit
+        $query = "SELECT %s FROM %s %s%s%s%s%s";
 
+        // Check for join key and build special query if it has been found.
+        if( isset($options["join"]) ) {
+            // 1st %s: fields list
+            // 2nd %s: table name
+            // 3rd %s: join statement
+            // 4rd %s: where condition
+            // 5th %s: grouping condition
+            // 6th %s: having condition
+            // 7th %s: ordering
+            // 8th %s: limit
+            $query = "SELECT %s FROM %s %s%s%s%s%s%s";
+
+            // Set join types, if not set then defaults to natural join
+            if(isset($options["join"]["type"])) {
+                $joinType = $options["join"]["type"]." ";
+            }
+            else {
+                $joinType = "JOIN ";
+            }
+
+            // join tables (table factor). Should be inside an array.
+            // build something like this (foo, bar, baz)
+            if(is_array($options["join"]["tables"])) {
+                $joinTables = "(".implode(", ", $options["join"]["tables"]).") ";
+            }
+            else {
+                // otherwise just use the value
+                $joinTables = $options["join"]["tables"]." ";
+            }
+
+            // Join condition
+            if(isset($options["join"]["condition"])) {
+                $tmp = $options["join"]["condition"];
+                $joinCondition = "ON $tmp ";
+            }
+            else {
+                $joinCondition = "";
+            }
+
+            // @todo: index hint
+            if(isset($options["join"]["index"])) {
+            }
+            else {
+            }
         }
-        */
+
+        // Pluralize model name
+        $tableName = Inflector::tableize($model);
 
         // Build query
         // 1. Build (field1, field2, ..) and (?, ?, ..)
@@ -263,7 +314,29 @@ class MySQL extends Adapter {
             $fields = "*";
         }
 
-        // Build condition
+        // Build WHERE condition
+        if( isset($options["conditions"]) ) {
+            $conditions = "WHERE ".$options["conditions"]." ";
+        }
+        else {
+            $conditions = "";
+        }
+
+        // Build grouping
+        if( isset($options["group"]) ) {
+            $group = "GROUP BY " . $options["group"] . " ";
+        }
+        else {
+            $group = "";
+        }
+
+        // Build having clause
+        if( isset($options["having"]) ) {
+            $having = "HAVING " . $options["having"] . " ";
+        }
+        else {
+            $having = "";
+        }
 
         // Build order
         if( isset($options["order"]) ) {
@@ -282,7 +355,13 @@ class MySQL extends Adapter {
             $limit = "";
         }
 
-        return "";
+        if(isset($options["join"])) {
+            // @todo
+            return sprintf($query, $fields, $tableName);
+        }
+        else {
+            return trim(sprintf($query, $fields, $tableName, $conditions, $group, $having, $order, $limit));
+        }
     }
 
 

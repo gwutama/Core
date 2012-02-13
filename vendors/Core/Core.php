@@ -28,6 +28,7 @@ class Core {
         $autoload = new Autoloader();
         $autoload->register("../../vendors/");
         $autoload->register("../");
+        $autoload->register("../libs/");
 
         // load configs from yaml files
         $config = Spyc::YAMLLoad("../../configs/global.yml");

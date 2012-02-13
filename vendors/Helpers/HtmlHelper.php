@@ -1,12 +1,14 @@
 <?php
 
+namespace Helpers;
+
 /**
  * 
  * Enter description here ...
  * @author Galuh Utama
  *
  */
-class HtmlHelper implements Core\TemplateHelper {
+class Html implements \Core\TemplateHelper {
 
     /**
      * (non-PHPdoc)
