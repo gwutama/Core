@@ -50,7 +50,7 @@ class FileIO
      */
     public static function delete($file) {
         if (!file_exists($file)) {
-            throw new exception("File $file doesn't exist.");
+            throw new \Exception("File $file doesn't exist.");
         }
         else {
             @unlink($file);

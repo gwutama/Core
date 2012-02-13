@@ -1,13 +1,5 @@
-<?php
-
-use Core\Config as Config;
-use Core\InvalidConfigKeyException as InvalidConfigKeyException;
-
-Config::set("routes", array(
-    "/foo/{bar}/{baz}/{blah}" => array(
-        "controller" => "Foobar",
-        "action" => "index"
-    )
-));
-
-?>
+routes:
+	test:
+		pattern: /foo/{bar}/{baz}/{blah}
+		controller: Foobar
+		action: index
