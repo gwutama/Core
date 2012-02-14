@@ -86,37 +86,28 @@ abstract class Controller {
     public function __construct($name, $action) {
         $this->name = $name;
         $this->action = $action;
+    }
 
-        // Initialize template object. Render error if it cannot be initialized.
-        try {
-            $this->template = new Template($name, $action,
-                "..".DS."views".DS.$this->theme.DS,
-                "..".DS."..".DS."vendors".DS."app".DS."views".DS.$this->theme.DS);
-        }
-        catch(Exception $e) {
-            $e->render();
-        }
 
-        // Loads and registers each template helpers. Throws exception
-        // if helper cannot be found. Helper's file name should be
-        // somewhat like "TemplateHelper" and should reside in libs/.
-        foreach( (array) $this->templateHelpers as $helper) {
-            $file = "..".DS."libs".DS."Helpers".DS.$helper.".php";
-            if( !file_exists($file) ) {
-                throw new TemplateHelperNotFoundException("Template helper
-                    <em>$helper</em> not found in <em>libs/</em>.");
-            }
-            include($file);
-            $obj = new $helper();
-            $this->template->registerHelper($obj);
-        }
+    public function getTheme() {
+        return $this->theme;
+    }
+
+
+    public function getTemplateHelpers() {
+        return $this->templateHelpers;
+    }
+
+
+    public function setTemplate(Template $template) {
+        $this->template = $template;
     }
 
 
     /**
      * Default action.
      */
-    public function index() {
+    public function index(Request $request) {
     }
 
 
