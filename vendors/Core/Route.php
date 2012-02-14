@@ -55,15 +55,10 @@ class Route {
                 <em>$controllerClass</em> not found in <em>Controllers/</em>.");
         }
 
-        // Initialize template object. Render error if it cannot be initialized.
-        try {
-            $template = new Template($controller, $action,
-                $options["views.directory"].$app->getTheme()."/",
-                $options["views.fallbackDirectory"].$app->getTheme()."/");
-        }
-        catch(Exception $e) {
-            $e->render();
-        }
+        // Initialize template object.
+        $template = new Template($controller, $action,
+            $options["views.directory"].$app->getTheme()."/",
+            $options["views.fallbackDirectory"].$app->getTheme()."/");
 
         // Loads and registers each template helpers. Throws exception
         // if helper cannot be found. Helper's file name should be
