@@ -196,7 +196,7 @@ class MySQLAdapterTest extends PHPUnit_Framework_TestCase
         Op::clearBinds();
 
         $q = MySQL::selectQuery("Movie", array(
-            "fields" => array("id, name, lorem, ipsum"),
+            "fields" => array("id", "name", "lorem", "ipsum"),
             "conditions" => Op::bAnd(
                 Op::eq("hello", "world"),
                 Op::eq("foo", "bar")
@@ -207,7 +207,7 @@ class MySQLAdapterTest extends PHPUnit_Framework_TestCase
         Op::clearBinds();
 
         $q = MySQL::selectQuery("Person", array(
-            "fields" => array("id, name, lorem, ipsum"),
+            "fields" => array("id", "name", "lorem", "ipsum"),
             "conditions" => Op::bAnd(
                 Op::eq("hello", "world"),
                 Op::eq("foo", "bar")
@@ -219,7 +219,7 @@ class MySQLAdapterTest extends PHPUnit_Framework_TestCase
         Op::clearBinds();
 
         $q = MySQL::selectQuery("Person", array(
-            "fields" => array("id, name, lorem, ipsum"),
+            "fields" => array("id", "name", "lorem", "ipsum"),
             "limit" => 3
         ));
         $this->assertEquals("SELECT `id`, `name`, `lorem`, `ipsum` FROM `people` LIMIT :core_query_limit", $q);
@@ -280,6 +280,40 @@ class MySQLAdapterTest extends PHPUnit_Framework_TestCase
         ));
         $this->assertEquals("SELECT * FROM `appointments` HAVING `date` = :date ORDER BY `id` DESC", $q);
         $this->assertEquals(array(":date" => "NOW()"), Op::getBinds());
+        Op::clearBinds();
+
+        $q = MySQL::selectQuery("Test", array(
+            "join" => array(
+                "tables" => array("things"),
+                "conditions" => "tests.id = things.tests_id"
+            )
+        ));
+        $this->assertEquals("SELECT * FROM `tests` JOIN (`things`) ON tests.id = things.tests_id", $q);
+        Op::clearBinds();
+
+        $q = MySQL::selectQuery("Family", array(
+           "fields" => array("families.position", "families.meal"),
+           "join" => array(
+               "tables" => array("foods"),
+               "conditions" => "families.position = foods.position",
+               "type" => "LEFT JOIN"
+           )
+        ));
+        $this->assertEquals("SELECT `families`.`position`, `families`.`meal` FROM `families` LEFT JOIN (`foods`)".
+                                " ON families.position = foods.position", $q);
+        Op::clearBinds();
+
+        $q = MySQL::selectQuery("Family", array(
+            "fields" => array("families.position", "families.meal"),
+            "join" => array(
+                "tables" => array("foods"),
+                "conditions" => "families.position = foods.position",
+                "type" => "LEFT JOIN"
+            ),
+            "conditions" => Op::eq("families.position", "father")
+        ));
+        $this->assertEquals("SELECT `families`.`position`, `families`.`meal` FROM `families` LEFT JOIN (`foods`)".
+            " ON families.position = foods.position WHERE `families`.`position` = :families.position", $q);
         Op::clearBinds();
     }
 }

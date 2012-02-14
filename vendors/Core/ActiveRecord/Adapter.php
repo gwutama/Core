@@ -15,14 +15,18 @@ abstract class Adapter {
     /**
      * Database object. PDO or PDO compliant.
      */
-    protected $dbh;
+    protected static $dbh;
     protected $model;
 
 
     /**
-     * Protected constructor.
+     * Public constructor.
      */
-    protected function __construct() {
+    public function __construct() {
+        $this->model = get_class($this);
+        if(self::$dbh == null) {
+            $this->connect();
+        }
     }
 
 
@@ -43,21 +47,6 @@ abstract class Adapter {
      */
     public function getModel() {
         return $this->model;
-    }
-
-
-    /**
-     * Returns an instance of database object.
-     * Connects to database if database object is
-     * still null.
-     *
-     * @return mixed
-     */
-    public function instance() {
-        if($this->dbh == null) {
-            $this->dbh = $this->connect();
-        }
-        return $this->dbh;
     }
 
 

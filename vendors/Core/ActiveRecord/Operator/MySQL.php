@@ -139,7 +139,8 @@ class MySQL implements Operator {
         }
 
         self::$binds[":$first"] = $second;
-        return "NOT `$first` = :$first";
+        $key = preg_replace("/([\w0-9_]+)/", "`$1`", $first);
+        return "NOT $key = :$first";
     }
 
 
@@ -157,7 +158,8 @@ class MySQL implements Operator {
         }
 
         self::$binds[":$first"] = $second;
-        return "`$first` = :$first";
+        $key = preg_replace("/([\w0-9_]+)/", "`$1`", $first);
+        return "$key = :$first";
     }
 
 
@@ -175,7 +177,8 @@ class MySQL implements Operator {
         }
 
         self::$binds[":$first"] = $second;
-        return "`$first` != :$first";
+        $key = preg_replace("/([\w0-9_]+)/", "`$1`", $first);
+        return "$key != :$first";
     }
 
 
@@ -193,7 +196,8 @@ class MySQL implements Operator {
         }
 
         self::$binds[":$first"] = $second;
-        return "`$first` < :$first";
+        $key = preg_replace("/([\w0-9_]+)/", "`$1`", $first);
+        return "$key < :$first";
     }
 
 
@@ -211,7 +215,8 @@ class MySQL implements Operator {
         }
 
         self::$binds[":$first"] = $second;
-        return "`$first` > :$first";
+        $key = preg_replace("/([\w0-9_]+)/", "`$1`", $first);
+        return "$key > :$first";
     }
 
 
@@ -229,7 +234,8 @@ class MySQL implements Operator {
         }
 
         self::$binds[":$first"] = $second;
-        return "`$first` <= :$first";
+        $key = preg_replace("/([\w0-9_]+)/", "`$1`", $first);
+        return "$key <= :$first";
     }
 
 
@@ -247,7 +253,8 @@ class MySQL implements Operator {
         }
 
         self::$binds[":$first"] = $second;
-        return "`$first` >= :$first";
+        $key = preg_replace("/([\w0-9_]+)/", "`$1`", $first);
+        return "$key >= :$first";
     }
 
 
@@ -265,6 +272,7 @@ class MySQL implements Operator {
         }
 
         $tmp = implode(", ", $array);
+        $tmp = preg_replace("/([\w0-9_]+)/", "`$1`", $tmp);
         return "$field IN($tmp)";
     }
 
@@ -283,6 +291,7 @@ class MySQL implements Operator {
         }
 
         $tmp = implode(", ", $array);
+        $tmp = preg_replace("/([\w0-9_]+)/", "`$1`", $tmp);
         return "$field NOT IN($tmp)";
     }
 

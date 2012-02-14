@@ -31,7 +31,22 @@ class MySQL extends Adapter {
     /**
      * Persistent connection. Boolean.
      */
-    protected $persistent;
+    protected $persistent = false;
+
+
+    /**
+     * @param $dsn
+     * @param $username
+     * @param $password
+     * @param $persistent
+     */
+    public function __construct($dsn, $username, $password, $persistent) {
+        $this->dsn = $dsn;
+        $this->username = $username;
+        $this->password = $password;
+        $this->persistent = $persistent;
+        parent::__construct();
+    }
 
 
     /**
@@ -54,20 +69,6 @@ class MySQL extends Adapter {
      * default to standard configuration in database.php.
      */
     protected function beforeConnect() {
-        $config = Config::get("database");
-
-        if(Config::get("debug") == true) {
-            $this->dsn = $config["debug"]["dsn"];
-            $this->username = $config["debug"]["username"];
-            $this->password = $config["debug"]["password"];
-            $this->persistent = $config["debug"]["persistent"];
-        }
-        else {
-            $this->dsn = $config["production"]["dsn"];
-            $this->username = $config["production"]["username"];
-            $this->password = $config["production"]["password"];
-            $this->persistent = $config["production"]["persistent"];
-        }
     }
 
 
@@ -205,7 +206,7 @@ class MySQL extends Adapter {
 
         // Execute query with prepared statement
         try {
-            $stmt = $this->dbh->prepare($query);
+            $stmt = self::$dbh->prepare($query);
             // bind parameters
             foreach(Op::getBinds() as $key=>$value) {
                 $stmt->bindParam($key, $value);
@@ -276,19 +277,21 @@ class MySQL extends Adapter {
             // build something like this (foo, bar, baz)
             if(is_array($options["join"]["tables"])) {
                 $joinTables = "(".implode(", ", $options["join"]["tables"]).") ";
+                $joinTables = strtolower($joinTables);
+                $joinTables = preg_replace("/([\w0-9_]+)/", "`$1`", $joinTables);
             }
             else {
                 // otherwise just use the value
                 $joinTables = $options["join"]["tables"]." ";
             }
 
-            // Join condition
-            if(isset($options["join"]["condition"])) {
-                $tmp = $options["join"]["condition"];
-                $joinCondition = "ON $tmp ";
+            // Join conditions
+            if(isset($options["join"]["conditions"])) {
+                $tmp = $options["join"]["conditions"];
+                $joinConditions = "ON $tmp ";
             }
             else {
-                $joinCondition = "";
+                $joinConditions = "";
             }
 
             // @todo: index hint
@@ -296,6 +299,8 @@ class MySQL extends Adapter {
             }
             else {
             }
+
+            $join = $joinType . $joinTables . $joinConditions;
         }
 
         // Pluralize model name
@@ -304,7 +309,7 @@ class MySQL extends Adapter {
         // Build query
         // 1. Build (field1, field2, ..) and (?, ?, ..)
         if(isset($options["fields"])) {
-            $fields = implode(",", $options["fields"]);
+            $fields = implode(", ", $options["fields"]);
             $fields = strtolower($fields);
             $fields = preg_replace("/([\w0-9_]+)/", "`$1`", $fields);
         }
@@ -355,7 +360,7 @@ class MySQL extends Adapter {
 
         if(isset($options["join"])) {
             // @todo
-            return sprintf($query, $fields, $tableName);
+            return trim(sprintf($query, $fields, $tableName, $join, $conditions, $group, $having, $order, $limit));
         }
         else {
             return trim(sprintf($query, $fields, $tableName, $conditions, $group, $having, $order, $limit));
@@ -385,7 +390,7 @@ class MySQL extends Adapter {
 
         // Execute query with prepared statement
         try {
-            $stmt = $this->dbh->prepare($query);
+            $stmt = self::$dbh->prepare($query);
             // bind parameters
             foreach(Op::getBinds() as $key=>$value) {
                 $stmt->bindParam($key, $value);
@@ -494,7 +499,7 @@ class MySQL extends Adapter {
 
         // Execute query with prepared statement
         try {
-            $stmt = $this->dbh->prepare($query);
+            $stmt = self::$dbh->prepare($query);
             // bind parameters
             foreach(Op::getBinds() as $key=>$value) {
                 $stmt->bindParam($key, $value);
@@ -587,7 +592,7 @@ class MySQL extends Adapter {
 
         // Execute query with prepared statement
         try {
-            $stmt = $this->dbh->prepare($query);
+            $stmt = self::$dbh->prepare($query);
             // bind parameters
             foreach(Op::getBinds() as $key=>$value) {
                 $stmt->bindParam($key, $value);
