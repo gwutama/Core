@@ -50,7 +50,11 @@ class Core {
                 $routingObject = $routeParser->parse($url);
             }
 
-            Route::dispatch($routingObject);
+            Route::dispatch($routingObject, array(
+                "views.directory" => "../views/",
+                "views.fallbackDirectory" => "../../vendors/app/views/",
+                "helpers.directory" => "../libs/Helpers/"
+            ));
         }
         catch(Exception $e) {
             $e->render();

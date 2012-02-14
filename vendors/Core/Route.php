@@ -28,7 +28,7 @@ class Route {
      * @param $route A routing object containing routing information.
      * @throws ActionNotFoundException
      */
-    public static function dispatch(RoutingObject $route) {
+    public static function dispatch(RoutingObject $route, $options = array()) {
         // Assuming the class exists. Build an instance of this controller.
         // Then try to call the action method of this controller.
         // In any case of exceptions, render the user friendly error
@@ -58,8 +58,8 @@ class Route {
         // Initialize template object. Render error if it cannot be initialized.
         try {
             $template = new Template($controller, $action,
-                "..".DS."views".DS.$app->getTheme().DS,
-                "..".DS."..".DS."vendors".DS."app".DS."views".DS.$app->getTheme().DS);
+                $options["views.directory"].$app->getTheme()."/",
+                $options["views.fallbackDirectory"].$app->getTheme()."/");
         }
         catch(Exception $e) {
             $e->render();
@@ -69,7 +69,7 @@ class Route {
         // if helper cannot be found. Helper's file name should be
         // somewhat like "TemplateHelper" and should reside in libs/.
         foreach( (array) $app->getTemplateHelpers() as $helper) {
-            $file = "..".DS."libs".DS."Helpers".DS.$helper.".php";
+            $file = $options["helpers.directory"].$helper.".php";
             try {
                 $helperObject = new $helper();
                 $template->registerHelper($helperObject);
