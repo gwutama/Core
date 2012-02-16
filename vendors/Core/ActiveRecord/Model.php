@@ -2,12 +2,8 @@
 
 namespace Core\ActiveRecord;
 
-const FIND_BY_ID = "id";
-const FIND_ALL = "all";
-const FIND_FIRST = "first";
-const FIND_LAST = "last";
-const FIND_ONE = "one";
-
+use \Core\ServiceContainer;
+use \Core\ActiveRecordAdapterNotFoundException;
 
 /**
  * <h1>Class Model</h1>
@@ -17,41 +13,85 @@ const FIND_ONE = "one";
  * Active Record pattern, or at least mimics it.
  * </p>
  */
-abstract class Model {
+abstract class Model extends ServiceContainer {
+
+    /**
+     * Database configuration from database.yml
+     *
+     * @var string
+     */
+    protected $adapter;
 
     /**
      * Database object. PDO or PDO compliant.
+     *
+     * @var string
      */
     protected $dbo;
 
+    /**
+     * Primary key field
+     *
+     * @var string
+     */
+    protected $primaryKey = "id";
 
     /**
-     * Driver name. Will be loaded along with constructor.
+     * 1-1 relationship to other models.
+     *
+     * @var mixed
      */
-    protected $driver;
+    protected $hasOne;
 
+    /**
+     * 1-n relationship to other models.
+     *
+     * @var mixed
+     */
+    protected $hasMany;
+
+    /**
+     * n-1 relationship to other models.
+     *
+     * @var mixed
+     */
+    protected $belongsTo;
+
+    /**
+     * @todo: Model validations.
+     *
+     * @var array
+     */
+    protected $validations = array();
 
     /**
      * Query values are saved in an array. Can be array of model objects
      * if findAll is called.
+     *
+     * @var string
      */
     protected $data;
 
 
     /**
-     * Loads the driver DBO object.
+     *
      */
-    private function __construct() {
-        $obj = "\\Core\\ActiveRecord\\Driver\\".$this->driver;
-        try {
-            // DBO driver implements singleton pattern.
-            $this->dbo = $obj::instance();
-            // Pass the model name to the adapter.
-            $this->dbho->setModel(get_class($this));
+    public function __construct() {
+        // @todo: Register all configured adapters as services
+    }
+
+
+    /**
+     * Sets the driver DBO object.
+     */
+    public function prepareAdapter() {
+        if($this->hasService($this->adapter)) {
+            $adapter = $this->getService($this->adapter);
+            $this->dbo = $adapter;
+            $this->dbo->setModel(get_class($this));
         }
-        catch(FileNotFoundException $e) {
-            throw new ActiveRecordAdapterNotFoundException(
-                "ActiveRecord adapter not found: ".$this->driver);
+        else {
+            throw new ActiveRecordAdapterNotFoundException("Adapter not found: $this->adapter.");
         }
     }
 
@@ -63,7 +103,7 @@ abstract class Model {
      * @return string   Model object.
      */
     protected static function instance() {
-        $obj = get_class(self);
+        $obj = get_class($this);
         return new $obj;
     }
 
@@ -79,20 +119,18 @@ abstract class Model {
         if(is_int($pos)) {
             return self::instance()->findById($pos, $options);
         }
-        elseif($pos == FIND_ALL) {
+        elseif($pos == "all") {
             return self::instance()->findAll($options);
         }
-        elseif($pos == FIND_FIRST) {
+        elseif($pos == "first") {
             return self::instance()->findFirst($options);
         }
-        elseif($pos == FIND_LAST) {
+        elseif($pos == "last") {
             return self::instance()->findLast($options);
         }
-        elseif($pos == FIND_ONE) {
+        elseif($pos == "one") {
             return self::instance()->findOne($options);
         }
-
-        throw new InvalidFinderMethodException($pos);
     }
 
 
@@ -151,11 +189,9 @@ abstract class Model {
      * @param array $options
      */
     public function findById($pos, $options = array()) {
-        if(is_array($this->data)) {
-            throw new CannotChainModelFindersException(
-                "Cannot chain object with this finder: \"" .FIND_BY_ID . "\".");
+        if(!$this->dbo) {
+            $this->prepareAdapter();
         }
-
         $this->data = $this->dbo->findById($pos, $options);
         return $this;
     }
@@ -167,11 +203,9 @@ abstract class Model {
      * @param array $options
      */
     public function findAll($options = array()) {
-        if(is_array($this->data)) {
-            throw new CannotChainModelFindersException(
-                "Cannot chain object with this finder: \"" .FIND_ALL . "\".");
+        if(!$this->dbo) {
+            $this->prepareAdapter();
         }
-
         $this->data = $this->dbo->findAll($options); // returns array of model objects
         return $this;
     }
@@ -183,11 +217,9 @@ abstract class Model {
      * @param array $options
      */
     public function findFirst($options = array()) {
-        if(is_array($this->data)) {
-            throw new CannotChainModelFindersException(
-                "Cannot chain object with this finder: \"" .FIND_FIRST . "\".");
+        if(!$this->dbo) {
+            $this->prepareAdapter();
         }
-
         $this->data = $this->dbo->findFirst($options);
         return $this;
     }
@@ -199,11 +231,9 @@ abstract class Model {
      * @param array $options
      */
     public function findLast($options = array()) {
-        if(is_array($this->data)) {
-            throw new CannotChainModelFindersException(
-                "Cannot chain object with this finder: \"" .FIND_LAST . "\".");
+        if(!$this->dbo) {
+            $this->prepareAdapter();
         }
-
         $this->data = $this->dbo->findLast($options);
         return $this;
     }
@@ -215,11 +245,9 @@ abstract class Model {
      * @param array $options
      */
     public function findOne($options = array()) {
-        if(is_array($this->data)) {
-            throw new CannotChainModelFindersException(
-                "Cannot chain object with this finder: \"" .FIND_ONE . "\".");
+        if(!$this->dbo) {
+            $this->prepareAdapter();
         }
-
         $this->data = $this->dbo->findOne($options);
         return $this;
     }
@@ -229,33 +257,20 @@ abstract class Model {
      * Saves an object.
      */
     public function save() {
-        if( is_array($this->data) == false ) {
-            throw new ModelSaveException("Cannot save model. Invalid object model.");
+        if(!$this->dbo) {
+            $this->prepareAdapter();
         }
-
-        try {
-            $this->dbo->save($this->data);
-        }
-        catch(ModelDriverException $e) {
-            throw new ModelSaveException($e->getMessage());
-        }
+        $this->dbo->save($this->data);
     }
-
 
     /**
      * Deletes an object.
      */
     public function delete() {
-        if( is_array($this->data) == false ) {
-            throw new ModelSaveException("Cannot delete model. Invalid object model.");
+        if(!$this->dbo) {
+            $this->prepareAdapter();
         }
-
-        try {
-            $this->dbo->delete($this->data);
-        }
-        catch(ModelDriverException $e) {
-            throw new ModelDeleteException($e->getMessage());
-        }
+        $this->dbo->delete($this->data);
     }
 
 

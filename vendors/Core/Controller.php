@@ -30,7 +30,7 @@ namespace Core;
 * 
 * @author Galuh Utama
 */
-abstract class Controller {
+abstract class Controller extends ServiceContainer {
     /**
      * Defines which template this controller uses.
      *
@@ -49,7 +49,7 @@ abstract class Controller {
      * Called or requested action.
      *
      * Enter description here ...
-     * @var unknown_type
+     * @var string
      */
     protected $action;
 

@@ -14,8 +14,16 @@ abstract class Adapter {
 
     /**
      * Database object. PDO or PDO compliant.
+     *
+     * @var string
      */
     protected static $dbh;
+
+    /**
+     * Model name
+     *
+     * @var string
+     */
     protected $model;
 
 
@@ -23,7 +31,6 @@ abstract class Adapter {
      * Public constructor.
      */
     public function __construct() {
-        $this->model = get_class($this);
         if(self::$dbh == null) {
             $this->connect();
         }
@@ -67,27 +74,11 @@ abstract class Adapter {
 
 
     /**
-     * Gets executed before inserting new records.
-     *
-     * @abstract
-     */
-    abstract public function beforeCreate();
-
-
-    /**
      * Base for create operation.
      *
      * @abstract
      */
     abstract public function create($data, $options = array());
-
-
-    /**
-     * Gets executed before selecting records.
-     *
-     * @abstract
-     */
-    abstract public function beforeRead();
 
 
     /**
@@ -99,27 +90,11 @@ abstract class Adapter {
 
 
     /**
-     * Gets executed before updating records.
-     *
-     * @abstract
-     */
-    abstract public function beforeUpdate();
-
-
-    /**
      * Base for update operation.
      *
      * @abstract
      */
     abstract public function update($data, $options = array());
-
-
-    /**
-     * Gets executed before deleting records.
-     *
-     * @abstract
-     */
-    abstract public function beforeDelete();
 
 
     /**
@@ -129,6 +104,13 @@ abstract class Adapter {
      */
     abstract public function delete($options = array());
 
+
+    /**
+     * THe destructor disconnects the database handler.
+     */
+    public function __destruct() {
+        $this->disconnect();
+    }
 }
 
 ?>

@@ -53,9 +53,8 @@ class MySQL extends Adapter {
      * Connects to mysql server.
      */
     protected function connect() {
-        $this->beforeConnect();
         try {
-            $this->dbh = new PDO($this->dsn, $this->username, $this->password,
+            self::$dbh = new PDO($this->dsn, $this->username, $this->password,
                 array(PDO::ATTR_PERSISTENT => $this->persistent));
         }
         catch(PDOException $e) {
@@ -65,18 +64,10 @@ class MySQL extends Adapter {
 
 
     /**
-     * Gets executed before connect. In this case, set dsn, username and password
-     * default to standard configuration in database.php.
-     */
-    protected function beforeConnect() {
-    }
-
-
-    /**
      * Disconnects from mysql server.
      */
     protected function disconnect() {
-        $this->dbh = null;
+        self::$dbh = null;
     }
 
 
@@ -182,16 +173,6 @@ class MySQL extends Adapter {
 
 
     /**
-     * Gets executed before inserting new records.
-     *
-     * @param $data
-     * @param $options
-     */
-    public function beforeCreate() {
-    }
-
-
-    /**
      * Creates new records.
      *
      * @param $data
@@ -199,7 +180,6 @@ class MySQL extends Adapter {
      */
     public function create($data, $options = array()) {
         Op::clearBinds();
-        $this->beforeCreate();
 
         // Build query
         $query = self::insertQuery($this->model, $data, $options);
@@ -369,13 +349,6 @@ class MySQL extends Adapter {
 
 
     /**
-     * Gets executed before selecting records.
-     */
-    public function beforeRead() {
-    }
-
-
-    /**
      * Selects records from database.
      *
      * @param $data
@@ -383,7 +356,6 @@ class MySQL extends Adapter {
      */
     public function read($data, $options = array()) {
         Op::clearBinds();
-        $this->beforeRead();
 
         // Build query
         $query = self::selectQuery($this->model, $data, $options);
@@ -478,13 +450,6 @@ class MySQL extends Adapter {
 
 
     /**
-     * Gets executed before updating records.
-     */
-    public function beforeUpdate() {
-    }
-
-
-    /**
      * Updates records.
      *
      * @param $data
@@ -492,7 +457,6 @@ class MySQL extends Adapter {
      */
     public function update($data, $options = array()) {
         Op::clearBinds();
-        $this->beforeUpdate();
 
         // Build query
         $query = self::updateQuery($this->model, $data, $options);
@@ -572,20 +536,12 @@ class MySQL extends Adapter {
 
 
     /**
-     * Gets executed before deleting records.
-     */
-    public function beforeDelete() {
-    }
-
-
-    /**
      * Deletes records from database.
      *
      * @param $options
      */
     public function delete($options = array()) {
         Op::clearBinds();
-        $this->beforeDelete();
 
         // Build query
         $query = self::deleteQuery($this->model, $options);

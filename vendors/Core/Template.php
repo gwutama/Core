@@ -315,8 +315,8 @@ class Template {
      * @param 	TemplateHelper	$helper		The template helper.
      */
     public function registerHelper(TemplateHelper $helper) {
-        $helperName = lcfirst($helper->getName());
-        $this->templateHelpers[$helperName] = $helper;
+        $helperName = "\\Helpers\\".$helper->getName();
+        $this->templateHelpers[lcfirst($helper->getName())] = $helper;
     }
 
 
@@ -358,12 +358,12 @@ class Template {
     private function renderBuffer($tpl, $file, $vars, $type="template") {
         if( !file_exists($file) ) {
             if($type == "template") {
-                throw new TemplateNotFoundException("Template <em>$tpl</em>
-                     not found in <em>views/</em>.");
+                throw new TemplateNotFoundException("Template <em>$tpl</em>".
+                     "not found in <em>views/</em>.");
             }
             elseif($type == "layout") {
-                throw new LayoutNotFoundException("Layout <em>$tpl</em>
-                     not found in <em>views/layouts/</em>.");
+                throw new LayoutNotFoundException("Layout <em>$tpl</em>".
+                     "not found in <em>views/layouts/</em>.");
             }
         }
         extract($vars);

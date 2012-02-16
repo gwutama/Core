@@ -46,13 +46,13 @@ class Route {
             }
 
             if( !method_exists($app, $route->action) ) {
-                throw new ActionNotFoundException("Action <em>$action</em>
-                not found in class <em>$controller</em>.");
+                throw new ActionNotFoundException("Action <em>$action</em>".
+                    "not found in class <em>$controller</em>.");
             }
         }
         catch(\FileNotFoundException $e) {
-            throw new ControllerNotFoundException("Controller file
-                <em>$controllerClass</em> not found in <em>Controllers/</em>.");
+            throw new ControllerNotFoundException("Controller file".
+                "<em>$controllerClass</em> not found in <em>Controllers/</em>.");
         }
 
         // Initialize template object.
