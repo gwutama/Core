@@ -16,6 +16,12 @@ define("RELATIVE_URL", str_replace("/webroot/index.php", "", $_SERVER['PHP_SELF'
 class Core {
 
     /**
+     * Actual version
+     */
+    const version = "0.1";
+
+
+    /**
      * Initialize the whole application.
      *
      * @static
@@ -50,11 +56,7 @@ class Core {
                 $routingObject = $routeParser->parse($url);
             }
 
-            Route::dispatch($routingObject, array(
-                "views.directory" => "../views/",
-                "views.fallbackDirectory" => "../../vendors/app/views/",
-                "helpers.directory" => "../libs/Helpers/"
-            ));
+            Route::dispatch($routingObject);
         }
         catch(Exception $e) {
             $e->render();

@@ -28,7 +28,7 @@ class Route {
      * @param $route A routing object containing routing information.
      * @throws ActionNotFoundException
      */
-    public static function dispatch(RoutingObject $route, $options = array()) {
+    public static function dispatch(RoutingObject $route) {
         // Assuming the class exists. Build an instance of this controller.
         // Then try to call the action method of this controller.
         // In any case of exceptions, render the user friendly error
@@ -40,12 +40,7 @@ class Route {
             $controllerClass = "\\Controllers\\".$controller;
             $app = new $controllerClass($controller, $action);
 
-            if( !class_exists($controllerClass) ) {
-                throw new ControllerNotFoundException("Controller class
-                    <em>$controllerClass</em> not found in <em>Controllers/</em>.");
-            }
-
-            if( !method_exists($app, $route->action) ) {
+            if( !method_exists($app, $action) ) {
                 throw new ActionNotFoundException("Action <em>$action</em>".
                     "not found in class <em>$controller</em>.");
             }
@@ -56,26 +51,18 @@ class Route {
         }
 
         // Initialize template object.
-        $template = new Template($controller, $action,
-            $options["views.directory"].$app->getTheme()."/",
-            $options["views.fallbackDirectory"].$app->getTheme()."/");
+        $app->register("Template", array(
+            "controller" => $controller,
+            "action" => $action,
+            "baseDir" => "../views/".$app->getTheme()."/",
+            "overrideBaseDir" => "../../vendors/app/views/".$app->getTheme()."/",
+            "helpers" => $app->getTemplateHelpers()
+        ));
 
-        // Loads and registers each template helpers. Throws exception
-        // if helper cannot be found. Helper's file name should be
-        // somewhat like "TemplateHelper" and should reside in libs/.
-        foreach( (array) $app->getTemplateHelpers() as $helper) {
-            $file = $options["helpers.directory"].$helper.".php";
-            try {
-                $helperObject = new $helper();
-                $template->registerHelper($helperObject);
-            }
-            catch(\FileNotFoundException $e) {
-                throw new TemplateHelperNotFoundException("Template helper
-                    <em>$helper</em> not found in <em>libs/</em>.");
-            }
+        // Register model objects
+        foreach($app->getModels() as $model) {
+            $app->register("\\Models\\".$model, array(), $model);
         }
-
-        $app->setTemplate($template);
 
         // Finally, excute the action and render the template to be echoed by index.php.
         try {

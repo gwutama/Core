@@ -31,7 +31,7 @@ class MySQL extends Adapter {
     /**
      * Persistent connection. Boolean.
      */
-    protected $persistent = false;
+    protected $persistent;
 
 
     /**
@@ -40,7 +40,7 @@ class MySQL extends Adapter {
      * @param $password
      * @param $persistent
      */
-    public function __construct($dsn, $username, $password, $persistent) {
+    public function __construct($dsn, $username, $password, $persistent = false) {
         $this->dsn = $dsn;
         $this->username = $username;
         $this->password = $password;

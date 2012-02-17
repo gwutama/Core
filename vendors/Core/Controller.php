@@ -77,6 +77,14 @@ abstract class Controller extends ServiceContainer {
     protected $theme = "default";
 
     /**
+     * List of model classes to be loaded.
+     *
+     * @var array
+     */
+    protected $models = array();
+
+
+    /**
      * Sets the member values and template object.
      *
      * @param string $name		The name of this controller.
@@ -99,8 +107,8 @@ abstract class Controller extends ServiceContainer {
     }
 
 
-    public function setTemplate(Template $template) {
-        $this->template = $template;
+    public function getModels() {
+        return $this->models;
     }
 
 

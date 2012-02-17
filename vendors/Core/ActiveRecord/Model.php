@@ -13,7 +13,7 @@ use \Core\ActiveRecordAdapterNotFoundException;
  * Active Record pattern, or at least mimics it.
  * </p>
  */
-abstract class Model extends ServiceContainer {
+abstract class Model {
 
     /**
      * Database configuration from database.yml
@@ -74,23 +74,14 @@ abstract class Model extends ServiceContainer {
 
 
     /**
-     *
-     */
-    public function __construct() {
-        // @todo: Register all configured adapters as services
-    }
-
-
-    /**
      * Sets the driver DBO object.
      */
-    public function prepareAdapter() {
-        if($this->hasService($this->adapter)) {
-            $adapter = $this->getService($this->adapter);
+    public function setAdapter(Adapter $adapter) {
+        try {
             $this->dbo = $adapter;
             $this->dbo->setModel(get_class($this));
         }
-        else {
+        catch(\Core\Exception $e) {
             throw new ActiveRecordAdapterNotFoundException("Adapter not found: $this->adapter.");
         }
     }
@@ -189,9 +180,6 @@ abstract class Model extends ServiceContainer {
      * @param array $options
      */
     public function findById($pos, $options = array()) {
-        if(!$this->dbo) {
-            $this->prepareAdapter();
-        }
         $this->data = $this->dbo->findById($pos, $options);
         return $this;
     }
@@ -203,9 +191,6 @@ abstract class Model extends ServiceContainer {
      * @param array $options
      */
     public function findAll($options = array()) {
-        if(!$this->dbo) {
-            $this->prepareAdapter();
-        }
         $this->data = $this->dbo->findAll($options); // returns array of model objects
         return $this;
     }
@@ -217,9 +202,6 @@ abstract class Model extends ServiceContainer {
      * @param array $options
      */
     public function findFirst($options = array()) {
-        if(!$this->dbo) {
-            $this->prepareAdapter();
-        }
         $this->data = $this->dbo->findFirst($options);
         return $this;
     }
@@ -231,9 +213,6 @@ abstract class Model extends ServiceContainer {
      * @param array $options
      */
     public function findLast($options = array()) {
-        if(!$this->dbo) {
-            $this->prepareAdapter();
-        }
         $this->data = $this->dbo->findLast($options);
         return $this;
     }
@@ -245,9 +224,6 @@ abstract class Model extends ServiceContainer {
      * @param array $options
      */
     public function findOne($options = array()) {
-        if(!$this->dbo) {
-            $this->prepareAdapter();
-        }
         $this->data = $this->dbo->findOne($options);
         return $this;
     }
@@ -257,9 +233,6 @@ abstract class Model extends ServiceContainer {
      * Saves an object.
      */
     public function save() {
-        if(!$this->dbo) {
-            $this->prepareAdapter();
-        }
         $this->dbo->save($this->data);
     }
 
@@ -267,9 +240,6 @@ abstract class Model extends ServiceContainer {
      * Deletes an object.
      */
     public function delete() {
-        if(!$this->dbo) {
-            $this->prepareAdapter();
-        }
         $this->dbo->delete($this->data);
     }
 

@@ -92,7 +92,7 @@ class Template {
      * @see Core_Template::registerHelper()
      * @var array
      */
-    private $templateHelpers = array("HtmlHelper");
+    private $helpers = array();
 
     /**
      * <p>Defines the layout used for this template. A layout is in essence
@@ -187,12 +187,13 @@ class Template {
      * @param 	string 		$action			The action name.
      * @param 	string 		$baseDir		The base directory for views.
      */
-    public function __construct($controller, $action, $baseDir, $overrideBaseDir = "") {
+    public function __construct($controller, $action, $baseDir, $overrideBaseDir = "", $helpers = array("Html")) {
         $this->controller = $controller;
         $this->action = $action;
         $this->baseDir = $baseDir;
         $this->overrideBaseDir = $overrideBaseDir;
         $this->title = "SSF &gt; $controller &gt; ".ucfirst($action);
+        $this->registerHelpers($helpers);
     }
 
 
@@ -316,7 +317,21 @@ class Template {
      */
     public function registerHelper(TemplateHelper $helper) {
         $helperName = "\\Helpers\\".$helper->getName();
-        $this->templateHelpers[lcfirst($helper->getName())] = $helper;
+        $this->helpers[lcfirst($helper->getName())] = $helper;
+    }
+
+
+    /**
+     * Register all template helpers.
+     *
+     * @param   $helpers Array
+     */
+    public function registerHelpers($helpers) {
+        foreach($helpers as $helper) {
+            $helper = "\\Helpers\\$helper";
+            $helperObject = new $helper;
+            $this->registerHelper($helperObject);
+        }
     }
 
 
@@ -328,7 +343,7 @@ class Template {
      * @return	mixed
      */
     public function __get($var) {
-        return $this->templateHelpers[$var];
+        return $this->helpers[$var];
     }
 
 
