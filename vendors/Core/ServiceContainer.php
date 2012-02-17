@@ -12,12 +12,17 @@ namespace Core;
 class ServiceContainer implements \Iterator {
 
     /**
+     * Container for all registered services.
+     *
      * @var array
      */
     protected $services = array();
 
 
     /**
+     * The constructor sets services if an array of services
+     * is passed to the constructor.
+     *
      * @param array $services
      */
     public function __construct($services = array()) {
@@ -26,7 +31,7 @@ class ServiceContainer implements \Iterator {
 
 
     /**
-     *
+     * Iterator rewind().
      */
     public function rewind() {
         reset($this->services);
@@ -34,6 +39,8 @@ class ServiceContainer implements \Iterator {
 
 
     /**
+     * Iterator current().
+     *
      * @return mixed
      */
     public function current() {
@@ -42,6 +49,8 @@ class ServiceContainer implements \Iterator {
 
 
     /**
+     * Iterator next().
+     *
      * @return mixed
      */
     public function next() {
@@ -50,6 +59,8 @@ class ServiceContainer implements \Iterator {
 
 
     /**
+     * Iterator key().
+     *
      * @return mixed
      */
     public function key() {
@@ -58,6 +69,8 @@ class ServiceContainer implements \Iterator {
 
 
     /**
+     * Iterator valid().
+     *
      * @return bool
      */
     public function valid() {
@@ -67,6 +80,8 @@ class ServiceContainer implements \Iterator {
 
 
     /**
+     * Checks whether a service is available or registered.
+     *
      * @param $name
      * @return bool
      */
@@ -76,6 +91,8 @@ class ServiceContainer implements \Iterator {
 
 
     /**
+     * Returns an instance of the service.
+     *
      * @param $name
      * @return null
      */
@@ -84,36 +101,66 @@ class ServiceContainer implements \Iterator {
             $service = $this->services[$name];
             return $service->getInstance();
         }
-        return null;
+        throw new ServiceNotAvailableException("Service not available or not registered: ".$name.".");
     }
 
 
     /**
+     * Registers a service. Alias can be used to prevent namespace problems.
+     *
      * @param $name
      * @param array $options
+     * @param $alias
      */
-    public function register($name, $options = array()) {
-        $this->services[$name] = new Service($name, $options);
+    public function register($name, $options = array(), $alias = null) {
+        if($name && $alias) {
+            $this->services[$alias] = new Service($name, $options);
+        }
+        elseif($name && !$alias) {
+            $this->services[$name] = new Service($name, $options);
+        }
     }
 
 
     /**
+     * Clear services.
+     */
+    public function clear() {
+        $this->services = array();
+    }
+
+
+    /**
+     * Returns the number of registered services.
+     *
+     * @return int
+     */
+    public function count() {
+        return count($this->services);
+    }
+
+
+    /**
+     * Returns a service with an attribute call.
+     *
+     * @param $name
+     */
+    public function __get($name) {
+        return $this->getService($name);
+    }
+
+
+    /**
+     * Returns a service with a method call
+     *
      * @param $name
      * @param array $args
      */
     public function __call($name, $args = array()) {
-        if($match = preg_match("/get([\w]+)Service/", $name)) {
-            return $this->getService($match[1]);
+        if(preg_match("/get([\w]+)Service/", $name, $matches)) {
+            return $this->getService($matches[1]);
         }
         return null;
-    }
-
-
-    /**
-     * @param $service
-     */
-    public function __get($service) {
-        return $this->getService($service);
     }
 }
 

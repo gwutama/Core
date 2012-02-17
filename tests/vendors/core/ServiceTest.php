@@ -2,22 +2,23 @@
 
 namespace Core;
 
-class Mock {
-    public $param1;
-    public $param2;
-    public $param3;
-}
-
-class Mock2 extends Mock {
-    public function __construct($param1, $param2, $param3) {
-        $this->param1 = $param1;
-        $this->param2 = $param2;
-        $this->param3 = $param3;
+if(!class_exists("\\Core\\Mock") && !class_exists("\\Core\\Mock2") && !class_exists("\\Core\\Mock3")) {
+    class Mock {
+        public $param1;
+        public $param2;
+        public $param3;
     }
+
+    class Mock2 extends Mock {
+        public function __construct($param1, $param2, $param3) {
+            $this->param1 = $param1;
+            $this->param2 = $param2;
+            $this->param3 = $param3;
+        }
+    }
+
+    class Mock3 extends Mock2 {}
 }
-
-class Mock3 extends Mock2 {}
-
 
 require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\Service.php';
 

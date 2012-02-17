@@ -93,9 +93,16 @@ class ActiveRecordOperatorException extends Exception {}
  */
 class FileNotFoundException extends Exception {}
 
+
 /**
  * Gets thrown when service instance can't be created.
  */
 class CannotCreateServiceException extends Exception {}
+
+
+/**
+ * Gets thrown when service is not available or not registered.
+ */
+class ServiceNotAvailableException extends Exception {}
 
 ?>
