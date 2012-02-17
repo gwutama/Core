@@ -8,8 +8,6 @@ namespace Core;
  * <p>
  * This class represents a dependency container of the dependency injection pattern.
  * </p>
- *
- * @todo: Non-singleton services
  */
 class ServiceContainer implements \Iterator {
 
@@ -83,7 +81,8 @@ class ServiceContainer implements \Iterator {
      */
     public function getService($name) {
         if($this->hasService($name)) {
-            return $this->services[$name];
+            $service = $this->services[$name];
+            return $service->getInstance();
         }
         return null;
     }

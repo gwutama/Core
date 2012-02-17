@@ -2,66 +2,107 @@
 
 namespace Core;
 
+/**
+ * <h1>Class Service</h1>
+ *
+ * <p>
+ * This class represents a service of a dependency injection pattern.
+ * </p>
+ */
 class Service {
 
     /**
+     * For singleton object.
+     *
      * @var
      */
-    private $instance;
+    private static $instance;
 
     /**
+     * Service name.
+     *
      * @var
      */
     private $name;
 
     /**
+     * Options.
+     *
      * @var
      */
     private $options;
 
 
     /**
-     * @param $isSingleton
+     * Whether this service is singleton or not.
+     *
+     * @var bool
+     */
+    private $isSingleton = false;
+
+
+    /**
+     * The consturctor sets the service name, options
+     * and whether this service implements singleton pattern.
+     *
+     * @param $name
+     * @param array $options
      */
     public function __construct($name, $options = array()) {
         $this->name = $name;
         $this->options = $options;
-        $this->setInstance();
+
+        if(isset($options["isSingleton"]) && $options["isSingleton"] == true) {
+            $this->isSingleton = true;
+        }
     }
 
 
     /**
-     * Sets the object instance.
+     * Creates a new object.
+     *
+     * @return object
      */
-    private function setInstance() {
-        $class = new ReflectionClass($this->name);
+    private function createInstance() {
+        $class = new \ReflectionClass($this->name);
         $constructor = $class->getConstructor();
-        $parameters = $constructor->getParameters();
-        var_export($parameters);
-
         $objParams = array();
 
-        foreach($parameters as $param) {
-            $name = $param->name;
-            if($param->isDefaultValueAvailable() && !isset($this->options[$name])) {
-                $objParams[$name] = $param->getDefaultValue();
-            }
-            else {
-                $objParams[$name] = $this->options[$name];
+        // Build constructor parameters
+        if($constructor) {
+            $parameters = $constructor->getParameters();
+            foreach($parameters as $param) {
+                $name = $param->name;
+                if($param->isDefaultValueAvailable() && !isset($this->options[$name])) {
+                    $objParams[$name] = $param->getDefaultValue();
+                }
+                else {
+                    $objParams[$name] = $this->options[$name];
+                }
             }
         }
 
-        $this->instance = $class->newInstanceArgs($objParams);
+        return $class->newInstanceArgs($objParams);
     }
 
 
     /**
-     * Returns the instance.
-     *
-     * @return mixed
+     * Gets the object instance.
      */
     public function getInstance() {
-        return $this->instance;
+        if($this->isSingleton == true) {
+            if(self::$instance == null) {
+                self::$instance = $this->createInstance();
+            }
+            return self::$instance;
+        }
+
+        try {
+            return $this->createInstance();
+        }
+        catch(\ReflectionException $e) {
+            throw new CannotCreateServiceException("Error creating instance: ".$this->name.". Class exists?");
+        }
     }
 
 }

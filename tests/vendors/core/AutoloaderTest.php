@@ -23,6 +23,12 @@ class AutoloaderTest extends PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->object = new Autoloader;
+        $this->object->register("app/");
+        $this->object->register("vendors/");
+        $this->object->register("libs/");
+        $this->object->register("models/");
+        $this->object->register("foobar/");
+        $this->object->register("acme/");
     }
 
     /**
@@ -31,16 +37,11 @@ class AutoloaderTest extends PHPUnit_Framework_TestCase
      */
     protected function tearDown()
     {
+        $this->object->unregister();
     }
 
     public function testRegister()
     {
-        $this->object->register("app/");
-        $this->object->register("vendors/");
-        $this->object->register("libs/");
-        $this->object->register("models/");
-        $this->object->register("foobar/");
-        $this->object->register("acme/");
         $this->assertEquals(array("app/", "vendors/", "libs/", "models/", "foobar/", "acme/"),
             $this->object->getDirs());
     }

@@ -27,6 +27,22 @@ class Autoloader {
 
 
     /**
+     * Unregister autoloader function
+     */
+    public function unregister() {
+        spl_autoload_unregister(array($this, "loader"));
+    }
+
+
+    /**
+     * Unregister autoloader function. Will be automoatically called.
+     */
+    public function __destruct() {
+        $this->unregister();
+    }
+
+
+    /**
      * Registers a directory.
      *
      * @param $dir  Path to directory.
