@@ -128,5 +128,13 @@ class ServiceContainerTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($this->object->getMockService() instanceof Mock);
         $this->assertTrue($this->object->getMock2Service() instanceof Mock2);
     }
+
+
+    public function testIterator()
+    {
+        foreach($this->object as $service) {
+            $this->assertNotNull($service->getName());
+        }
+    }
 }
 ?>

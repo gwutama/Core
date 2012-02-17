@@ -105,6 +105,15 @@ class Service {
         }
     }
 
+
+    /**
+     * Returns the service name.
+     *
+     * @return string
+     */
+    public function getName() {
+        return $this->name;
+    }
 }
 
 ?>
