@@ -1,12 +1,20 @@
 database:
-	MySQL:
+	default:
 		production:
 			dsn: mysql:host=localhost;dbname=production
 			username: root
 			password:
 			persistent: false
+			adapter: MySQL
 		debug:
 			dsn: mysql:host=localhost;dbname=debug
 			username: root
 			password:
 			persistent: false
+			adapter: MySQL
+	mongo:
+	another:
+		production:
+			dsn: foo
+		debug:
+			dsn: foo

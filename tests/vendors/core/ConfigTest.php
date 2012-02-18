@@ -1,11 +1,13 @@
 <?php
 
 require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\Config.php';
+require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\Spyc.php';
 require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\ConfigNode.php';
 require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\exceptions.php';
 
 use Core\Config;
 use Core\ConfigNode;
+use Core\Spyc;
 use Core\InvalidConfigKeyException;
 
 
@@ -48,8 +50,6 @@ class ConfigTest extends PHPUnit_Framework_TestCase
         Config::set("long.long2.long3", "hello");
         Config::set("long.long2", "hello2");
         Config::set("long", "hello3");
-        Config::set("null.value", null);
-        Config::set("null", null);
     }
 
     public function testGet()
@@ -189,6 +189,78 @@ class ConfigTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(array(1, "bar", "baz"), Config::get("foo"));
         $this->assertEquals("world", Config::get("hello"));
         $this->assertEquals(array("foo", "bar", "baz"), Config::get("test"));
+        Config::clear();
+    }
+
+    public function testSetArray3()
+    {
+        $config = Spyc::YAMLLoad("tests/resources/database.yml");
+        Config::setArray($config);
+
+        $this->assertEquals("mysql:host=localhost;dbname=production", Config::get("database.default.production.dsn"));
+        $this->assertEquals("root", Config::get("database.default.production.username"));
+        $this->assertEquals("", Config::get("database.default.production.password"));
+        $this->assertEquals("MySQL", Config::get("database.default.production.adapter"));
+        $this->assertFalse(Config::get("database.default.production.persistent"));
+
+        $this->assertEquals("mysql:host=localhost;dbname=debug", Config::get("database.default.debug.dsn"));
+        $this->assertEquals("root", Config::get("database.default.debug.username"));
+        $this->assertEquals("", Config::get("database.default.debug.password"));
+        $this->assertEquals("MySQL", Config::get("database.default.debug.adapter"));
+        $this->assertFalse(Config::get("database.default.debug.persistent"));
+
+        $profiles = Config::get("database");
+        $this->assertEquals(3, count($profiles));
+
+        $tmp = array();
+        foreach($profiles as $profile) {
+            $tmp[] = $profile;
+        }
+
+        $this->assertEquals("default", $tmp[0]->getKey());
+        $this->assertEquals("mongo", $tmp[1]->getKey());
+        $this->assertEquals("another", $tmp[2]->getKey());
+
+        Config::clear();
+    }
+
+    public function testSetArray4()
+    {
+        $config = Spyc::YAMLLoad("tests/resources/database.yml");
+        Config::setArray($config);
+
+        $database = Config::get("database");
+
+        $this->assertEquals("mysql:host=localhost;dbname=production",
+            $database["default"]->getChild("production")->getChild("dsn")->getValue());
+
+        $this->assertEquals("root",
+            $database["default"]->getChild("production")->getChild("username")->getValue());
+
+        $this->assertEquals("",
+            $database["default"]->getChild("production")->getChild("password")->getValue());
+
+        $this->assertFalse(
+            $database["default"]->getChild("production")->getChild("persistent")->getValue());
+
+        $this->assertEquals("MySQL",
+            $database["default"]->getChild("production")->getChild("adapter")->getValue());
+
+        $this->assertEquals("mysql:host=localhost;dbname=debug",
+            $database["default"]->getChild("debug")->getChild("dsn")->getValue());
+
+        $this->assertEquals("root",
+            $database["default"]->getChild("debug")->getChild("username")->getValue());
+
+        $this->assertEquals("",
+            $database["default"]->getChild("debug")->getChild("password")->getValue());
+
+        $this->assertFalse(
+            $database["default"]->getChild("debug")->getChild("persistent")->getValue());
+
+        $this->assertEquals("MySQL",
+            $database["default"]->getChild("debug")->getChild("adapter")->getValue());
+
         Config::clear();
     }
 

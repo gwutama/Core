@@ -59,9 +59,23 @@ class Route {
             "helpers" => $app->getTemplateHelpers()
         ));
 
+        // Register adapter services
+        $app->register("\\Core\\ActiveRecord\\Adapter\\MySQL", array(
+            "dsn" => "",
+            "username" => "",
+            "password" => "",
+            "persistent" => ""
+        ));
+
         // Register model objects
         foreach($app->getModels() as $model) {
-            $app->register("\\Models\\".$model, array(), $model);
+            $class = new \ReflectionClass("\\Models\\$model");
+            $properties = $class->getDefaultProperties();
+            $adapterName = $properties["adapter"];
+
+            $app->register("\\Models\\".$model, array(
+                "dbo" => $app->getService("\\Core\\ActiveRecord\\Adapter\\".$adapterName)
+            ), $model);
         }
 
         // Finally, excute the action and render the template to be echoed by index.php.

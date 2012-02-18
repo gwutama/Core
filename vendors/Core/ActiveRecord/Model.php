@@ -16,7 +16,7 @@ use \Core\ActiveRecordAdapterNotFoundException;
 abstract class Model {
 
     /**
-     * Database configuration from database.yml
+     * Database configuration name from database.yml
      *
      * @var string
      */
@@ -76,14 +76,9 @@ abstract class Model {
     /**
      * Sets the driver DBO object.
      */
-    public function setAdapter(Adapter $adapter) {
-        try {
-            $this->dbo = $adapter;
-            $this->dbo->setModel(get_class($this));
-        }
-        catch(\Core\Exception $e) {
-            throw new ActiveRecordAdapterNotFoundException("Adapter not found: $this->adapter.");
-        }
+    public function __construct(Adapter $dbo) {
+        $this->dbo = $dbo;
+        $this->dbo->setModel(get_class($this));
     }
 
 

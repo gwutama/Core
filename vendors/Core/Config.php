@@ -73,6 +73,13 @@ class Config {
             throw new InvalidConfigKeyException($key);
         }
 
+        // Skip keys with null values but process boolean values.
+        /*
+        if($value == null && !is_bool($value)) {
+            return;
+        }
+        */
+
         $config =& self::$configs;
 
         $tokens = explode(".", $key);
@@ -81,18 +88,18 @@ class Config {
             if(@$config[$tokens[$i]] instanceof ConfigNode == false) {
                 $config[$tokens[$i]] = new ConfigNode($tokens[$i]);
             }
-            $config = &$config[$tokens[$i]]->children;
+            $config = &$config[$tokens[$i]]->getChildren();
         }
 
         if(@$config[$tokens[$i]] instanceof ConfigNode) {
-            $children = $config[$tokens[$i]]->children;
+            $children = $config[$tokens[$i]]->getChildren();
         }
         else {
             $children = array();
         }
 
         $config[$tokens[$i]] = new ConfigNode($tokens[$i], $value);
-        $config[$tokens[$i]]->children = $children;
+        $config[$tokens[$i]]->setChildren($children);
     }
 
 
@@ -122,11 +129,14 @@ class Config {
                 return null;
             }
 
-            $value = $config[$tokens[$i]]->value;
-            $config = &$config[$tokens[$i]]->children;
+            $value = $config[$tokens[$i]]->getValue();
+            $config = &$config[$tokens[$i]]->getChildren();
         }
 
-        return $value;
+        if($value || count($config) == 0) {
+            return $value;
+        }
+        return $config;
     }
 
 
