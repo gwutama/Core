@@ -72,6 +72,13 @@ abstract class Model {
      */
     protected $data;
 
+    /**
+     * Model profile. Defaults to "default".
+     *
+     * @var string
+     */
+    protected $databaseProfile = "default";
+
 
     /**
      * Sets the driver DBO object.

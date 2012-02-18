@@ -2,6 +2,9 @@
 
 namespace Core;
 
+// Include exceptions
+include "../../vendors/core/exceptions.php";
+
 // Standard constant definitions
 define("DS", DIRECTORY_SEPARATOR);
 define("RELATIVE_URL", str_replace("/webroot/index.php", "", $_SERVER['PHP_SELF']));
@@ -27,12 +30,10 @@ class Core {
      * @static
      */
     public static function init() {
-        // Include exceptions and config class
-        include "../../vendors/core/exceptions.php";
-
         // Registers autoloaded directories
         $autoload = new Autoloader();
         $autoload->register("../../vendors/");
+        $autoload->register("../../vendors/app/");
         $autoload->register("../");
         $autoload->register("../libs/");
 
@@ -43,6 +44,10 @@ class Core {
         Config::setArray($config);
         $config = Spyc::YAMLLoad("../../configs/routes.yml");
         Config::setArray($config, true);
+
+        // Set configs for template paths
+        Config::set("global.template.baseDir", "../views/");
+        Config::set("global.template.overrideBaseDir", "../../vendors/app/views/");
 
         // Run application
         try {

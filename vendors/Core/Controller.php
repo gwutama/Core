@@ -83,7 +83,6 @@ abstract class Controller extends ServiceContainer {
      */
     protected $models = array();
 
-
     /**
      * Sets the member values and template object.
      *
@@ -128,6 +127,10 @@ abstract class Controller extends ServiceContainer {
      * @see Core_Controller::template
      */
     public function set($var, $value) {
+        if(!$this->template) {
+            $this->template = $this->getService("\\Core\\Template");
+        }
+
         $this->template->$var = $value;
     }
 
@@ -141,6 +144,10 @@ abstract class Controller extends ServiceContainer {
      * @return mixed
      */
     public function get($var) {
+        if(!$this->template) {
+            $this->template = $this->getService("\\Core\\Template");
+        }
+
         return $this->template->$var;
     }
 
@@ -163,8 +170,11 @@ abstract class Controller extends ServiceContainer {
      * @see Core_Controller::setOutput()
      */
     public function renderTemplate() {
+        if(!$this->template) {
+            $this->template = $this->getService("\\Core\\Template");
+        }
+
         if($this->output == "html") {
-            // render file /views/theme/controller/action.tpl
             $tpl = strtolower($this->name.DS.$this->action);
             echo $this->template->render($tpl);
         }

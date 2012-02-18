@@ -4,8 +4,6 @@ namespace Models;
 use \Core\ActiveRecord\Operator\MySQL as Op;
 
 class Test extends \Core\ActiveRecord\Model {
-    protected $adapter = "MySQL";
-
     protected $hasOne = array(
         "Lorem",
         array(

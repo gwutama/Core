@@ -54,7 +54,7 @@ class MySQL extends Adapter {
      */
     protected function connect() {
         try {
-            self::$dbh = new PDO($this->dsn, $this->username, $this->password,
+            self::$dbh = @new PDO($this->dsn, $this->username, $this->password,
                 array(PDO::ATTR_PERSISTENT => $this->persistent));
         }
         catch(PDOException $e) {

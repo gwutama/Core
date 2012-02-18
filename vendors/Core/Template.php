@@ -374,11 +374,11 @@ class Template {
         if( !file_exists($file) ) {
             if($type == "template") {
                 throw new TemplateNotFoundException("Template <em>$tpl</em>".
-                     "not found in <em>views/</em>.");
+                     " not found in <em>views/</em>.");
             }
             elseif($type == "layout") {
                 throw new LayoutNotFoundException("Layout <em>$tpl</em>".
-                     "not found in <em>views/layouts/</em>.");
+                     " not found in <em>views/layouts/</em>.");
             }
         }
         extract($vars);

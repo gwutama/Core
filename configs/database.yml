@@ -1,12 +1,14 @@
 database:
-	MySQL:
+	default:
 		production:
-			dsn: mysql:host=localhost;dbname=production
+			dsn: mysql:host=localhost;dbname=test
 			username: root
-			password:
+			password: gwutama
 			persistent: false
+			adapter: MySQL
 		debug:
-			dsn: mysql:host=localhost;dbname=debug
+			dsn: mysql:host=localhost;dbname=test
 			username: root
-			password:
+			password: gwutama
 			persistent: false
+			adapter: MySQL

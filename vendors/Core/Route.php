@@ -50,38 +50,55 @@ class Route {
                 "<em>$controllerClass</em> not found in <em>Controllers/</em>.");
         }
 
-        // Initialize template object.
-        $app->register("Template", array(
+        // Register template object.
+        $app->register("\\Core\\Template", array(
             "controller" => $controller,
             "action" => $action,
-            "baseDir" => "../views/".$app->getTheme()."/",
-            "overrideBaseDir" => "../../vendors/app/views/".$app->getTheme()."/",
+            "baseDir" => Config::get("global.template.baseDir").$app->getTheme()."/",
+            "overrideBaseDir" => Config::get("global.template.overrideBaseDir").$app->getTheme()."/",
             "helpers" => $app->getTemplateHelpers()
         ));
 
-        // Register adapter services
-        $app->register("\\Core\\ActiveRecord\\Adapter\\MySQL", array(
-            "dsn" => "",
-            "username" => "",
-            "password" => "",
-            "persistent" => ""
-        ));
+        // Register adapter services from database.yml
+        $databaseProfiles = Config::get("database");
+        foreach($databaseProfiles as $profile) {
+            $profileName = "modelProfile.".$profile->getKey();
+
+            // production or debug?
+            if(Config::get("global.debug")) {
+                $profileCfg = $profile->getChild("debug")->getChildren();
+            }
+            else {
+                $profileCfg = $profile->getChild("production")->getChildren();
+            }
+
+            $config = array();
+            foreach($profileCfg as $cfg) {
+                $config[$cfg->getKey()] = $cfg->getValue();
+            }
+
+            $app->register("\\Core\\ActiveRecord\\Adapter\\".$config["adapter"],
+                $config, $profileName);
+        }
 
         // Register model objects
         foreach($app->getModels() as $model) {
             $class = new \ReflectionClass("\\Models\\$model");
             $properties = $class->getDefaultProperties();
-            $adapterName = $properties["adapter"];
 
-            $app->register("\\Models\\".$model, array(
-                "dbo" => $app->getService("\\Core\\ActiveRecord\\Adapter\\".$adapterName)
-            ), $model);
+            $databaseProfile = "modelProfile.".$properties["databaseProfile"];
+
+            if($app->hasService($databaseProfile)) {
+                $app->register("\\Models\\".$model, array(
+                    "dbo" => $app->getService($databaseProfile)
+                ));
+            }
         }
 
         // Finally, excute the action and render the template to be echoed by index.php.
         try {
             $app->renderTemplate();
-            $app->$action();
+            $app->$action(new Request);
         }
         catch(CoreException $e) {
             $e->render();

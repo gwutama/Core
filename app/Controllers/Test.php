@@ -2,9 +2,9 @@
 
 namespace Controllers;
 
-class Home extends \Core\Controller {
+class Test extends \Core\Controller {
 
-    protected $models = array("Test", "Foo", "Bar");
+    protected $models = array("Test");
     protected $templateHelpers = array("Html");
 
 }
