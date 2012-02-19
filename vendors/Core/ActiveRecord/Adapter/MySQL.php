@@ -4,7 +4,7 @@ namespace Core\ActiveRecord\Adapter;
 
 use \Core\ActiveRecord\Adapter;
 use \Core\ActiveRecord\Operator\MySQL as Op;
-use \Core\Config;
+use \Core\ActiveRecord\ModelCollection;
 use \Core\ActiveRecordAdapterConnectionException;
 use \Core\ActiveRecordQueryException;
 use \Core\Inflector;
@@ -52,10 +52,13 @@ class MySQL extends Adapter {
     /**
      * Connects to mysql server.
      */
-    protected function connect() {
+    public function connect() {
         try {
-            self::$dbh = @new PDO($this->dsn, $this->username, $this->password,
-                array(PDO::ATTR_PERSISTENT => $this->persistent));
+            // Allow only one instance
+            if(self::$dbh == null) {
+                self::$dbh = @new PDO($this->dsn, $this->username, $this->password,
+                    array(PDO::ATTR_PERSISTENT => $this->persistent));
+            }
         }
         catch(PDOException $e) {
             throw new ActiveRecordAdapterConnectionException("Cannot connect to MySQL server.");
@@ -66,8 +69,88 @@ class MySQL extends Adapter {
     /**
      * Disconnects from mysql server.
      */
-    protected function disconnect() {
+    public function disconnect() {
         self::$dbh = null;
+    }
+
+
+    /**
+     * @param $statement
+     * @return mixed
+     */
+    public function query($statement) {
+        return self::$dbh->query($statement);
+    }
+
+
+    /**
+     * @param $statement
+     */
+    public function execute($statement) {
+        self::$dbh->exec($statement);
+    }
+
+
+    /**
+     * @param $primaryKey
+     * @param $pos
+     * @return mixed
+     */
+    public function findById($primaryKey, $pos) {
+        $objects = $this->read(array(
+            "conditions" => Op::eq($primaryKey, $pos)
+        ));
+        return $objects[0];
+    }
+
+
+    /**
+     * @return mixed
+     */
+    public function findAll($primaryKey) {
+        return new ModelCollection($this, $primaryKey, $this->read());
+    }
+
+
+    /**
+     * @param $primaryKey
+     * @param array $options
+     * @return mixed
+     */
+    public function findFirst($primaryKey, $options = array()) {
+        $objects = $this->read(array(
+            "conditions" => @$options["conditions"],
+            "limit" => 1,
+            "order" => "`$primaryKey` ASC"
+        ));
+        return $objects[0];
+    }
+
+
+    /**
+     * @param $primaryKey
+     * @param array $options
+     * @return mixed
+     */
+    public function findLast($primaryKey, $options = array()) {
+        $objects = $this->read(array(
+            "conditions" => @$options["conditions"],
+            "limit" => 1,
+            "order" => "`$primaryKey` DESC"
+        ));
+        return $objects[0];
+    }
+
+
+    /**
+     * @param array $options
+     */
+    public function findOne($options = array()) {
+        $objects = $this->read(array(
+            "conditions" => @$options["conditions"],
+            "limit" => 1
+        ));
+        return $objects[0];
     }
 
 
@@ -103,7 +186,7 @@ class MySQL extends Adapter {
      * @param $options  Options. See example above.
      * @return string   SQL Query (prepared statement).
      */
-    public static function insertQuery($model, $data, $options = array()) {
+    public static function insertQuery($model, $data = array(), $options = array()) {
         // Set $data to prepared statement bind variables
         Op::setBinds($data);
 
@@ -128,17 +211,25 @@ class MySQL extends Adapter {
         }
 
         // Pluralize model name
+        // Due to the nature of namespace and get_class() function,
+        // get_class() function returns for example Models\Modelname
+        // Replace Core\ActiveRecord\ with nothing.
+        $model = str_replace("Models\\", "", $model);
         $tableName = Inflector::tableize($model);
 
         // Build field names based on $data keys
-        $keys = array_keys($data);
-        $fields = implode(", ", $keys);
-        $fields = strtolower($fields);
-        $fields = preg_replace("/([\w0-9_]+)/", "`$1`", $fields);
+        $fields = "";
+        $binds = "";
+        if(count($data)) {
+            $keys = array_keys($data);
+            $fields = implode(", ", $keys);
+            $fields = strtolower($fields);
+            $fields = preg_replace("/([\w0-9_]+)/", "`$1`", $fields);
 
-        // Statements are bound with bind variables
-        $binds = implode(", ", $keys);
-        $binds = preg_replace("/([\w0-9_]+)/", ":$1", $binds);
+            // Statements are bound with bind variables
+            $binds = implode(", ", $keys);
+            $binds = preg_replace("/([\w0-9_]+)/", ":$1", $binds);
+        }
 
         // Default query parts
         $onDuplicateKeyUpdate = "";
@@ -179,20 +270,20 @@ class MySQL extends Adapter {
      * @param $options
      */
     public function create($data, $options = array()) {
-        Op::clearBinds();
-
         // Build query
         $query = self::insertQuery($this->model, $data, $options);
 
         // Execute query with prepared statement
         try {
-            $stmt = self::$dbh->prepare($query);
             // bind parameters
-            foreach(Op::getBinds() as $key=>$value) {
-                $stmt->bindParam($key, $value);
+            $binds = Op::getBinds();
+            Op::clearBinds();
+
+            $stmt = self::$dbh->prepare($query);
+            foreach($binds as $key=>&$value) {
+                $stmt->bindParam($key, $value, $this->pdoType($value));
             }
             $stmt->execute();
-            Op::clearBinds();
         }
         catch(PDOException $e) {
             throw new ActiveRecordQueryException();
@@ -284,6 +375,10 @@ class MySQL extends Adapter {
         }
 
         // Pluralize model name
+        // Due to the nature of namespace and get_class() function,
+        // get_class() function returns for example Models\Modelname
+        // Replace Core\ActiveRecord\ with nothing.
+        $model = str_replace("Models\\", "", $model);
         $tableName = Inflector::tableize($model);
 
         // Build query
@@ -340,10 +435,12 @@ class MySQL extends Adapter {
 
         if(isset($options["join"])) {
             // @todo
-            return trim(sprintf($query, $fields, $tableName, $join, $conditions, $group, $having, $order, $limit));
+            return trim(sprintf($query, $fields, $tableName, $join,
+                $conditions, $group, $having, $order, $limit));
         }
         else {
-            return trim(sprintf($query, $fields, $tableName, $conditions, $group, $having, $order, $limit));
+            return trim(sprintf($query, $fields, $tableName,
+                $conditions, $group, $having, $order, $limit));
         }
     }
 
@@ -354,21 +451,25 @@ class MySQL extends Adapter {
      * @param $data
      * @param $options
      */
-    public function read($data, $options = array()) {
-        Op::clearBinds();
-
+    public function read($options = array()) {
         // Build query
-        $query = self::selectQuery($this->model, $data, $options);
+        $query = self::selectQuery($this->model, $options);
 
         // Execute query with prepared statement
         try {
-            $stmt = self::$dbh->prepare($query);
             // bind parameters
-            foreach(Op::getBinds() as $key=>$value) {
-                $stmt->bindParam($key, $value);
+            $binds = Op::getBinds();
+            Op::clearBinds();
+
+            $stmt = self::$dbh->prepare($query);
+            foreach($binds as $key=>&$value) {
+                $stmt->bindParam($key, $value, $this->pdoType($value));
             }
             $stmt->execute();
-            Op::clearBinds();
+
+            // return as an object of the original model class
+            return $stmt->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE,
+                $this->model, array(&$this));
         }
         catch(PDOException $e) {
             throw new ActiveRecordQueryException();
@@ -404,6 +505,10 @@ class MySQL extends Adapter {
         $query = "UPDATE `%s` SET %s%s%s%s";
 
         // Pluralize model name
+        // Due to the nature of namespace and get_class() function,
+        // get_class() function returns for example Models\Modelname
+        // Replace Core\ActiveRecord\ with nothing.
+        $model = str_replace("Models\\", "", $model);
         $tableName = Inflector::tableize($model);
 
         // Build key-value pairs
@@ -456,20 +561,20 @@ class MySQL extends Adapter {
      * @param $options
      */
     public function update($data, $options = array()) {
-        Op::clearBinds();
-
         // Build query
         $query = self::updateQuery($this->model, $data, $options);
 
         // Execute query with prepared statement
         try {
-            $stmt = self::$dbh->prepare($query);
             // bind parameters
-            foreach(Op::getBinds() as $key=>$value) {
-                $stmt->bindParam($key, $value);
+            $binds = Op::getBinds();
+            Op::clearBinds();
+
+            $stmt = self::$dbh->prepare($query);
+            foreach($binds as $key=>&$value) {
+                $stmt->bindParam($key, $value, $this->pdoType($value));
             }
             $stmt->execute();
-            Op::clearBinds();
         }
         catch(PDOException $e) {
             throw new ActiveRecordQueryException();
@@ -504,6 +609,10 @@ class MySQL extends Adapter {
         $query = "DELETE FROM `%s` %s%s%s";
 
         // Pluralize model name
+        // Due to the nature of namespace and get_class() function,
+        // get_class() function returns for example Models\Modelname
+        // Replace Core\ActiveRecord\ with nothing.
+        $model = str_replace("Models\\", "", $model);
         $tableName = Inflector::tableize($model);
 
         // Build condition
@@ -540,24 +649,90 @@ class MySQL extends Adapter {
      *
      * @param $options
      */
-    public function delete($options = array()) {
-        Op::clearBinds();
+    public function delete() {
+        // Build query based on passed parameters.
+        $args = func_get_args();
+        $numargs = func_num_args();
 
-        // Build query
-        $query = self::deleteQuery($this->model, $options);
+        $first = @$args[0];
+        $second = @$args[1];
+
+        if($numargs == 1) {
+            // $first is the options
+            $query = self::deleteQuery($this->model, $first);
+        }
+        elseif($numargs == 2) {
+            if(is_array($second)) {
+                // $first is the primary key and $second contains options, since it is an array.
+                // $second can be an array of options or an array of Model objects.
+                // To check whether it is an array of Model objects, we only check the first array value
+                // whether it is an instance of Model.
+                if($second[0] instanceof \Core\ActiveRecord\Model) {
+                    // Delete multiple records. Build IN() statement.
+                    $in = array();
+                    foreach($second as $obj) {
+                        $in[] = $obj->{$first}; // first is the primary key
+                    }
+
+                    $query = self::deleteQuery($this->model, array(
+                        "conditions" => Op::in($first, $in)  // first is the primary key
+                    ));
+                }
+                else {
+                    return; // todo: throw an exception instead?
+                }
+            }
+            elseif($second instanceof \Core\ActiveRecord\Model) {
+                // $first is the primary key and $second is a single model to be deleted.
+                $val = $second->{$first}; // value of the primary key field
+                $query = self::deleteQuery($this->model, array(
+                    "conditions" => Op::eq($first, $val)
+                ));
+            }
+            else {
+                return; // todo: throw an exception instead?
+            }
+        }
+        else {
+            return; // todo: throw an exception instead?
+        }
+
 
         // Execute query with prepared statement
         try {
-            $stmt = self::$dbh->prepare($query);
             // bind parameters
-            foreach(Op::getBinds() as $key=>$value) {
-                $stmt->bindParam($key, $value);
+            $binds = Op::getBinds();
+            Op::clearBinds();
+
+            $stmt = self::$dbh->prepare($query);
+            foreach($binds as $key=>&$value) {
+                $stmt->bindParam($key, $value, $this->pdoType($value));
             }
             $stmt->execute();
-            Op::clearBinds();
         }
         catch(PDOException $e) {
             throw new ActiveRecordQueryException();
+        }
+    }
+
+
+    /**
+     * Returns the PDO type for specific values.
+     *
+     * @param $value
+     */
+    private function pdoType($value) {
+        if(is_bool($value)) {
+            return PDO::PARAM_BOOL;
+        }
+        if(is_null($value)) {
+            return PDO::PARAM_NULL;
+        }
+        if(is_int($value)) {
+            return PDO::PARAM_INT;
+        }
+        if(is_string($value)) {
+            return PDO::PARAM_STR;
         }
     }
 

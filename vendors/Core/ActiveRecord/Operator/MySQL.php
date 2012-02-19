@@ -153,11 +153,7 @@ class MySQL implements Operator {
      * @param $second
      */
     public static function eq($first, $second) {
-        if(!$first) {
-            throw new \Core\ActiveRecordOperatorException("Operator key cannot be empty.");
-        }
-
-        self::$binds[":$first"] = $second;
+        self::setBind($first, $second);
         $key = preg_replace("/([\w0-9_]+)/", "`$1`", $first);
         return "$key = :$first";
     }
@@ -172,11 +168,7 @@ class MySQL implements Operator {
      * @param $second
      */
     public static function neq($first, $second) {
-        if(!$first) {
-            throw new \Core\ActiveRecordOperatorException("Operator key cannot be empty.");
-        }
-
-        self::$binds[":$first"] = $second;
+        self::setBind($first, $second);
         $key = preg_replace("/([\w0-9_]+)/", "`$1`", $first);
         return "$key != :$first";
     }
@@ -191,11 +183,7 @@ class MySQL implements Operator {
      * @param $second
      */
     public static function lt($first, $second) {
-        if(!$first) {
-            throw new \Core\ActiveRecordOperatorException("Operator key cannot be empty.");
-        }
-
-        self::$binds[":$first"] = $second;
+        self::setBind($first, $second);
         $key = preg_replace("/([\w0-9_]+)/", "`$1`", $first);
         return "$key < :$first";
     }
@@ -210,11 +198,7 @@ class MySQL implements Operator {
      * @param $second
      */
     public static function gt($first, $second) {
-        if(!$first) {
-            throw new \Core\ActiveRecordOperatorException("Operator key cannot be empty.");
-        }
-
-        self::$binds[":$first"] = $second;
+        self::setBind($first, $second);
         $key = preg_replace("/([\w0-9_]+)/", "`$1`", $first);
         return "$key > :$first";
     }
@@ -229,11 +213,7 @@ class MySQL implements Operator {
      * @param $second
      */
     public static function lte($first, $second) {
-        if(!$first) {
-            throw new \Core\ActiveRecordOperatorException("Operator key cannot be empty.");
-        }
-
-        self::$binds[":$first"] = $second;
+        self::setBind($first, $second);
         $key = preg_replace("/([\w0-9_]+)/", "`$1`", $first);
         return "$key <= :$first";
     }
@@ -248,11 +228,7 @@ class MySQL implements Operator {
      * @param $second
      */
     public static function gte($first, $second) {
-        if(!$first) {
-            throw new \Core\ActiveRecordOperatorException("Operator key cannot be empty.");
-        }
-
-        self::$binds[":$first"] = $second;
+        self::setBind($first, $second);
         $key = preg_replace("/([\w0-9_]+)/", "`$1`", $first);
         return "$key >= :$first";
     }
@@ -272,8 +248,8 @@ class MySQL implements Operator {
         }
 
         $tmp = implode(", ", $array);
-        $tmp = preg_replace("/([\w0-9_]+)/", "`$1`", $tmp);
-        return "$field IN($tmp)";
+        $tmp = preg_replace("/([\w0-9_]+)/", "'$1'", $tmp);
+        return "`$field` IN($tmp)";
     }
 
 
@@ -291,8 +267,8 @@ class MySQL implements Operator {
         }
 
         $tmp = implode(", ", $array);
-        $tmp = preg_replace("/([\w0-9_]+)/", "`$1`", $tmp);
-        return "$field NOT IN($tmp)";
+        $tmp = preg_replace("/([\w0-9_]+)/", "'$1'", $tmp);
+        return "`$field` NOT IN($tmp)";
     }
 
 }

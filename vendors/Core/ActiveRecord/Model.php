@@ -16,13 +16,6 @@ use \Core\ActiveRecordAdapterNotFoundException;
 abstract class Model {
 
     /**
-     * Database configuration name from database.yml
-     *
-     * @var string
-     */
-    protected $adapter;
-
-    /**
      * Database object. PDO or PDO compliant.
      *
      * @var string
@@ -81,97 +74,20 @@ abstract class Model {
 
 
     /**
+     * Whether $data has been fetched.
+     *
+     * @var bool
+     */
+    protected $fetched = false;
+
+
+    /**
      * Sets the driver DBO object.
      */
     public function __construct(Adapter $dbo) {
         $this->dbo = $dbo;
-        $this->dbo->setModel(get_class($this));
-    }
-
-
-    /**
-     * Returns the model object.
-     *
-     * @static
-     * @return string   Model object.
-     */
-    protected static function instance() {
-        $obj = get_class($this);
-        return new $obj;
-    }
-
-
-    /**
-     * Retrieves result.
-     *
-     * @static
-     * @param $pos      A string either all/first/last/one/primary key id.
-     * @param $options  An array of options.
-     */
-    public static function find($pos, $options = array()) {
-        if(is_int($pos)) {
-            return self::instance()->findById($pos, $options);
-        }
-        elseif($pos == "all") {
-            return self::instance()->findAll($options);
-        }
-        elseif($pos == "first") {
-            return self::instance()->findFirst($options);
-        }
-        elseif($pos == "last") {
-            return self::instance()->findLast($options);
-        }
-        elseif($pos == "one") {
-            return self::instance()->findOne($options);
-        }
-    }
-
-
-    /**
-     * Returns all objects in model.
-     *
-     * @static
-     * @param $options  An array of options.
-     * @return Model object
-     */
-    public static function all($options = array()) {
-        return self::instance()->findAll($options);
-    }
-
-
-    /**
-     * Returns the first object in model.
-     *
-     * @static
-     * @param $options  An array of options.
-     * @return Model object
-     */
-    public static function first($options = array()) {
-        return self::instance()->findFirst($options);
-    }
-
-
-    /**
-     * Returns the last object in model.
-     *
-     * @static
-     * @param $options  An array of options.
-     * @return Model object
-     */
-    public static function last($options = array()) {
-        return self::instance()->findLast($options);
-    }
-
-
-    /**
-     * Returns an object in model.
-     *
-     * @static
-     * @param $options  An array of options.
-     * @return Model object
-     */
-    public static function one($options = array()) {
-        return self::instance()->findOne($options);
+        $model = get_class($this);
+        $this->dbo->setModel($model);
     }
 
 
@@ -179,11 +95,9 @@ abstract class Model {
      * Retrieves an object from model by primary key.
      *
      * @param $pos
-     * @param array $options
      */
-    public function findById($pos, $options = array()) {
-        $this->data = $this->dbo->findById($pos, $options);
-        return $this;
+    public function findById($pos) {
+        return $this->dbo->findById($this->primaryKey, $pos);
     }
 
 
@@ -193,8 +107,7 @@ abstract class Model {
      * @param array $options
      */
     public function findAll($options = array()) {
-        $this->data = $this->dbo->findAll($options); // returns array of model objects
-        return $this;
+        return $this->dbo->findAll($this->primaryKey, $options); // returns ModelCollection
     }
 
 
@@ -204,8 +117,7 @@ abstract class Model {
      * @param array $options
      */
     public function findFirst($options = array()) {
-        $this->data = $this->dbo->findFirst($options);
-        return $this;
+        return $this->dbo->findFirst($this->primaryKey, $options);
     }
 
 
@@ -215,8 +127,7 @@ abstract class Model {
      * @param array $options
      */
     public function findLast($options = array()) {
-        $this->data = $this->dbo->findLast($options);
-        return $this;
+        return $this->dbo->findLast($this->primaryKey, $options);
     }
 
 
@@ -226,8 +137,7 @@ abstract class Model {
      * @param array $options
      */
     public function findOne($options = array()) {
-        $this->data = $this->dbo->findOne($options);
-        return $this;
+        return $this->dbo->findOne($options);
     }
 
 
@@ -235,14 +145,46 @@ abstract class Model {
      * Saves an object.
      */
     public function save() {
-        $this->dbo->save($this->data);
+        if($this->fetched == false) {
+            $this->dbo->create($this->data);
+        }
+        else {
+            $this->dbo->update($this->data);
+        }
     }
 
     /**
-     * Deletes an object.
+     * Deletes objects. With $options : Deletes with query
+     * Without $options : Delete current object(s).
      */
-    public function delete() {
-        $this->dbo->delete($this->data);
+    public function delete($options = array()) {
+        if(count($options)) {
+            $this->dbo->delete($options);
+        }
+        else {
+            $this->dbo->delete($this->primaryKey, $this);
+        }
+    }
+
+
+    /**
+     * Executes an adapter specific statement.
+     *
+     * @param $statement
+     */
+    public function execute($statement) {
+        $this->dbo->execute($statement);
+    }
+
+
+    /**
+     * Queries an adapter specific statement.
+     *
+     * @param $statement
+     * @return mixed
+     */
+    public function query($statement) {
+        return $this->dbo->query($statement);
     }
 
 

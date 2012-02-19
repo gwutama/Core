@@ -62,7 +62,7 @@ abstract class Adapter {
      *
      * @abstract
      */
-    abstract protected function connect();
+    abstract public function connect();
 
 
     /**
@@ -70,7 +70,7 @@ abstract class Adapter {
      *
      * @abstract
      */
-    abstract protected function disconnect();
+    abstract public function disconnect();
 
 
     /**
@@ -86,7 +86,7 @@ abstract class Adapter {
      *
      * @abstract
      */
-    abstract public function read($data, $options = array());
+    abstract public function read($options = array());
 
 
     /**
@@ -102,7 +102,25 @@ abstract class Adapter {
      *
      * @abstract
      */
-    abstract public function delete($options = array());
+    abstract public function delete();
+
+
+    /**
+     * Queries an adapter specific statement.
+     *
+     * @abstract
+     * @param $statement
+     */
+    abstract public function query($statement);
+
+
+    /**
+     * Executes an adapter specific statement.
+     *
+     * @abstract
+     * @param $statement
+     */
+    abstract public function execute($statement);
 
 
     /**
