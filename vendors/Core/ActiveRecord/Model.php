@@ -74,14 +74,6 @@ abstract class Model {
 
 
     /**
-     * Whether $data has been fetched.
-     *
-     * @var bool
-     */
-    protected $fetched = false;
-
-
-    /**
      * Sets the driver DBO object.
      */
     public function __construct(Adapter $dbo) {
@@ -194,7 +186,7 @@ abstract class Model {
      * @param $key      Object key.
      */
     public function __get($key) {
-        return $this->data[$key];
+        return @$this->data[$key];
     }
 
 
