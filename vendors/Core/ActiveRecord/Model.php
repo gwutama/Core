@@ -51,13 +51,6 @@ abstract class Model {
     protected $belongsTo;
 
     /**
-     * @todo: Model validations.
-     *
-     * @var array
-     */
-    protected $validations = array();
-
-    /**
      * Query values are saved in an array. Can be array of model objects
      * if findAll is called.
      *
@@ -220,6 +213,48 @@ abstract class Model {
      */
     public function __set($key, $value) {
         $this->data[$key] = $value;
+    }
+
+
+    /**
+     * Validates all constraints. Throws ActiveRecordModelValidationException
+     * on failure.
+     */
+    public function validateAll() {
+        foreach((array) $this->data as $key=>$value) {
+            // Try to call validation method if it exists.
+            // A validation method will return an exception
+            // if it fails.
+            $method = "validate".ucfirst($key);
+            if(method_exists($this, $method)) {
+                $this->{$method}($value);
+            }
+        }
+    }
+
+
+    /**
+     * Validates all constraints and returns error messages.
+     */
+    public function getValidationErrors() {
+        $errors = array();
+
+        foreach((array) $this->data as $key=>$value) {
+            try {
+                // Try to call validation method if it exists.
+                // A validation method will return an exception
+                // if it fails.
+                $method = "validate".ucfirst($key);
+                if(method_exists($this, $method)) {
+                    $this->{$method}($value);
+                }
+            }
+            catch(ActiveRecordModelValidationException $e) {
+                $errors = $e->getMessage();
+            }
+        }
+
+        return $errors;
     }
 }
 

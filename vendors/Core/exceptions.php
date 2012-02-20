@@ -89,6 +89,12 @@ class ActiveRecordOperatorException extends Exception {}
 
 
 /**
+ * Gets thrown on model validation errors.
+ */
+class ActiveRecordModelValidationException extends Exception {}
+
+
+/**
  * Gets thrown when file cannot be found.
  */
 class FileNotFoundException extends Exception {}
