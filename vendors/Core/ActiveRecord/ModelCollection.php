@@ -70,7 +70,7 @@ class ModelCollection implements \Iterator {
     /**
      * Returns primary key values of all models.
      */
-    public function getPkValues() {
+    public function getPrimaryKeyValues() {
         $tmp = array();
         foreach($this->models as $model) {
             $tmp[] = $model->{$this->primaryKey};
@@ -92,22 +92,16 @@ class ModelCollection implements \Iterator {
     /**
      * Deletes collection.
      */
-    public function delete() {
-        $in = $this->getPkValues();
-        $this->dbo->delete(array(
-            "conditions" => Op::in($this->primaryKey, $in)
-        ));
+    public function delete($options = array()) {
+        $this->dbo->deleteAll($this, $options);
     }
 
 
     /**
      * Updates collection.
      */
-    public function update($data = array()) {
-        $in = $this->getPkValues();
-        $this->dbo->update($data, array(
-            "conditions" => Op::in($this->primaryKey, $in)
-        ));
+    public function save($data, $options = array()) {
+        $this->dbo->updateAll($this, $data, $options);
     }
 
 

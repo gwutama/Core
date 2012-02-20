@@ -72,14 +72,42 @@ abstract class Model {
      */
     protected $databaseProfile = "default";
 
+    /**
+     * Whether data has been fetched or not.
+     *
+     * @var bool
+     */
+    protected $fetched = false;
+
 
     /**
      * Sets the driver DBO object.
      */
-    public function __construct(Adapter $dbo) {
+    public function __construct(Adapter $dbo, $fetched = false) {
         $this->dbo = $dbo;
         $model = get_class($this);
         $this->dbo->setModel($model);
+        $this->fetched = $fetched;
+    }
+
+
+    /**
+     * Returns current model's primary key.
+     *
+     * @return string
+     */
+    public function getPrimaryKey() {
+        return $this->primaryKey;
+    }
+
+
+    /**
+     * Returns all data.
+     *
+     * @return string
+     */
+    public function getData() {
+        return $this->data;
     }
 
 
@@ -134,28 +162,22 @@ abstract class Model {
 
 
     /**
-     * Saves an object.
+     * Saves objects.
      */
-    public function save() {
+    public function save($options = array()) {
         if($this->fetched == false) {
-            $this->dbo->create($this->data);
+            $this->dbo->create($this->data, $options);
         }
         else {
-            $this->dbo->update($this->data);
+            $this->dbo->update($this, $this->data, $options);
         }
     }
 
     /**
-     * Deletes objects. With $options : Deletes with query
-     * Without $options : Delete current object(s).
+     * Deletes objects.
      */
     public function delete($options = array()) {
-        if(count($options)) {
-            $this->dbo->delete($options);
-        }
-        else {
-            $this->dbo->delete($this->primaryKey, $this);
-        }
+        $this->dbo->delete($this, $options);
     }
 
 

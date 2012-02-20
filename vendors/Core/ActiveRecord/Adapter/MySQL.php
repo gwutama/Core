@@ -5,6 +5,7 @@ namespace Core\ActiveRecord\Adapter;
 use \Core\ActiveRecord\Adapter;
 use \Core\ActiveRecord\Operator\MySQL as Op;
 use \Core\ActiveRecord\QueryBuilder\MySQL as QueryBuilder;
+use \Core\ActiveRecord\Model;
 use \Core\ActiveRecord\ModelCollection;
 use \Core\ActiveRecordAdapterConnectionException;
 use \Core\ActiveRecordQueryException;
@@ -268,7 +269,7 @@ class MySQL implements Adapter {
 
             // return as an object of the original model class
             return $stmt->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE,
-                $this->model, array(&$this));
+                $this->model, array(&$this, true)); // true: mark this object as fetched
         }
         catch(PDOException $e) {
             throw new ActiveRecordQueryException();
@@ -282,7 +283,50 @@ class MySQL implements Adapter {
      * @param $data
      * @param $options
      */
-    public function update($data, $options = array()) {
+    public function update(Model $model, $data, $options = array()) {
+        // Build query
+        $pk = $model->getPrimaryKey();
+        $pkValue = $model->{$pk};
+        $options["conditions"] = Op::eq($pk, $pkValue);
+        $query = $this->queryBuilder->update($data, $options);
+
+        // Set $data to prepared statement bind variables
+        Op::setBinds($data);
+
+        // Bind limit option if it is set
+        if(isset($options["limit"])) {
+            Op::setBind("core_query_limit", (int) $options["limit"]);
+        }
+
+        // Execute query with prepared statement
+        try {
+            // bind parameters
+            $binds = Op::getBinds();
+            Op::clearBinds();
+
+            $stmt = self::$dbh->prepare($query);
+            foreach($binds as $key=>&$value) {
+                $stmt->bindParam($key, $value, $this->pdoType($value));
+            }
+            $stmt->execute();
+        }
+        catch(PDOException $e) {
+            throw new ActiveRecordQueryException();
+        }
+    }
+
+
+    /**
+     * Updates multiple records.
+     *
+     * @param \Core\ActiveRecord\ModelCollection $models
+     * @param array $options
+     */
+    public function updateAll(ModelCollection $models, $data, $options = array()) {
+        // Build query
+        $pk = $models->getPrimaryKey();
+        $pkValues = $models->getPrimaryKeyValues();
+        $options["conditions"] = Op::in($pk, $pkValues);
         $query = $this->queryBuilder->update($data, $options);
 
         // Set $data to prepared statement bind variables
@@ -316,58 +360,52 @@ class MySQL implements Adapter {
      *
      * @param $options
      */
-    public function delete() {
-        // Build query based on passed parameters.
-        $args = func_get_args();
-        $numargs = func_num_args();
+    public function delete(Model $model, $options = array()) {
+        // Build query
+        $pk = $model->getPrimaryKey();
+        $pkValue = $model->{$pk};
+        $options["conditions"] = Op::eq($pk, $pkValue);
+        $query = $this->queryBuilder->delete($options);
 
-        $first = @$args[0];
-        $second = @$args[1];
-
-        if($numargs == 1) {
-            // $first is the options
-            $query = $this->queryBuilder->delete($first);
-
-            // Bind limit option if it is set
-            if(isset($first["limit"])) {
-                Op::setBind("core_query_limit", (int) $first["limit"]);
-            }
-        }
-        elseif($numargs == 2) {
-            if(is_array($second)) {
-                // $first is the primary key and $second can be an array of options or an array of Model objects.
-                // To check whether it is an array of Model objects, we only check the first array value
-                // whether it is an instance of Model.
-                if($second[0] instanceof \Core\ActiveRecord\Model) {
-                    // Delete multiple records. Build IN() statement.
-                    $in = array();
-                    foreach($second as $obj) {
-                        $in[] = $obj->{$first}; // first is the primary key
-                    }
-
-                    $query = $this->queryBuilder->delete(array(
-                        "conditions" => Op::in($first, $in)  // first is the primary key
-                    ));
-                }
-                else {
-                    return; // todo: throw an exception instead?
-                }
-            }
-            elseif($second instanceof \Core\ActiveRecord\Model) {
-                // $first is the primary key and $second is a single model to be deleted.
-                $val = $second->{$first}; // value of the primary key field
-                $query = $this->queryBuilder->delete(array(
-                    "conditions" => Op::eq($first, $val)
-                ));
-            }
-            else {
-                return; // todo: throw an exception instead?
-            }
-        }
-        else {
-            return; // todo: throw an exception instead?
+        // Bind limit option if it is set
+        if(isset($first["limit"])) {
+            Op::setBind("core_query_limit", (int) $first["limit"]);
         }
 
+        // Execute query with prepared statement
+        try {
+            // bind parameters
+            $binds = Op::getBinds();
+            Op::clearBinds();
+
+            $stmt = self::$dbh->prepare($query);
+            foreach($binds as $key=>&$value) {
+                $stmt->bindParam($key, $value, $this->pdoType($value));
+            }
+            $stmt->execute();
+        }
+        catch(PDOException $e) {
+            throw new ActiveRecordQueryException();
+        }
+    }
+
+
+    /**
+     * Deletes multiple records.
+     *
+     * @param \Core\ActiveRecord\ModelCollection $models
+     * @param array $options
+     */
+    public function deleteAll(ModelCollection $models, $options = array()) {
+        $pk = $models->getPrimaryKey();
+        $pkValues = $models->getPrimaryKeyValues();
+        $options["conditions"] = Op::in($pk, $pkValues);
+        $query = $this->queryBuilder->delete($options);
+
+        // Bind limit option if it is set
+        if(isset($options["limit"])) {
+            Op::setBind("core_query_limit", (int) $options["limit"]);
+        }
 
         // Execute query with prepared statement
         try {

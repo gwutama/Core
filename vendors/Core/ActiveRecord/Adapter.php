@@ -75,13 +75,25 @@ interface Adapter {
     /**
      * Base for update operation.
      */
-    public function update($data, $options = array());
+    public function update(Model $model, $data, $options = array());
+
+
+    /**
+     * Base for multiple update operation.
+     */
+    public function updateAll(ModelCollection $model, $data, $options = array());
 
 
     /**
      * Base for delete operation.
      */
-    public function delete();
+    public function delete(Model $model, $options = array());
+
+
+    /**
+     * Base for multiple delete operation.
+     */
+    public function deleteAll(ModelCollection $models, $options = array());
 
 
     /**
