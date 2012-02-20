@@ -23,7 +23,7 @@ class Test extends \Core\ActiveRecord\Model {
     );
 
     public function getSomething() {
-        return $this->find(array(
+        return $this->findAll(array(
             "conditions" => Op::eq("foo", "bar"))
         );
     }
