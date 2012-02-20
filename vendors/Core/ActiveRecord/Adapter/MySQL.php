@@ -134,6 +134,9 @@ class MySQL implements Adapter {
      * @return mixed
      */
     public function query($statement) {
+        if(self::$dbh == null) {
+            $this->connect();
+        }
         return self::$dbh->query($statement);
     }
 
@@ -142,6 +145,9 @@ class MySQL implements Adapter {
      * @param $statement
      */
     public function execute($statement) {
+        if(self::$dbh == null) {
+            $this->connect();
+        }
         self::$dbh->exec($statement);
     }
 
@@ -216,6 +222,10 @@ class MySQL implements Adapter {
      * @param $options
      */
     public function create($data, $options = array()) {
+        if(self::$dbh == null) {
+            $this->connect();
+        }
+
         // Build query
         $query = $this->queryBuilder->insert($data, $options);
 
@@ -247,6 +257,10 @@ class MySQL implements Adapter {
      * @param $options
      */
     public function read($options = array()) {
+        if(self::$dbh == null) {
+            $this->connect();
+        }
+
         // Build query
         $query = $this->queryBuilder->select($options);
 
@@ -284,6 +298,10 @@ class MySQL implements Adapter {
      * @param $options
      */
     public function update(Model $model, $data, $options = array()) {
+        if(self::$dbh == null) {
+            $this->connect();
+        }
+
         // Build query
         $pk = $model->getPrimaryKey();
         $pkValue = $model->{$pk};
@@ -323,6 +341,10 @@ class MySQL implements Adapter {
      * @param array $options
      */
     public function updateAll(ModelCollection $models, $data, $options = array()) {
+        if(self::$dbh == null) {
+            $this->connect();
+        }
+
         // Build query
         $pk = $models->getPrimaryKey();
         $pkValues = $models->getPrimaryKeyValues();
@@ -361,6 +383,10 @@ class MySQL implements Adapter {
      * @param $options
      */
     public function delete(Model $model, $options = array()) {
+        if(self::$dbh == null) {
+            $this->connect();
+        }
+
         // Build query
         $pk = $model->getPrimaryKey();
         $pkValue = $model->{$pk};
@@ -397,6 +423,10 @@ class MySQL implements Adapter {
      * @param array $options
      */
     public function deleteAll(ModelCollection $models, $options = array()) {
+        if(self::$dbh == null) {
+            $this->connect();
+        }
+
         $pk = $models->getPrimaryKey();
         $pkValues = $models->getPrimaryKeyValues();
         $options["conditions"] = Op::in($pk, $pkValues);

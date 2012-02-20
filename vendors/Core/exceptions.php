@@ -95,6 +95,12 @@ class ActiveRecordModelValidationException extends Exception {}
 
 
 /**
+ * Gets thrown when a model has no adapter set.
+ */
+class ActiveRecordModelNoAdapterSetException extends Exception {}
+
+
+/**
  * Gets thrown when file cannot be found.
  */
 class FileNotFoundException extends Exception {}

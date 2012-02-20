@@ -3,7 +3,10 @@
 namespace Core\ActiveRecord;
 
 use \Core\ServiceContainer;
+use \Core\Config;
 use \Core\ActiveRecordAdapterNotFoundException;
+use \Core\ActiveRecordModelNoAdapterSetException;
+use \Core\ActiveRecordModelValidationException;
 
 /**
  * <h1>Class Model</h1>
@@ -76,11 +79,12 @@ abstract class Model {
     /**
      * Sets the driver DBO object.
      */
-    public function __construct(Adapter $dbo, $fetched = false) {
-        $this->dbo = $dbo;
-        $model = get_class($this);
-        $this->dbo->setModel($model);
+    public function __construct($fetched = false) {
         $this->fetched = $fetched;
+
+        $adapters = new AdapterServiceContainer();
+        $this->dbo = $adapters->getService($this->databaseProfile);
+        $this->dbo->setModel(get_class($this));
     }
 
 
@@ -110,7 +114,10 @@ abstract class Model {
      * @param $pos
      */
     public function findById($pos) {
-        return $this->dbo->findById($this->primaryKey, $pos);
+        if($this->dbo) {
+            return $this->dbo->findById($this->primaryKey, $pos);
+        }
+        throw new ActiveRecordModelNoAdapterSetException();
     }
 
 
@@ -120,7 +127,10 @@ abstract class Model {
      * @param array $options
      */
     public function findAll($options = array()) {
-        return $this->dbo->findAll($this->primaryKey, $options); // returns ModelCollection
+        if($this->dbo) {
+            return $this->dbo->findAll($this->primaryKey, $options); // returns ModelCollection
+        }
+        throw new ActiveRecordModelNoAdapterSetException();
     }
 
 
@@ -130,7 +140,10 @@ abstract class Model {
      * @param array $options
      */
     public function findFirst($options = array()) {
-        return $this->dbo->findFirst($this->primaryKey, $options);
+        if($this->dbo) {
+            return $this->dbo->findFirst($this->primaryKey, $options);
+        }
+        throw new ActiveRecordModelNoAdapterSetException();
     }
 
 
@@ -140,7 +153,10 @@ abstract class Model {
      * @param array $options
      */
     public function findLast($options = array()) {
-        return $this->dbo->findLast($this->primaryKey, $options);
+        if($this->dbo) {
+            return $this->dbo->findLast($this->primaryKey, $options);
+        }
+        throw new ActiveRecordModelNoAdapterSetException();
     }
 
 
@@ -150,7 +166,10 @@ abstract class Model {
      * @param array $options
      */
     public function findOne($options = array()) {
-        return $this->dbo->findOne($options);
+        if($this->dbo) {
+            return $this->dbo->findOne($options);
+        }
+        throw new ActiveRecordModelNoAdapterSetException();
     }
 
 
@@ -158,11 +177,16 @@ abstract class Model {
      * Saves objects.
      */
     public function save($options = array()) {
-        if($this->fetched == false) {
-            $this->dbo->create($this->data, $options);
+        if($this->dbo) {
+            if($this->fetched == false) {
+                $this->dbo->create($this->data, $options);
+            }
+            else {
+                $this->dbo->update($this, $this->data, $options);
+            }
         }
         else {
-            $this->dbo->update($this, $this->data, $options);
+            throw new ActiveRecordModelNoAdapterSetException();
         }
     }
 
@@ -170,7 +194,12 @@ abstract class Model {
      * Deletes objects.
      */
     public function delete($options = array()) {
-        $this->dbo->delete($this, $options);
+        if($this->dbo) {
+            $this->dbo->delete($this, $options);
+        }
+        else {
+            throw new ActiveRecordModelNoAdapterSetException();
+        }
     }
 
 
@@ -180,7 +209,12 @@ abstract class Model {
      * @param $statement
      */
     public function execute($statement) {
-        $this->dbo->execute($statement);
+        if($this->dbo) {
+            $this->dbo->execute($statement);
+        }
+        else {
+            throw new ActiveRecordModelNoAdapterSetException();
+        }
     }
 
 
@@ -191,7 +225,12 @@ abstract class Model {
      * @return mixed
      */
     public function query($statement) {
-        return $this->dbo->query($statement);
+        if($this->dbo) {
+            return $this->dbo->query($statement);
+        }
+        else {
+            throw new ActiveRecordModelNoAdapterSetException();
+        }
     }
 
 

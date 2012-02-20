@@ -34,6 +34,14 @@ class Service {
 
 
     /**
+     * Callbacks to be called after new instance has been created.
+     *
+     * @var array
+     */
+    private $callbacks;
+
+
+    /**
      * Whether this service is singleton or not.
      *
      * @var bool
@@ -48,9 +56,10 @@ class Service {
      * @param $name
      * @param array $options
      */
-    public function __construct($name, $options = array()) {
+    public function __construct($name, $options = array(), $callbacks = array()) {
         $this->name = $name;
         $this->options = $options;
+        $this->callbacks = $callbacks;
 
         if(isset($options["isSingleton"]) && $options["isSingleton"] == true) {
             $this->isSingleton = true;
@@ -82,7 +91,20 @@ class Service {
             }
         }
 
-        return $class->newInstanceArgs($objParams);
+        // Create new instance and pass the constructor parameters
+        $obj = $class->newInstanceArgs($objParams);
+
+        // execute the supplied methods
+        foreach((array)$this->callbacks as $method=>$args) {
+            if(is_array($args)) {
+                call_user_func_array(array($obj, $method), $args);
+            }
+            else {
+                call_user_func(array($obj, $method), $args);
+            }
+        }
+
+        return $obj;
     }
 
 

@@ -110,14 +110,15 @@ class ServiceContainer implements \Iterator {
      *
      * @param $name
      * @param array $options
+     * @param array $callbacks
      * @param $alias
      */
-    public function register($name, $options = array(), $alias = null) {
+    public function register($name, $options = array(), $callbacks = array(), $alias = null) {
         if($name && $alias) {
-            $this->services[$alias] = new Service($name, $options);
+            $this->services[$alias] = new Service($name, $options, $callbacks);
         }
         elseif($name && !$alias) {
-            $this->services[$name] = new Service($name, $options);
+            $this->services[$name] = new Service($name, $options, $callbacks);
         }
     }
 
