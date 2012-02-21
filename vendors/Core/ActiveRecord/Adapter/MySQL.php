@@ -243,6 +243,9 @@ class MySQL implements Adapter {
                 $stmt->bindParam($key, $value, $this->pdoType($value));
             }
             $stmt->execute();
+
+            // return the id
+            return self::$dbh->lastInsertId();
         }
         catch(PDOException $e) {
             throw new ActiveRecordQueryException();

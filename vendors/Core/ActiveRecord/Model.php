@@ -7,6 +7,7 @@ use \Core\Config;
 use \Core\ActiveRecordAdapterNotFoundException;
 use \Core\ActiveRecordModelNoAdapterSetException;
 use \Core\ActiveRecordModelValidationException;
+use \Core\Inflector;
 
 /**
  * <h1>Class Model</h1>
@@ -115,7 +116,7 @@ abstract class Model {
      */
     public function findById($pos) {
         if($this->dbo) {
-            return $this->dbo->findById($this->primaryKey, $pos);
+            return $this->dbo->findById($this->primaryKey, $pos, $this->hasOne, $this->hasMany);
         }
         throw new ActiveRecordModelNoAdapterSetException();
     }
@@ -179,7 +180,8 @@ abstract class Model {
     public function save($options = array()) {
         if($this->dbo) {
             if($this->fetched == false) {
-                $this->dbo->create($this->data, $options);
+                $pkValue = $this->dbo->create($this->data, $options);
+                $this->__set($this->primaryKey, $pkValue);
             }
             else {
                 $this->dbo->update($this, $this->data, $options);
@@ -240,6 +242,7 @@ abstract class Model {
      * @param $key      Object key.
      */
     public function __get($key) {
+        $key = Inflector::underscore($key);
         return @$this->data[$key];
     }
 
@@ -251,6 +254,7 @@ abstract class Model {
      * @param $value    Object value.
      */
     public function __set($key, $value) {
+        $key = Inflector::underscore($key);
         $this->data[$key] = $value;
     }
 

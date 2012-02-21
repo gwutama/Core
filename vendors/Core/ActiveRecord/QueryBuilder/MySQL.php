@@ -39,7 +39,6 @@ class MySQL extends QueryBuilder {
      * @return string   SQL Query (prepared statement).
      */
     public function insert($data = array(), $options = array()) {
-        // Determine query format.
         // Lowercase all $options keys then find for "select" option.
         if(isset($options["select"]) == false) {
             // First case: Standard insert query

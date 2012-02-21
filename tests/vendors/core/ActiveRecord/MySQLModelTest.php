@@ -39,11 +39,13 @@ class MySQLModelTest extends \PHPUnit_Framework_TestCase
         Config::set("global.debug", true);
 
         $adapters = new AdapterServiceContainer();
-        $this->object = $adapters->getService("default");
+        $adapter = $adapters->getService("default");
 
-        $this->object->setModel("Mock");
+        $adapter->setModel("Mock");
 
-        $this->object->execute(
+        $adapter->execute("DROP TABLE IF EXISTS mocks");
+
+        $adapter->execute(
             "CREATE TABLE mocks(
                 id INT PRIMARY KEY AUTO_INCREMENT,
                 field1 VARCHAR(255),

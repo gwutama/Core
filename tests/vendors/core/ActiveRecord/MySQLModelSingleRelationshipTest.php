@@ -1,10 +1,16 @@
 <?php
-/*
 namespace Core\ActiveRecord;
 use Core\ActiveRecord\Adapter\MySQL;
+use Core\Spyc;
+use Core\Config;
 use Models\Mock;
 use Models\Single;
 
+require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\Spyc.php';
+require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\Config.php';
+require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\ServiceContainer.php';
+require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\Service.php';
+require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\ActiveRecord\AdapterServiceContainer.php';
 require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\ActiveRecord\Model.php';
 require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\ActiveRecord\ModelCollection.php';
 require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\ActiveRecord\Operator.php';
@@ -14,23 +20,33 @@ require_once 'C:\Users\Galuh Utama\workspace\Core\tests\resources\Models\Single.
 
 class MySQLModelSingleRelationshipTest extends \PHPUnit_Framework_TestCase
 {
-    protected $object;
-
-    protected $adapter;
+    protected $mock;
+    protected $single;
 
 
     protected function setUp()
     {
-        $this->adapter = new MySQL("mysql:host=localhost;dbname=test", "root", "gwutama");
-        $this->object = new MySQL("mysql:host=localhost;dbname=test", "root", "gwutama");
-        $this->object->setModel("Mock");
-        $this->object->execute(
+        $config = Spyc::YAMLLoad("tests/resources/database.yml");
+        Config::setArray($config);
+        Config::set("global.debug", true);
+
+        $adapters = new AdapterServiceContainer();
+        $adapter = $adapters->getService("default");
+
+        $adapter->setModel("Mock");
+
+        $adapter->execute("DROP TABLE IF EXISTS mocks");
+        $adapter->execute("DROP TABLE IF EXISTS singles");
+
+        $adapter->execute(
             "CREATE TABLE mocks(
                 id INT PRIMARY KEY AUTO_INCREMENT,
-                field VARCHAR(255),
+                field1 VARCHAR(255),
+                field2 VARCHAR(255),
+                field3 INT
             )"
         );
-        $this->object->execute(
+        $adapter->execute(
             "CREATE TABLE singles(
                 id INT PRIMARY KEY AUTO_INCREMENT,
                 field VARCHAR(255),
@@ -39,29 +55,46 @@ class MySQLModelSingleRelationshipTest extends \PHPUnit_Framework_TestCase
             )"
         );
 
-        // Insert dummy records
-        $test = new Mock($this->adapter);
-        $test->field = "test";
-        $test->save();
+        $this->mock = new Mock();
+        $this->single = new Single();
 
-        $single = new Single($this->adapter);
-        $single->field = "test";
-        $single->mocksId = $test->id;
+        // Insert dummy records
+        $mock = new Mock();
+        $mock->field1 = "value1-1";
+        $mock->field2 = "value2-1";
+        $mock->field3 = 1;
+        $mock->save();
+
+        $single = new Single();
+        $single->field = "test single";
+        $single->mocksId = $mock->id;
         $single->save();
     }
 
     protected function tearDown()
     {
-        $this->object->execute("DROP TABLE tests");
-        $this->object->execute("DROP TABLE singles");
-        $this->object->disconnect();
+        $this->mock->execute("DROP TABLE mocks");
+        $this->single->execute("DROP TABLE singles");
     }
 
     public function testFindById()
     {
+        $mock = $this->mock->findById(1);
+        $this->assertEquals("value1-1", $mock->field1);
+        $this->assertEquals("value2-1", $mock->field2);
+        $this->assertEquals(1, $mock->field3);
+
+        $single = $this->single->findById(1);
+        $this->assertEquals("test single", $single->field);
+        $this->assertEquals(1, $single->mocksId);
+
+        /*
+        $single = $mock->single;
+        $this->assertTrue($single instanceof Single);
+        $this->assertEquals("test single", $single->field);
+        $this->assertEquals(1, $single->mocksId);
+        */
     }
 }
-
-*/
 
 ?>
