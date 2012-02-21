@@ -1,14 +1,14 @@
 <?php
 namespace Core;
 
-if(!class_exists("\\Core\\Mock") && !class_exists("\\Core\\Mock2") && !class_exists("\\Core\\Mock3")) {
-    class Mock {
+if(!class_exists("\\Core\\MockClass") && !class_exists("\\Core\\MockClass2") && !class_exists("\\Core\\MockClass3")) {
+    class MockClass {
         public $param1;
         public $param2;
         public $param3;
     }
 
-    class Mock2 extends Mock {
+    class MockClass2 extends MockClass {
         public function __construct($param1, $param2, $param3) {
             $this->param1 = $param1;
             $this->param2 = $param2;
@@ -16,7 +16,7 @@ if(!class_exists("\\Core\\Mock") && !class_exists("\\Core\\Mock2") && !class_exi
         }
     }
 
-    class Mock3 extends Mock2 {}
+    class MockClass3 extends MockClass2 {}
 }
 
 require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\ServiceContainer.php';
@@ -39,17 +39,17 @@ class ServiceContainerTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->object = new ServiceContainer;
-        $this->object->register("\\Core\\Mock", array(), "Mock");
-        $this->object->register("\\Core\\Mock2", array(
+        $this->object->register("\\Core\\MockClass", array(), array(), "MockClass");
+        $this->object->register("\\Core\\MockClass2", array(
             "param1" => "value1",
             "param2" => "value2",
             "param3" => "value3"
-        ), "Mock2");
-        $this->object->register("\\Core\\Mock3", array(
+        ), array(), "MockClass2");
+        $this->object->register("\\Core\\MockClass3", array(
             "param1" => "foo",
             "param2" => "bar",
             "param3" => array(1,2,3)
-        ));
+        ), array());
     }
 
     /**
@@ -62,18 +62,18 @@ class ServiceContainerTest extends \PHPUnit_Framework_TestCase
 
     public function testHasService()
     {
-        $this->assertTrue($this->object->hasService("Mock"));
-        $this->assertTrue($this->object->hasService("Mock2"));
-        $this->assertTrue($this->object->hasService("\\Core\\Mock3"));
-        $this->assertFalse($this->object->hasService("Mock4"));
+        $this->assertTrue($this->object->hasService("MockClass"));
+        $this->assertTrue($this->object->hasService("MockClass2"));
+        $this->assertTrue($this->object->hasService("\\Core\\MockClass3"));
+        $this->assertFalse($this->object->hasService("MockClass4"));
         $this->assertFalse($this->object->hasService("Inexists"));
     }
 
     public function testGetService()
     {
-        $this->assertTrue($this->object->getService("Mock") instanceof Mock);
-        $this->assertTrue($this->object->getService("Mock2") instanceof Mock2);
-        $this->assertTrue($this->object->getService("\\Core\\Mock3") instanceof Mock3);
+        $this->assertTrue($this->object->getService("MockClass") instanceof MockClass);
+        $this->assertTrue($this->object->getService("MockClass2") instanceof MockClass2);
+        $this->assertTrue($this->object->getService("\\Core\\MockClass3") instanceof MockClass3);
     }
 
     /**
@@ -90,43 +90,43 @@ class ServiceContainerTest extends \PHPUnit_Framework_TestCase
         $this->object->clear();
         $this->assertEquals(0, $this->object->count());
 
-        $this->object->register("\\Core\\Mock", array(), "Mock");
-        $this->object->register("\\Core\\Mock2", array(
+        $this->object->register("\\Core\\MockClass", array(), array(), "MockClass");
+        $this->object->register("\\Core\\MockClass2", array(
             "param1" => "value1",
             "param2" => "value2",
             "param3" => "value3"
-        ), "Mock2");
-        $this->object->register("\\Core\\Mock3", array(
+        ), array(), "MockClass2");
+        $this->object->register("\\Core\\MockClass3", array(
             "param1" => "foo",
             "param2" => "bar",
             "param3" => array(1,2,3)
-        ), "Mock3");
+        ), array(), "MockClass3");
         $this->assertEquals(3, $this->object->count());
 
         // service name must not be null
         $this->object->register(null);
         $this->assertEquals(3, $this->object->count());
 
-        $this->object->register("\\Core\\Mock4", array(), "Mock4");
+        $this->object->register("\\Core\\MockClass4", array(), array(), "MockClass4");
         $this->assertEquals(4, $this->object->count());
 
         // same registered service
-        $this->object->register("\\Core\\Mock", array(), "Mock");
+        $this->object->register("\\Core\\MockClass", array(), array(), "MockClass");
         $this->assertEquals(4, $this->object->count());
     }
 
 
     public function test__get()
     {
-        $this->assertTrue($this->object->Mock instanceof Mock);
-        $this->assertTrue($this->object->Mock2 instanceof Mock2);
+        $this->assertTrue($this->object->MockClass instanceof MockClass);
+        $this->assertTrue($this->object->MockClass2 instanceof MockClass2);
     }
 
 
     public function test__call()
     {
-        $this->assertTrue($this->object->getMockService() instanceof Mock);
-        $this->assertTrue($this->object->getMock2Service() instanceof Mock2);
+        $this->assertTrue($this->object->getMockClassService() instanceof MockClass);
+        $this->assertTrue($this->object->getMockClass2Service() instanceof MockClass2);
     }
 
 

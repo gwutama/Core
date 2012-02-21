@@ -267,6 +267,11 @@ class MySQL implements Adapter {
         // Bind limit option if it is set
         if(isset($options["limit"])) {
             Op::setBind("core_query_limit", (int) $options["limit"]);
+
+            // Bind offset option if it is set. Offset won't work without limit.
+            if(isset($options["offset"])) {
+                Op::setBind("core_query_offset", (int) $options["offset"]);
+            }
         }
 
         // Execute query with prepared statement

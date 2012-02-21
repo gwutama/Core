@@ -1,24 +1,38 @@
 <?php
 
+namespace Models;
+use Core\ActiveRecord\AdapterServiceContainer;
+use Core\ActiveRecord\Adapter\MySQL;
+use Core\Spyc;
+use Core\Config;
+
+require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\Spyc.php';
+require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\Config.php';
+require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\ServiceContainer.php';
+require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\Service.php';
 require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\ActiveRecord\Model.php';
 require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\ActiveRecord\ModelCollection.php';
 require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\ActiveRecord\Operator.php';
 require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\ActiveRecord\Operator\MySQL.php';
 require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\ActiveRecord\Adapter.php';
 require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\ActiveRecord\Adapter\MySQL.php';
+require_once 'C:\Users\Galuh Utama\workspace\Core\tests\resources\Models\Mock.php';
 
-class Mock extends \Core\ActiveRecord\Model {}
-
-use Core\ActiveRecord\Adapter\MySQL;
-
-class MySQLAdapterTest extends PHPUnit_Framework_TestCase
+class MySQLAdapterTest extends \PHPUnit_Framework_TestCase
 {
     protected $object;
 
     protected function setUp()
     {
-        $this->object = new MySQL("mysql:host=localhost;dbname=test", "root", "gwutama");
-        $this->object->setModel("Mock");
+        $config = Spyc::YAMLLoad("tests/resources/database.yml");
+        Config::setArray($config);
+        Config::set("global.debug", true);
+
+        $adapters = new AdapterServiceContainer();
+        $this->object = $adapters->getService("default");
+
+        $this->object->setModel("\\Models\\Mock");
+
         $this->object->execute(
             "CREATE TABLE mocks(
                 id INT PRIMARY KEY AUTO_INCREMENT,
@@ -186,7 +200,7 @@ class MySQLAdapterTest extends PHPUnit_Framework_TestCase
         $objects = $this->object->findAll("id");
         $this->assertEquals(3, $objects->count());
         foreach($objects as $object) {
-            $object->delete();
+            $this->object->delete($object);
         }
         $objects = $this->object->findAll("id");
         $this->assertEquals(0, $objects->count());

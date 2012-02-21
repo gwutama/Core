@@ -1,22 +1,21 @@
 <?php
 
 namespace Models;
-use Core\ActiveRecord\Operator\MySQL as Op;
+use Core\ActiveRecord\AdapterServiceContainer;
+use Core\ActiveRecord\Adapter\MySQL;
+use Core\Spyc;
+use Core\Config;
 
+require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\Spyc.php';
+require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\Config.php';
+require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\ServiceContainer.php';
+require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\Service.php';
+require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\ActiveRecord\AdapterServiceContainer.php';
 require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\ActiveRecord\Model.php';
 require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\ActiveRecord\ModelCollection.php';
 require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\ActiveRecord\Operator.php';
 require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\ActiveRecord\Operator\MySQL.php';
-
-class Mock extends \Core\ActiveRecord\Model {}
-
-///////////////////////////////////////////////////////////
-
-
-namespace Core\ActiveRecord;
-use Core\ActiveRecord\Adapter\MySQL;
-use Models\Mock;
-
+require_once 'C:\Users\Galuh Utama\workspace\Core\tests\resources\Models\Mock.php';
 
 /**
  * Test class for Model.
@@ -30,18 +29,20 @@ class MySQLModelTest extends \PHPUnit_Framework_TestCase
     protected $object;
 
     /**
-     * @var Adapter
-     */
-    protected $adapter;
-
-    /**
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
      */
     protected function setUp()
     {
-        $this->adapter = new MySQL("mysql:host=localhost;dbname=test", "root", "gwutama");
-        $this->object = new Mock($this->adapter);
+        $config = Spyc::YAMLLoad("tests/resources/database.yml");
+        Config::setArray($config);
+        Config::set("global.debug", true);
+
+        $adapters = new AdapterServiceContainer();
+        $this->object = $adapters->getService("default");
+
+        $this->object->setModel("Mock");
+
         $this->object->execute(
             "CREATE TABLE mocks(
                 id INT PRIMARY KEY AUTO_INCREMENT,
@@ -51,23 +52,25 @@ class MySQLModelTest extends \PHPUnit_Framework_TestCase
             )"
         );
 
+        $this->object = new Mock();
+
         // Insert dummy records
         // ID 1
-        $mock = new Mock($this->adapter);
+        $mock = new Mock();
         $mock->field1 = "value1-1";
         $mock->field2 = "value2-1";
         $mock->field3 = 1;
         $mock->save();
 
         // ID 2
-        $mock = new Mock($this->adapter);
+        $mock = new Mock();
         $mock->field1 = "value1-2";
         $mock->field2 = "value2-2";
         $mock->field3 = 1;
         $mock->save();
 
         // ID 3
-        $mock = new Mock($this->adapter);
+        $mock = new Mock();
         $mock->field1 = "value1-3";
         $mock->field2 = "value2-3";
         $mock->field3 = 1;
@@ -81,7 +84,6 @@ class MySQLModelTest extends \PHPUnit_Framework_TestCase
     protected function tearDown()
     {
         $this->object->execute("DROP TABLE mocks");
-        $this->adapter->disconnect();
     }
 
     public function testFindById()
@@ -148,7 +150,7 @@ class MySQLModelTest extends \PHPUnit_Framework_TestCase
     {
         // Insert dummy records
         for($i = 0; $i < 10; $i++) {
-            $mock = new Mock($this->adapter);
+            $mock = new Mock();
             $mock->save();
         }
 

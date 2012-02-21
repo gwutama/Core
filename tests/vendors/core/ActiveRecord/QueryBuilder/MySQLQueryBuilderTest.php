@@ -203,6 +203,21 @@ class MySQLQueryBuilderTest extends PHPUnit_Framework_TestCase
         ));
         $this->assertEquals("SELECT `id`, `name`, `lorem`, `ipsum` FROM `people` LIMIT :core_query_limit", $q);
 
+        $b = new Builder("Address");
+        $q = $b->select(array(
+            "fields" => array("id", "name", "lorem"),
+            "limit" => 3,
+            "offset" => 5
+        ));
+        $this->assertEquals("SELECT `id`, `name`, `lorem` FROM `addresses` LIMIT :core_query_limit OFFSET :core_query_offset", $q);
+
+        $b = new Builder("Table");
+        $q = $b->select(array(
+            "fields" => array("id", "name", "lorem"),
+            "offset" => 5 // offset won't work without limit.
+        ));
+        $this->assertEquals("SELECT `id`, `name`, `lorem` FROM `tables`", $q);
+
         $b = new Builder("Name");
         $q = $b->select(array(
             "order" => "`id` DESC"
@@ -222,6 +237,14 @@ class MySQLQueryBuilderTest extends PHPUnit_Framework_TestCase
             "limit" => 42
         ));
         $this->assertEquals("SELECT * FROM `sites` ORDER BY `id` DESC, `name` ASC LIMIT :core_query_limit", $q);
+
+        $b = new Builder("Site");
+        $q = $b->select(array(
+            "order" => "`id` DESC, `name` ASC",
+            "limit" => 42,
+            "offset" => 5
+        ));
+        $this->assertEquals("SELECT * FROM `sites` ORDER BY `id` DESC, `name` ASC LIMIT :core_query_limit OFFSET :core_query_offset", $q);
 
         $b = new Builder("Appointment");
         $q = $b->select(array(
@@ -290,6 +313,22 @@ class MySQLQueryBuilderTest extends PHPUnit_Framework_TestCase
         ));
         $this->assertEquals("SELECT `families`.`position`, `families`.`meal` FROM `families` LEFT JOIN (`foods`)".
             " ON families.position = foods.position WHERE `families`.`position` = :families.position", $q);
+
+        $b = new Builder("Family");
+        $q = $b->select(array(
+            "fields" => array("families.position", "families.meal"),
+            "join" => array(
+                "tables" => array("foods"),
+                "conditions" => "families.position = foods.position",
+                "type" => "LEFT JOIN"
+            ),
+            "conditions" => Op::eq("families.position", "father"),
+            "limit" => 10,
+            "offset" => 5
+        ));
+        $this->assertEquals("SELECT `families`.`position`, `families`.`meal` FROM `families` LEFT JOIN (`foods`)".
+            " ON families.position = foods.position WHERE `families`.`position` = :families.position".
+            " LIMIT :core_query_limit OFFSET :core_query_offset", $q);
     }
 }
 

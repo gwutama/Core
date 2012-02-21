@@ -136,7 +136,8 @@ class MySQL extends QueryBuilder {
         // 5th %s: having condition
         // 6th %s: ordering
         // 7th %s: limit
-        $query = "SELECT %s FROM `%s` %s%s%s%s%s";
+        // 8th %s: offset
+        $query = "SELECT %s FROM `%s` %s%s%s%s%s%s";
 
         // Check for join key and build special query if it has been found.
         if(isset($options["join"])) {
@@ -148,7 +149,8 @@ class MySQL extends QueryBuilder {
             // 6th %s: having condition
             // 7th %s: ordering
             // 8th %s: limit
-            $query = "SELECT %s FROM `%s` %s%s%s%s%s%s";
+            // 9th %s: offset
+            $query = "SELECT %s FROM `%s` %s%s%s%s%s%s%s";
 
             // Set join types, if not set then defaults to natural join
             if(isset($options["join"]["type"])) {
@@ -232,21 +234,25 @@ class MySQL extends QueryBuilder {
         }
 
         // Build limit
+        $limit = "";
+        $offset = "";
         if(isset($options["limit"])) {
-            $limit = "LIMIT :core_query_limit";
-        }
-        else {
-            $limit = "";
+            $limit = "LIMIT :core_query_limit ";
+
+            // Build offset. Offset won't work without limit.
+            if(isset($options["offset"])) {
+                $offset = "OFFSET :core_query_offset";
+            }
         }
 
         if(isset($options["join"])) {
             // @todo
             return trim(sprintf($query, $fields, $this->tableName, $join,
-                $conditions, $group, $having, $order, $limit));
+                $conditions, $group, $having, $order, $limit, $offset));
         }
         else {
             return trim(sprintf($query, $fields, $this->tableName,
-                $conditions, $group, $having, $order, $limit));
+                $conditions, $group, $having, $order, $limit, $offset));
         }
     }
 
