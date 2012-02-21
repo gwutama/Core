@@ -1,9 +1,9 @@
 <?php
 
-require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\Config.php';
-require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\Spyc.php';
-require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\ConfigNode.php';
-require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\exceptions.php';
+require_once 'vendors/Core/Config.php';
+require_once 'vendors/Core/Spyc.php';
+require_once 'vendors/Core/ConfigNode.php';
+require_once 'vendors/Core/exceptions.php';
 
 use Core\Config;
 use Core\ConfigNode;

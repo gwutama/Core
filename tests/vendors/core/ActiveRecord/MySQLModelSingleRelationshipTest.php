@@ -6,17 +6,17 @@ use Core\Config;
 use Models\Mock;
 use Models\Single;
 
-require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\Spyc.php';
-require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\Config.php';
-require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\ServiceContainer.php';
-require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\Service.php';
-require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\ActiveRecord\AdapterServiceContainer.php';
-require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\ActiveRecord\Model.php';
-require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\ActiveRecord\ModelCollection.php';
-require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\ActiveRecord\Operator.php';
-require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\ActiveRecord\Operator\MySQL.php';
-require_once 'C:\Users\Galuh Utama\workspace\Core\tests\resources\Models\Mock.php';
-require_once 'C:\Users\Galuh Utama\workspace\Core\tests\resources\Models\Single.php';
+require_once 'vendors/Core/Spyc.php';
+require_once 'vendors/Core/Config.php';
+require_once 'vendors/Core/ServiceContainer.php';
+require_once 'vendors/Core/Service.php';
+require_once 'vendors/Core/ActiveRecord/AdapterServiceContainer.php';
+require_once 'vendors/Core/ActiveRecord/Model.php';
+require_once 'vendors/Core/ActiveRecord/ModelCollection.php';
+require_once 'vendors/Core/ActiveRecord/Operator.php';
+require_once 'vendors/Core/ActiveRecord/Operator/MySQL.php';
+require_once 'tests/resources/Models/Mock.php';
+require_once 'tests/resources/Models/Single.php';
 
 class MySQLModelSingleRelationshipTest extends \PHPUnit_Framework_TestCase
 {

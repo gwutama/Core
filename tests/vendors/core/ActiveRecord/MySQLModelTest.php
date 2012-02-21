@@ -6,16 +6,16 @@ use Core\ActiveRecord\Adapter\MySQL;
 use Core\Spyc;
 use Core\Config;
 
-require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\Spyc.php';
-require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\Config.php';
-require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\ServiceContainer.php';
-require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\Service.php';
-require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\ActiveRecord\AdapterServiceContainer.php';
-require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\ActiveRecord\Model.php';
-require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\ActiveRecord\ModelCollection.php';
-require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\ActiveRecord\Operator.php';
-require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\ActiveRecord\Operator\MySQL.php';
-require_once 'C:\Users\Galuh Utama\workspace\Core\tests\resources\Models\Mock.php';
+require_once 'vendors/Core/Spyc.php';
+require_once 'vendors/Core/Config.php';
+require_once 'vendors/Core/ServiceContainer.php';
+require_once 'vendors/Core/Service.php';
+require_once 'vendors/Core/ActiveRecord\AdapterServiceContainer.php';
+require_once 'vendors/Core/ActiveRecord\Model.php';
+require_once 'vendors/Core/ActiveRecord\ModelCollection.php';
+require_once 'vendors/Core/ActiveRecord\Operator.php';
+require_once 'vendors/Core/ActiveRecord\Operator\MySQL.php';
+require_once 'tests/resources/Models/Mock.php';
 
 /**
  * Test class for Model.

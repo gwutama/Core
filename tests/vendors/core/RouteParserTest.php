@@ -1,8 +1,8 @@
 <?php
 
-require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\RouteParser.php';
-require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\RoutingObject.php';
-require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\exceptions.php';
+require_once 'vendors/Core/RouteParser.php';
+require_once 'vendors/Core/RoutingObject.php';
+require_once 'vendors/Core/exceptions.php';
 
 use Core\RouteParser;
 use Core\RoutingObject;

@@ -1,6 +1,6 @@
 <?php
 
-require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\Autoloader.php';
+require_once 'vendors/Core/Autoloader.php';
 define("DS", DIRECTORY_SEPARATOR);
 
 use Core\Autoloader;

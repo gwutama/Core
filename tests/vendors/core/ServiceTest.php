@@ -20,7 +20,7 @@ if(!class_exists("\\Core\\Mock") && !class_exists("\\Core\\Mock2") && !class_exi
     class Mock3 extends Mock2 {}
 }
 
-require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\Service.php';
+require_once 'vendors/Core/Service.php';
 
 /**
  * Test class for Service.

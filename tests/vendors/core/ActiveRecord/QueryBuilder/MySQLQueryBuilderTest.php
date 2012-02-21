@@ -1,13 +1,13 @@
 <?php
 
-require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\ActiveRecord\Adapter.php';
-require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\ActiveRecord\Adapter\MySQL.php';
-require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\ActiveRecord\Operator.php';
-require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\ActiveRecord\Operator\MySQL.php';
-require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\ActiveRecord\QueryBuilder.php';
-require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\ActiveRecord\QueryBuilder\MySQL.php';
-require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\exceptions.php';
-require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\Inflector.php';
+require_once 'vendors/Core/ActiveRecord/Adapter.php';
+require_once 'vendors/Core/ActiveRecord/Adapter/MySQL.php';
+require_once 'vendors/Core/ActiveRecord/Operator.php';
+require_once 'vendors/Core/ActiveRecord/Operator/MySQL.php';
+require_once 'vendors/Core/ActiveRecord/QueryBuilder.php';
+require_once 'vendors/Core/ActiveRecord/QueryBuilder/MySQL.php';
+require_once 'vendors/Core/exceptions.php';
+require_once 'vendors/Core/Inflector.php';
 
 use Core\ActiveRecord\QueryBuilder\MySQL as Builder;
 use Core\ActiveRecord\Operator\MySQL as Op;

@@ -1,6 +1,6 @@
 <?php
 
-require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\Inflector.php';
+require_once 'vendors/Core/Inflector.php';
 
 use Core\Inflector;
 

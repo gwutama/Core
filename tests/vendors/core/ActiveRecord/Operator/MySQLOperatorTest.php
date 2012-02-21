@@ -1,7 +1,7 @@
 <?php
 
-require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\ActiveRecord\Operator.php';
-require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\ActiveRecord\Operator\MySQL.php';
+require_once 'vendors/Core/ActiveRecord/Operator.php';
+require_once 'vendors/Core/ActiveRecord/Operator/MySQL.php';
 
 use Core\ActiveRecord\Operator\MySQL as Op;
 

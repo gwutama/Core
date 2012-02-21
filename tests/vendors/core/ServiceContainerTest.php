@@ -19,7 +19,7 @@ if(!class_exists("\\Core\\MockClass") && !class_exists("\\Core\\MockClass2") && 
     class MockClass3 extends MockClass2 {}
 }
 
-require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\ServiceContainer.php';
+require_once 'vendors/Core/ServiceContainer.php';
 
 /**
  * Test class for ServiceContainer.

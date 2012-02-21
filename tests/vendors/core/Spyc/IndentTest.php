@@ -1,6 +1,6 @@
 <?php
 
-require_once 'C:\Users\Galuh Utama\workspace\Core\vendors\Core\Spyc.php';
+require_once 'vendors/Core/Spyc.php';
 use Core\Spyc;
 
 class IndentTest extends PHPUnit_Framework_TestCase
