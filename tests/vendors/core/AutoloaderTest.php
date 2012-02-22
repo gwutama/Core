@@ -2,8 +2,8 @@
 
 require_once 'vendors/Core/Autoloader.php';
 require_once 'vendors/Core/Storage/Storageable.php';
-require_once 'vendors/Core/Storage/BaseStorage.php';
-require_once 'vendors/Core/Storage/BaseStorageNode.php';
+require_once 'vendors/Core/Storage/Storage.php';
+require_once 'vendors/Core/Storage/StorageNode.php';
 require_once 'vendors/Core/Storage/Config.php';
 require_once 'vendors/Core/Storage/ConfigNode.php';
 

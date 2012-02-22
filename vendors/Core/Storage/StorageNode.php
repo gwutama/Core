@@ -7,7 +7,7 @@ namespace Core\Storage;
  *
  * Basic representation of a storage node.
  */
-abstract class BaseStorageNode {
+abstract class StorageNode {
 
     /**
      * The storage key.

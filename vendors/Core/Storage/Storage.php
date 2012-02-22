@@ -2,7 +2,7 @@
 
 namespace Core\Storage;
 
-abstract class BaseStorage implements Storageable {
+abstract class Storage implements Storageable {
 
     /**
      * Checks whether key contains only alphanumerical characters.

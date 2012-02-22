@@ -17,7 +17,7 @@ use Core\InvalidConfigKeyException;
  * var_dump(Config::get("foo")); // returns bar
  * var_dump(Config::get("foo.acme")); // returns blah
  */
-class Config extends BaseStorage {
+class Config extends Storage {
 
     /**
      * Configurations are statically saved in an array.

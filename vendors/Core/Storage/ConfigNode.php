@@ -7,7 +7,7 @@ namespace Core\Storage;
  *
  * Basic representation of a configuration node.
  */
-class ConfigNode extends BaseStorageNode implements \Iterator {
+class ConfigNode extends StorageNode implements \Iterator {
 
     /**
      * A ConfigNode can have children of type ConfigNode.
