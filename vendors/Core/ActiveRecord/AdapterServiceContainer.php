@@ -2,7 +2,7 @@
 
 namespace Core\ActiveRecord;
 use \Core\ServiceContainer;
-use \Core\Config;
+use \Core\Storage\Config;
 
 class AdapterServiceContainer extends ServiceContainer {
 

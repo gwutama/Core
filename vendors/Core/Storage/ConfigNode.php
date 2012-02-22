@@ -1,27 +1,13 @@
 <?php
 
-namespace Core;
+namespace Core\Storage;
 
 /**
  * <h1>Class ConfigNode</h1>
  *
  * Basic representation of a configuration node.
  */
-class ConfigNode implements \Iterator {
-
-    /**
-     * The configuration key.
-     *
-     * @var null
-     */
-    private $key;
-
-    /**
-     * The configuration value.
-     *
-     * @var null
-     */
-    private $value;
+class ConfigNode extends BaseStorageNode implements \Iterator {
 
     /**
      * A ConfigNode can have children of type ConfigNode.
@@ -30,57 +16,6 @@ class ConfigNode implements \Iterator {
      * @var array
      */
     private $children = array();
-
-    /**
-     * The constructor sets key and value.
-     *
-     * @param null $key
-     * @param null $value
-     */
-    public function __construct($key = null, $value = null) {
-        $this->key = $key;
-        $this->value = $value;
-    }
-
-
-    /**
-     * Setter for key
-     *
-     * @param $key
-     */
-    public function setKey($key) {
-        $this->key = $key;
-    }
-
-
-    /**
-     * Getter for key.
-     *
-     * @return null
-     */
-    public function getKey() {
-        return $this->key;
-    }
-
-
-    /**
-     * Setter for value.
-     *
-     * @param $value
-     */
-    public function setValue($value) {
-        $this->value = $value;
-    }
-
-
-    /**
-     * Getter for value.
-     *
-     * @return null
-     */
-    public function getValue() {
-        return $this->value;
-    }
 
 
     /**

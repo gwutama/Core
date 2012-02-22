@@ -4,10 +4,15 @@ namespace Models;
 use Core\ActiveRecord\AdapterServiceContainer;
 use Core\ActiveRecord\Adapter\MySQL;
 use Core\Spyc;
-use Core\Config;
+use Core\Storage\Config;
+use Core\Storage\ConfigNode;
 
 require_once 'vendors/Core/Spyc.php';
-require_once 'vendors/Core/Config.php';
+require_once 'vendors/Core/Storage/Storageable.php';
+require_once 'vendors/Core/Storage/BaseStorage.php';
+require_once 'vendors/Core/Storage/BaseStorageNode.php';
+require_once 'vendors/Core/Storage/Config.php';
+require_once 'vendors/Core/Storage/ConfigNode.php';
 require_once 'vendors/Core/ServiceContainer.php';
 require_once 'vendors/Core/Service.php';
 require_once 'vendors/Core/ActiveRecord\AdapterServiceContainer.php';

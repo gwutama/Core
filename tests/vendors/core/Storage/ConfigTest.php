@@ -1,12 +1,15 @@
 <?php
 
-require_once 'vendors/Core/Config.php';
+require_once 'vendors/Core/Storage/Storageable.php';
+require_once 'vendors/Core/Storage/BaseStorage.php';
+require_once 'vendors/Core/Storage/BaseStorageNode.php';
+require_once 'vendors/Core/Storage/Config.php';
+require_once 'vendors/Core/Storage/ConfigNode.php';
 require_once 'vendors/Core/Spyc.php';
-require_once 'vendors/Core/ConfigNode.php';
 require_once 'vendors/Core/exceptions.php';
 
-use Core\Config;
-use Core\ConfigNode;
+use Core\Storage\Config;
+use Core\Storage\ConfigNode;
 use Core\Spyc;
 use Core\InvalidConfigKeyException;
 

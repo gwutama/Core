@@ -1,9 +1,17 @@
 <?php
 
 require_once 'vendors/Core/Autoloader.php';
+require_once 'vendors/Core/Storage/Storageable.php';
+require_once 'vendors/Core/Storage/BaseStorage.php';
+require_once 'vendors/Core/Storage/BaseStorageNode.php';
+require_once 'vendors/Core/Storage/Config.php';
+require_once 'vendors/Core/Storage/ConfigNode.php';
+
 define("DS", DIRECTORY_SEPARATOR);
 
 use Core\Autoloader;
+use Core\Storage\Config;
+use Core\Template;
 
 /**
  * Test class for Autoloader.
@@ -48,9 +56,9 @@ class AutoloaderTest extends PHPUnit_Framework_TestCase
 
     public function testLoader()
     {
-        $foo = new Core\Config;
+        $foo = new Config;
         //$foo = new \Controllers\Home("Foo", "bar");
-        $foo = new Core\Template("foo", "bar", "baz");
+        $foo = new Template("foo", "bar", "baz");
     }
 
     /**

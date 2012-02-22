@@ -1,6 +1,7 @@
 <?php
 
-namespace Core;
+namespace Core\Storage;
+use Core\InvalidConfigKeyException;
 
 /**
  * <h1>Class Config</h1>
@@ -16,46 +17,12 @@ namespace Core;
  * var_dump(Config::get("foo")); // returns bar
  * var_dump(Config::get("foo.acme")); // returns blah
  */
-class Config {
+class Config extends BaseStorage {
 
     /**
      * Configurations are statically saved in an array.
      */
     public static $configs = array();
-
-
-    /**
-     * Sets the configuration based on an array with keys.
-     *
-     * @static
-     * @param $array
-     */
-    public static function setArray($array, $keepArrayAsArray = false, $parent = "") {
-        foreach((array) $array as $key=>$value) {
-            if( !is_array($value) ) {
-                if($parent) {
-                    $key = "$parent.$key";
-                }
-                self::set($key, $value);
-            }
-            else {
-                if($keepArrayAsArray) {
-                    self::set($key, $value);
-                }
-                else {
-                    $tmp = $parent;
-                    if($parent) {
-                        $parent .= ".$key";
-                    }
-                    else {
-                        $parent = $key;
-                    }
-                    self::setArray($value, $keepArrayAsArray, $parent);
-                    $parent = $tmp;
-                }
-            }
-        }
-    }
 
 
     /**
@@ -72,13 +39,6 @@ class Config {
         if(self::validKey($key) == false) {
             throw new InvalidConfigKeyException($key);
         }
-
-        // Skip keys with null values but process boolean values.
-        /*
-        if($value == null && !is_bool($value)) {
-            return;
-        }
-        */
 
         $config =& self::$configs;
 
@@ -137,20 +97,6 @@ class Config {
             return $value;
         }
         return $config;
-    }
-
-
-    /**
-     * Checks whether key contains only alphanumerical characters.
-     *
-     * @static
-     * @param $key  Configuration key. Must be string.
-     */
-    public static function validKey($key) {
-        if(is_string($key) && preg_match("/^[a-zA-Z0-9\.]+$/", $key)) {
-            return true;
-        }
-        return false;
     }
 
 
