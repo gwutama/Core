@@ -2,9 +2,9 @@
 
 namespace Core\ActiveRecord\Operator;
 
-use \Core\ActiveRecord\Operator;
+use \Core\ActiveRecord\Operatorable;
 
-class MySQL implements Operator {
+class MySQL implements Operatorable {
 
     /**
      * The binds array contains binds values

@@ -2,7 +2,7 @@
 
 namespace Core\ActiveRecord;
 
-interface Operator {
+interface Operatorable {
 
     /**
      * Boolean AND operator.

@@ -18,7 +18,7 @@ require_once 'vendors/Core/Service.php';
 require_once 'vendors/Core/ActiveRecord/AdapterServiceContainer.php';
 require_once 'vendors/Core/ActiveRecord/Model.php';
 require_once 'vendors/Core/ActiveRecord/ModelCollection.php';
-require_once 'vendors/Core/ActiveRecord/Operator.php';
+require_once 'vendors/Core/ActiveRecord/Operatorable.php';
 require_once 'vendors/Core/ActiveRecord/Operator/MySQL.php';
 require_once 'tests/resources/Models/Mock.php';
 require_once 'tests/resources/Models/Single.php';

@@ -2,7 +2,7 @@
 
 require_once 'vendors/Core/ActiveRecord/Adapter.php';
 require_once 'vendors/Core/ActiveRecord/Adapter/MySQL.php';
-require_once 'vendors/Core/ActiveRecord/Operator.php';
+require_once 'vendors/Core/ActiveRecord/Operatorable.php';
 require_once 'vendors/Core/ActiveRecord/Operator/MySQL.php';
 require_once 'vendors/Core/ActiveRecord/QueryBuilder.php';
 require_once 'vendors/Core/ActiveRecord/QueryBuilder/MySQL.php';

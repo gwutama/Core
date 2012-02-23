@@ -129,7 +129,7 @@ abstract class Model {
      */
     public function findAll($options = array()) {
         if($this->dbo) {
-            return $this->dbo->findAll($this->primaryKey, $options); // returns ModelCollection
+            return $this->dbo->findAll($this->primaryKey, $options);
         }
         throw new ActiveRecordModelNoAdapterSetException();
     }

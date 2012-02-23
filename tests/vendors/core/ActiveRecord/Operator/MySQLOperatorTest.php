@@ -1,6 +1,6 @@
 <?php
 
-require_once 'vendors/Core/ActiveRecord/Operator.php';
+require_once 'vendors/Core/ActiveRecord/Operatorable.php';
 require_once 'vendors/Core/ActiveRecord/Operator/MySQL.php';
 
 use Core\ActiveRecord\Operator\MySQL as Op;
