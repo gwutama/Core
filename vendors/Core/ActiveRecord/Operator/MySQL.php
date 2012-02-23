@@ -15,6 +15,12 @@ class MySQL implements Operatorable {
     protected static $binds = array();
 
 
+    public function __call($name, $arguments) {
+        $class = get_class($this);
+        return call_user_func_array(array($class, $name), $arguments);
+    }
+
+
     /**
      * Get the binds array.
      *
