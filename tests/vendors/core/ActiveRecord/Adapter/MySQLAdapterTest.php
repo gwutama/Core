@@ -37,6 +37,7 @@ class MySQLAdapterTest extends \PHPUnit_Framework_TestCase
         $this->object = $adapters->getService("default");
 
         $this->object->setModel("\\Models\\Mock");
+        $this->object->setPrimaryKey("id");
 
         $this->object->execute("DROP TABLE IF EXISTS mocks");
 
@@ -77,17 +78,17 @@ class MySQLAdapterTest extends \PHPUnit_Framework_TestCase
 
     public function testFindById()
     {
-        $obj = $this->object->findById("id", 1);
+        $obj = $this->object->findById(1);
         $this->assertEquals("value1-1", $obj->field1);
         $this->assertEquals("value2-1", $obj->field2);
         $this->assertEquals(1, $obj->field3);
 
-        $obj = $this->object->findById("id", 2);
+        $obj = $this->object->findById(2);
         $this->assertEquals("value1-2", $obj->field1);
         $this->assertEquals("value2-2", $obj->field2);
         $this->assertEquals(1, $obj->field3);
 
-        $obj = $this->object->findById("id", 3);
+        $obj = $this->object->findById(3);
         $this->assertEquals("value1-3", $obj->field1);
         $this->assertEquals("value2-3", $obj->field2);
         $this->assertEquals(1, $obj->field3);
@@ -95,7 +96,7 @@ class MySQLAdapterTest extends \PHPUnit_Framework_TestCase
 
     public function testFindAll()
     {
-        $objs = $this->object->findAll("id");
+        $objs = $this->object->findAll();
         $this->assertEquals(3, $objs->count());
 
         $this->assertEquals("value1-1", $objs->get(0)->field1);
@@ -113,7 +114,7 @@ class MySQLAdapterTest extends \PHPUnit_Framework_TestCase
 
     public function testFindFirst()
     {
-        $obj = $this->object->findFirst("id");
+        $obj = $this->object->findFirst();
         $this->assertEquals("value1-1", $obj->field1);
         $this->assertEquals("value2-1", $obj->field2);
         $this->assertEquals(1, $obj->field3);
@@ -121,7 +122,7 @@ class MySQLAdapterTest extends \PHPUnit_Framework_TestCase
 
     public function testFindLast()
     {
-        $obj = $this->object->findLast("id");
+        $obj = $this->object->findLast();
         $this->assertEquals("value1-3", $obj->field1);
         $this->assertEquals("value2-3", $obj->field2);
         $this->assertEquals(1, $obj->field3);
@@ -146,13 +147,13 @@ class MySQLAdapterTest extends \PHPUnit_Framework_TestCase
             ));
         }
 
-        $objects = $this->object->findAll("id");
+        $objects = $this->object->findAll();
         $this->assertEquals(13, $objects->count()); // 10 + 3 from before
     }
 
     public function testUpdate()
     {
-        $objects = $this->object->findAll("id");
+        $objects = $this->object->findAll();
         $this->assertEquals(3, $objects->count());
         foreach($objects as $object) {
             $this->object->update($object, array(
@@ -162,7 +163,7 @@ class MySQLAdapterTest extends \PHPUnit_Framework_TestCase
             ));
         }
 
-        $objects = $this->object->findAll("id");
+        $objects = $this->object->findAll();
         $this->assertEquals(3, $objects->count());
         $this->assertEquals("updated", $objects->get(0)->field1);
         $this->assertEquals("test", $objects->get(0)->field2);
@@ -179,7 +180,7 @@ class MySQLAdapterTest extends \PHPUnit_Framework_TestCase
 
     public function testUpdateAll()
     {
-        $objects = $this->object->findAll("id");
+        $objects = $this->object->findAll();
         $this->assertEquals(3, $objects->count());
         $this->object->updateAll($objects, array(
             "field1" => "updated",
@@ -187,7 +188,7 @@ class MySQLAdapterTest extends \PHPUnit_Framework_TestCase
             "field3" => 42
         ));
 
-        $objects = $this->object->findAll("id");
+        $objects = $this->object->findAll();
         $this->assertEquals(3, $objects->count());
         $this->assertEquals("updated", $objects->get(0)->field1);
         $this->assertEquals("test", $objects->get(0)->field2);
@@ -204,18 +205,18 @@ class MySQLAdapterTest extends \PHPUnit_Framework_TestCase
 
     public function testDelete()
     {
-        $objects = $this->object->findAll("id");
+        $objects = $this->object->findAll();
         $this->assertEquals(3, $objects->count());
         foreach($objects as $object) {
             $this->object->delete($object);
         }
-        $objects = $this->object->findAll("id");
+        $objects = $this->object->findAll();
         $this->assertEquals(0, $objects->count());
     }
 
     public function testDeleteAll()
     {
-        $objects = $this->object->findAll("id");
+        $objects = $this->object->findAll();
         $this->assertEquals(3, $objects->count());
 
         $objects->delete();

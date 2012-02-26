@@ -40,6 +40,12 @@ abstract class Adapter {
 
 
     /**
+     * @var
+     */
+    protected $primaryKey;
+
+
+    /**
      * @var QueryBuilder
      */
     protected $queryBuilder;
@@ -131,31 +137,52 @@ abstract class Adapter {
         return $table;
     }
 
+
+    /**
+     * Sets the primar key.
+     *
+     * @param $key
+     */
+    public function setPrimaryKey($key) {
+        $this->primaryKey = $key;
+    }
+
+
+    /**
+     * Returns the primary key.
+     *
+     * @return mixed
+     */
+    public function getPrimaryKey() {
+        return $this->primaryKey;
+    }
+
+
     /**
      * @param $primaryKey
      * @param $pos
      */
-    abstract public function findById($primaryKey, $pos);
+    abstract public function findById($pos);
 
 
     /**
      * @param $primaryKey
      */
-    abstract public function findAll($primaryKey);
-
-
-    /**
-     * @param $primaryKey
-     * @param array $options
-     */
-    abstract public function findFirst($primaryKey, $options = array());
+    abstract public function findAll();
 
 
     /**
      * @param $primaryKey
      * @param array $options
      */
-    abstract public function findLast($primaryKey, $options = array());
+    abstract public function findFirst($options = array());
+
+
+    /**
+     * @param $primaryKey
+     * @param array $options
+     */
+    abstract public function findLast($options = array());
 
 
     /**

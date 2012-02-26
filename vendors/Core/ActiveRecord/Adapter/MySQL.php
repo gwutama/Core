@@ -145,11 +145,10 @@ class MySQL extends Adapter {
 
 
     /**
-     * @param $primaryKey
      * @param $pos
      * @return mixed
      */
-    public function findById($primaryKey, $pos) {
+    public function findById($pos) {
         // tableize model names
         $tables = (array) $this->hasOne + (array) $this->hasMany;
         $joinTables = array();
@@ -163,9 +162,11 @@ class MySQL extends Adapter {
         // Get current table name
         $currTable = $this->getTableName();
 
+        $pk = $this->primaryKey;
+
         // finaly get the object.
         $objects = $this->read(array(
-            "conditions" => Op::eq($currTable.".".$primaryKey, $pos),
+            "conditions" => Op::eq("$currTable.$pk", $pos),
             "join" => array(
                 "tables" => $joinTables,
                 "conditions" => $joinConditions
@@ -178,36 +179,36 @@ class MySQL extends Adapter {
     /**
      * @return mixed
      */
-    public function findAll($primaryKey) {
-        return new ModelCollection($this, $primaryKey, $this->read());
+    public function findAll() {
+        return new ModelCollection($this, $this->primaryKey, $this->read());
     }
 
 
     /**
-     * @param $primaryKey
      * @param array $options
      * @return mixed
      */
-    public function findFirst($primaryKey, $options = array()) {
+    public function findFirst($options = array()) {
+        $pk = $this->primaryKey;
         $objects = $this->read(array(
             "conditions" => @$options["conditions"],
             "limit" => 1,
-            "order" => "`$primaryKey` ASC"
+            "order" => "`$pk` ASC"
         ));
         return $objects[0];
     }
 
 
     /**
-     * @param $primaryKey
      * @param array $options
      * @return mixed
      */
-    public function findLast($primaryKey, $options = array()) {
+    public function findLast($options = array()) {
+        $pk = $this->primaryKey;
         $objects = $this->read(array(
             "conditions" => @$options["conditions"],
             "limit" => 1,
-            "order" => "`$primaryKey` DESC"
+            "order" => "`$pk` DESC"
         ));
         return $objects[0];
     }

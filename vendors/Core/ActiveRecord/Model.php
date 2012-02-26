@@ -86,6 +86,7 @@ abstract class Model {
         $adapters = new AdapterServiceContainer();
         $this->dbo = $adapters->getService($this->databaseProfile);
         $this->dbo->setModel(get_class($this));
+        $this->dbo->setPrimaryKey($this->primaryKey);
         $this->dbo->setHasOne($this->hasOne);
         $this->dbo->setHasMany($this->hasMany);
         $this->dbo->setBelongsTo($this->belongsTo);
@@ -119,7 +120,7 @@ abstract class Model {
      */
     public function findById($pos, $options = array()) {
         if($this->dbo) {
-            return $this->dbo->findById($this->primaryKey, $pos, $options);
+            return $this->dbo->findById($pos, $options);
         }
         throw new ActiveRecordModelNoAdapterSetException();
     }
@@ -132,7 +133,7 @@ abstract class Model {
      */
     public function findAll($options = array()) {
         if($this->dbo) {
-            return $this->dbo->findAll($this->primaryKey, $options);
+            return $this->dbo->findAll($options);
         }
         throw new ActiveRecordModelNoAdapterSetException();
     }
@@ -145,7 +146,7 @@ abstract class Model {
      */
     public function findFirst($options = array()) {
         if($this->dbo) {
-            return $this->dbo->findFirst($this->primaryKey, $options);
+            return $this->dbo->findFirst($options);
         }
         throw new ActiveRecordModelNoAdapterSetException();
     }
@@ -158,7 +159,7 @@ abstract class Model {
      */
     public function findLast($options = array()) {
         if($this->dbo) {
-            return $this->dbo->findLast($this->primaryKey, $options);
+            return $this->dbo->findLast($options);
         }
         throw new ActiveRecordModelNoAdapterSetException();
     }
