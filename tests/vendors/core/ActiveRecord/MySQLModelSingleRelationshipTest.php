@@ -40,8 +40,8 @@ class MySQLModelSingleRelationshipTest extends \PHPUnit_Framework_TestCase
 
         $adapter->setModel("Mock");
 
-        $adapter->execute("DROP TABLE IF EXISTS mocks");
         $adapter->execute("DROP TABLE IF EXISTS singles");
+        $adapter->execute("DROP TABLE IF EXISTS mocks");
 
         $adapter->execute(
             "CREATE TABLE mocks(
@@ -78,8 +78,8 @@ class MySQLModelSingleRelationshipTest extends \PHPUnit_Framework_TestCase
 
     protected function tearDown()
     {
-        $this->mock->execute("DROP TABLE mocks");
         $this->single->execute("DROP TABLE singles");
+        $this->mock->execute("DROP TABLE mocks");
     }
 
     public function testFindById()

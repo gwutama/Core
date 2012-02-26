@@ -20,7 +20,7 @@ require_once 'vendors/Core/ActiveRecord\Model.php';
 require_once 'vendors/Core/ActiveRecord\ModelCollection.php';
 require_once 'vendors/Core/ActiveRecord\Operatorable.php';
 require_once 'vendors/Core/ActiveRecord\Operator\MySQL.php';
-require_once 'tests/resources/Models/Mock.php';
+require_once 'tests/resources/Models/SimpleMock.php';
 
 /**
  * Test class for Model.
@@ -46,12 +46,12 @@ class MySQLModelTest extends \PHPUnit_Framework_TestCase
         $adapters = new AdapterServiceContainer();
         $adapter = $adapters->getService("default");
 
-        $adapter->setModel("Mock");
+        $adapter->setModel("SimpleMock");
 
-        $adapter->execute("DROP TABLE IF EXISTS mocks");
+        $adapter->execute("DROP TABLE IF EXISTS simple_mocks");
 
         $adapter->execute(
-            "CREATE TABLE mocks(
+            "CREATE TABLE simple_mocks(
                 id INT PRIMARY KEY AUTO_INCREMENT,
                 field1 VARCHAR(255),
                 field2 VARCHAR(255),
@@ -59,25 +59,25 @@ class MySQLModelTest extends \PHPUnit_Framework_TestCase
             )"
         );
 
-        $this->object = new Mock();
+        $this->object = new SimpleMock();
 
         // Insert dummy records
         // ID 1
-        $mock = new Mock();
+        $mock = new SimpleMock();
         $mock->field1 = "value1-1";
         $mock->field2 = "value2-1";
         $mock->field3 = 1;
         $mock->save();
 
         // ID 2
-        $mock = new Mock();
+        $mock = new SimpleMock();
         $mock->field1 = "value1-2";
         $mock->field2 = "value2-2";
         $mock->field3 = 1;
         $mock->save();
 
         // ID 3
-        $mock = new Mock();
+        $mock = new SimpleMock();
         $mock->field1 = "value1-3";
         $mock->field2 = "value2-3";
         $mock->field3 = 1;
@@ -90,7 +90,7 @@ class MySQLModelTest extends \PHPUnit_Framework_TestCase
      */
     protected function tearDown()
     {
-        $this->object->execute("DROP TABLE mocks");
+        $this->object->execute("DROP TABLE simple_mocks");
     }
 
     public function testFindById()
@@ -157,7 +157,7 @@ class MySQLModelTest extends \PHPUnit_Framework_TestCase
     {
         // Insert dummy records
         for($i = 0; $i < 10; $i++) {
-            $mock = new Mock();
+            $mock = new SimpleMock();
             $mock->save();
         }
 

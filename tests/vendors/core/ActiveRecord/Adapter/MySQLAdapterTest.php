@@ -38,6 +38,8 @@ class MySQLAdapterTest extends \PHPUnit_Framework_TestCase
 
         $this->object->setModel("\\Models\\Mock");
 
+        $this->object->execute("DROP TABLE IF EXISTS mocks");
+
         $this->object->execute(
             "CREATE TABLE mocks(
                 id INT PRIMARY KEY AUTO_INCREMENT,

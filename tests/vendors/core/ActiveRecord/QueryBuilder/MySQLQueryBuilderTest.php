@@ -279,7 +279,10 @@ class MySQLQueryBuilderTest extends PHPUnit_Framework_TestCase
             "order" => "`id` DESC"
         ));
         $this->assertEquals("SELECT * FROM `appointments` HAVING `date` = :date ORDER BY `id` DESC", $q);
+    }
 
+
+    public function testSimpleJoins() {
         $b = new Builder("Test");
         $q = $b->select(array(
             "join" => array(
@@ -287,19 +290,19 @@ class MySQLQueryBuilderTest extends PHPUnit_Framework_TestCase
                 "conditions" => "tests.id = things.tests_id"
             )
         ));
-        $this->assertEquals("SELECT * FROM `tests` JOIN (`things`) ON tests.id = things.tests_id", $q);
+        $this->assertEquals("SELECT * FROM `tests` JOIN (`things`) ON (tests.id = things.tests_id)", $q);
 
         $b = new Builder("Family");
         $q = $b->select(array(
-           "fields" => array("families.position", "families.meal"),
-           "join" => array(
-               "tables" => array("foods"),
-               "conditions" => "families.position = foods.position",
-               "type" => "LEFT JOIN"
-           )
+            "fields" => array("families.position", "families.meal"),
+            "join" => array(
+                "tables" => array("foods"),
+                "conditions" => "families.position = foods.position",
+                "type" => "LEFT JOIN"
+            )
         ));
         $this->assertEquals("SELECT `families`.`position`, `families`.`meal` FROM `families` LEFT JOIN (`foods`)".
-                                " ON families.position = foods.position", $q);
+            " ON (families.position = foods.position)", $q);
 
         $b = new Builder("Family");
         $q = $b->select(array(
@@ -312,7 +315,7 @@ class MySQLQueryBuilderTest extends PHPUnit_Framework_TestCase
             "conditions" => Op::eq("families.position", "father")
         ));
         $this->assertEquals("SELECT `families`.`position`, `families`.`meal` FROM `families` LEFT JOIN (`foods`)".
-            " ON families.position = foods.position WHERE `families`.`position` = :families.position", $q);
+            " ON (families.position = foods.position) WHERE `families`.`position` = :families_position", $q);
 
         $b = new Builder("Family");
         $q = $b->select(array(
@@ -327,7 +330,38 @@ class MySQLQueryBuilderTest extends PHPUnit_Framework_TestCase
             "offset" => 5
         ));
         $this->assertEquals("SELECT `families`.`position`, `families`.`meal` FROM `families` LEFT JOIN (`foods`)".
-            " ON families.position = foods.position WHERE `families`.`position` = :families.position".
+            " ON (families.position = foods.position) WHERE `families`.`position` = :families_position".
+            " LIMIT :core_query_limit OFFSET :core_query_offset", $q);
+    }
+
+
+    public function testMultipleJoins() {
+        $b = new Builder("Test");
+        $q = $b->select(array(
+            "join" => array(
+                "tables" => array("things", "foobars"),
+                "conditions" => "tests.id = things.tests_id AND things.tests_id = foobars.things_id"
+            )
+        ));
+        $this->assertEquals("SELECT * FROM `tests` JOIN (`things`, `foobars`) ON".
+            " (tests.id = things.tests_id AND things.tests_id = foobars.things_id)", $q);
+
+        $b = new Builder("Family");
+        $q = $b->select(array(
+            "fields" => array("families.position", "families.meal"),
+            "join" => array(
+                "tables" => array("foods", "restaurants"),
+                "conditions" => "families.position = foods.position AND foods.restaurant = restaurants.id",
+                "type" => "LEFT JOIN"
+            ),
+            "conditions" => Op::eq("families.position", "father"),
+            "limit" => 10,
+            "offset" => 5
+        ));
+        $this->assertEquals("SELECT `families`.`position`, `families`.`meal` FROM `families`".
+            " LEFT JOIN (`foods`, `restaurants`)".
+            " ON (families.position = foods.position AND foods.restaurant = restaurants.id)".
+            " WHERE `families`.`position` = :families_position".
             " LIMIT :core_query_limit OFFSET :core_query_offset", $q);
     }
 }

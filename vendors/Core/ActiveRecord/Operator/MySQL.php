@@ -34,7 +34,9 @@ class MySQL implements Operatorable {
 
     public static function setBind($key, $value) {
         if($key) {
+            $key = str_replace(".", "_", $key);
             self::$binds[":$key"] = $value;
+            return $key;
         }
         else {
             throw new \Core\ActiveRecordOperatorException("Operator key cannot be empty.");
@@ -144,7 +146,7 @@ class MySQL implements Operatorable {
             throw new \Core\ActiveRecordOperatorException("Operator key cannot be empty.");
         }
 
-        self::$binds[":$first"] = $second;
+        self::setBind($first, $second);
         $key = preg_replace("/([\w0-9_]+)/", "`$1`", $first);
         return "NOT $key = :$first";
     }
@@ -159,9 +161,9 @@ class MySQL implements Operatorable {
      * @param $second
      */
     public static function eq($first, $second) {
-        self::setBind($first, $second);
+        $bind = self::setBind($first, $second);
         $key = preg_replace("/([\w0-9_]+)/", "`$1`", $first);
-        return "$key = :$first";
+        return "$key = :$bind";
     }
 
 
@@ -174,9 +176,9 @@ class MySQL implements Operatorable {
      * @param $second
      */
     public static function neq($first, $second) {
-        self::setBind($first, $second);
+        $bind = self::setBind($first, $second);
         $key = preg_replace("/([\w0-9_]+)/", "`$1`", $first);
-        return "$key != :$first";
+        return "$key != :$bind";
     }
 
 
@@ -189,9 +191,9 @@ class MySQL implements Operatorable {
      * @param $second
      */
     public static function lt($first, $second) {
-        self::setBind($first, $second);
+        $bind = self::setBind($first, $second);
         $key = preg_replace("/([\w0-9_]+)/", "`$1`", $first);
-        return "$key < :$first";
+        return "$key < :$bind";
     }
 
 
@@ -204,9 +206,9 @@ class MySQL implements Operatorable {
      * @param $second
      */
     public static function gt($first, $second) {
-        self::setBind($first, $second);
+        $bind = self::setBind($first, $second);
         $key = preg_replace("/([\w0-9_]+)/", "`$1`", $first);
-        return "$key > :$first";
+        return "$key > :$bind";
     }
 
 
@@ -219,9 +221,9 @@ class MySQL implements Operatorable {
      * @param $second
      */
     public static function lte($first, $second) {
-        self::setBind($first, $second);
+        $bind = self::setBind($first, $second);
         $key = preg_replace("/([\w0-9_]+)/", "`$1`", $first);
-        return "$key <= :$first";
+        return "$key <= :$bind";
     }
 
 
@@ -234,9 +236,9 @@ class MySQL implements Operatorable {
      * @param $second
      */
     public static function gte($first, $second) {
-        self::setBind($first, $second);
+        $bind = self::setBind($first, $second);
         $key = preg_replace("/([\w0-9_]+)/", "`$1`", $first);
-        return "$key >= :$first";
+        return "$key >= :$bind";
     }
 
 

@@ -14,7 +14,7 @@ use \PDO;
 use \PDOException;
 
 
-class MySQL implements Adapter {
+class MySQL extends Adapter {
 
     /**
      * Database object. PDO or PDO compliant.
@@ -43,19 +43,6 @@ class MySQL implements Adapter {
      */
     protected $persistent;
 
-    /**
-     * Model name
-     *
-     * @var string
-     */
-    protected $model;
-
-
-    /**
-     * @var QueryBuilder
-     */
-    protected $queryBuilder;
-
 
     /**
      * @param $dsn
@@ -80,27 +67,6 @@ class MySQL implements Adapter {
      */
     public function __destruct() {
         $this->disconnect();
-    }
-
-
-    /**
-     * Sets the model name.
-     *
-     * @param $model    Model name.
-     */
-    public function setModel($model) {
-        $this->model = $model;
-        $this->queryBuilder = new QueryBuilder($model);
-    }
-
-
-    /**
-     * Returns the model name.
-     *
-     * @return Model name.
-     */
-    public function getModel() {
-        return $this->model;
     }
 
 
@@ -153,13 +119,57 @@ class MySQL implements Adapter {
 
 
     /**
+     * @return array
+     */
+    private function buildJoinConditions() {
+        $models = (array)$this->hasOne + (array)$this->hasMany;
+        $references = array();
+
+        $currTable = $this->getTableName();
+
+        foreach($models as $model) {
+            if(is_array($model) == false) {
+                $table = Inflector::tableize($model);
+                $references[] = "$currTable.id = ".$table.".".$currTable."_id";
+            }
+            else {
+                $table = Inflector::tableize($model["model"]);
+                $references[] = "$currTable.id = ".$table.".".$model["reference"];
+            }
+        }
+
+        $str = implode(" AND", $references);
+
+        return $str;
+    }
+
+
+    /**
      * @param $primaryKey
      * @param $pos
      * @return mixed
      */
     public function findById($primaryKey, $pos) {
+        // tableize model names
+        $tables = (array) $this->hasOne + (array) $this->hasMany;
+        $joinTables = array();
+        foreach($tables as $table) {
+            $joinTables = Inflector::tableize($table);
+        }
+
+        // Build join conditions
+        $joinConditions = $this->buildJoinConditions();
+
+        // Get current table name
+        $currTable = $this->getTableName();
+
+        // finaly get the object.
         $objects = $this->read(array(
-            "conditions" => Op::eq($primaryKey, $pos)
+            "conditions" => Op::eq($currTable.".".$primaryKey, $pos),
+            "join" => array(
+                "tables" => $joinTables,
+                "conditions" => $joinConditions
+            )
         ));
         return $objects[0];
     }

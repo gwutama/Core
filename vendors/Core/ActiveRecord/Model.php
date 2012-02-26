@@ -86,6 +86,9 @@ abstract class Model {
         $adapters = new AdapterServiceContainer();
         $this->dbo = $adapters->getService($this->databaseProfile);
         $this->dbo->setModel(get_class($this));
+        $this->dbo->setHasOne($this->hasOne);
+        $this->dbo->setHasMany($this->hasMany);
+        $this->dbo->setBelongsTo($this->belongsTo);
     }
 
 
@@ -114,9 +117,9 @@ abstract class Model {
      *
      * @param $pos
      */
-    public function findById($pos) {
+    public function findById($pos, $options = array()) {
         if($this->dbo) {
-            return $this->dbo->findById($this->primaryKey, $pos, $this->hasOne, $this->hasMany);
+            return $this->dbo->findById($this->primaryKey, $pos, $options);
         }
         throw new ActiveRecordModelNoAdapterSetException();
     }

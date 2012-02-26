@@ -139,7 +139,10 @@ class MySQL extends QueryBuilder {
         $query = "SELECT %s FROM `%s` %s%s%s%s%s%s";
 
         // Check for join key and build special query if it has been found.
-        if(isset($options["join"])) {
+        // Join if at least one table is set in $options["join"]["tables].
+        $doJoin = (isset($options["join"]["tables"]) && count($options["join"]["tables"]) > 0);
+        $join = "";
+        if($doJoin) {
             // 1st %s: fields list
             // 2nd %s: table name
             // 3rd %s: join statement
@@ -164,17 +167,17 @@ class MySQL extends QueryBuilder {
             if(is_array($options["join"]["tables"])) {
                 $joinTables = "(".implode(", ", $options["join"]["tables"]).") ";
                 $joinTables = strtolower($joinTables);
-                $joinTables = preg_replace("/([\w0-9_]+)/", "`$1`", $joinTables);
             }
             else {
                 // otherwise just use the value
                 $joinTables = $options["join"]["tables"]." ";
             }
+            $joinTables = preg_replace("/([\w0-9_]+)/", "`$1`", $joinTables);
 
             // Join conditions
             if(isset($options["join"]["conditions"])) {
                 $tmp = $options["join"]["conditions"];
-                $joinConditions = "ON $tmp ";
+                $joinConditions = "ON ($tmp) ";
             }
             else {
                 $joinConditions = "";
@@ -244,8 +247,7 @@ class MySQL extends QueryBuilder {
             }
         }
 
-        if(isset($options["join"])) {
-            // @todo
+        if($doJoin) {
             return trim(sprintf($query, $fields, $this->tableName, $join,
                 $conditions, $group, $having, $order, $limit, $offset));
         }
