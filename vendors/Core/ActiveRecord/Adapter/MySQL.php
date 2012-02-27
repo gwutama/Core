@@ -180,7 +180,10 @@ class MySQL extends Adapter {
 
         // finally, get the object.
         $objects = $this->read($options);
-        return $objects[0];
+        if(count($objects)) {
+            return $objects[0];
+        }
+        return null;
     }
 
 
@@ -211,7 +214,10 @@ class MySQL extends Adapter {
 
         // finally, get the object
         $objects = $this->read($options);
-        return $objects[0];
+        if(count($objects)) {
+            return $objects[0];
+        }
+        return null;
     }
 
 
@@ -229,7 +235,10 @@ class MySQL extends Adapter {
 
         // finally, get the object
         $objects = $this->read($options);
-        return $objects[0];
+        if(count($objects)) {
+            return $objects[0];
+        }
+        return null;
     }
 
 
@@ -245,7 +254,10 @@ class MySQL extends Adapter {
 
         // finally, get the object
         $objects = $this->read($options);
-        return $objects[0];
+        if(count($objects)) {
+            return $objects[0];
+        }
+        return null;
     }
 
 

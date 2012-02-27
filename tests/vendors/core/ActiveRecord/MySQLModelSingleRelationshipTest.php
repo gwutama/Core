@@ -74,6 +74,17 @@ class MySQLModelSingleRelationshipTest extends \PHPUnit_Framework_TestCase
         $single->field = "test single";
         $single->mocksId = $mock->id;
         $single->save();
+
+        $mock = new Mock();
+        $mock->field1 = "value1-2";
+        $mock->field2 = "value2-2";
+        $mock->field3 = 2;
+        $mock->save();
+
+        $single = new Single();
+        $single->field = "test single 2";
+        $single->mocksId = $mock->id;
+        $single->save();
     }
 
     protected function tearDown()
@@ -93,13 +104,33 @@ class MySQLModelSingleRelationshipTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals("test single", $single->field);
         $this->assertEquals(1, $single->mocksId);
 
-        /*
-        $single = $mock->single;
-        $this->assertTrue($single instanceof Single);
-        $this->assertEquals("test single", $single->field);
-        $this->assertEquals(1, $single->mocksId);
-        */
+        $mock = $this->mock->findById(1);
+        $this->assertEquals(1, $mock->id);
+        $this->assertEquals("value1-1", $mock->field1);
+        $this->assertEquals("value2-1", $mock->field2);
+        $this->assertEquals(1, $mock->field3);
+        $this->assertEquals("test single", $mock->field);
     }
+
+    public function testFindById2()
+    {
+        $mock = $this->mock->findById(2);
+        $this->assertEquals("value1-2", $mock->field1);
+        $this->assertEquals("value2-2", $mock->field2);
+        $this->assertEquals(2, $mock->field3);
+
+        $single = $this->single->findById(2);
+        $this->assertEquals("test single 2", $single->field);
+        $this->assertEquals(2, $single->mocksId);
+
+        $mock = $this->mock->findById(2);
+        $this->assertEquals(2, $mock->id);
+        $this->assertEquals("value1-2", $mock->field1);
+        $this->assertEquals("value2-2", $mock->field2);
+        $this->assertEquals(2, $mock->field3);
+        $this->assertEquals("test single 2", $mock->field);
+    }
+
 }
 
 ?>
