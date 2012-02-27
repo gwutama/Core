@@ -119,23 +119,29 @@ class MySQL extends Adapter {
 
 
     /**
-     * @return array
+     * Builds join conditions.
+     *
+     * @return string
      */
-    private function buildJoinConditions() {
-        $models = (array)$this->hasOne + (array)$this->hasMany;
-        $references = array();
-
-        $currTable = $this->getTableName();
+    private function buildJoinConditions($models = array(), &$joinedTables = array(),
+                                         &$references = array()) {
+        if(count($models) == 0) {
+            $models = (array)$this->hasOne + (array)$this->hasMany;
+        }
 
         foreach($models as $model) {
             if(is_array($model) == false) {
                 $table = Inflector::tableize($model);
-                $references[] = "$currTable.id = ".$table.".".$currTable."_id";
+                $reference = sprintf("`%s`.`%s` = `%s`.`%s_id`", $this->tableName,
+                    $this->primaryKey, $table, $this->tableName);
             }
             else {
                 $table = Inflector::tableize($model["model"]);
-                $references[] = "$currTable.id = ".$table.".".$model["reference"];
+                $reference = sprintf("`%s`.`%s` = `%s`.`%s`", $this->tableName,
+                    $this->primaryKey, $table, $model["reference"]);
             }
+            $references[] = $reference;
+            $joinedTables[] = $table;
         }
 
         $str = implode(" AND", $references);
@@ -145,33 +151,35 @@ class MySQL extends Adapter {
 
 
     /**
+     * @param array $options
+     */
+    private function modifyJoinOptions(&$options = array()) {
+        // Build join conditions
+        $joinConditions = $this->buildJoinConditions(array(), $joinedTables);
+
+        // modify options
+        $options["join"] = array(
+            "tables" => $joinedTables,
+            "conditions" => $joinConditions
+        );
+    }
+
+
+    /**
      * @param $pos
+     * @param $options array
      * @return mixed
      */
-    public function findById($pos) {
-        // tableize model names
-        $tables = (array) $this->hasOne + (array) $this->hasMany;
-        $joinTables = array();
-        foreach($tables as $table) {
-            $joinTables = Inflector::tableize($table);
-        }
+    public function findById($pos, $options = array()) {
+        // Build join conditions into $options
+        $this->modifyJoinOptions($options);
 
-        // Build join conditions
-        $joinConditions = $this->buildJoinConditions();
+        // modify conditions
+        $pkField = $this->tableName.".".$this->primaryKey;
+        $options["conditions"] = Op::eq($pkField, $pos);
 
-        // Get current table name
-        $currTable = $this->getTableName();
-
-        $pk = $this->primaryKey;
-
-        // finaly get the object.
-        $objects = $this->read(array(
-            "conditions" => Op::eq("$currTable.$pk", $pos),
-            "join" => array(
-                "tables" => $joinTables,
-                "conditions" => $joinConditions
-            )
-        ));
+        // finally, get the object.
+        $objects = $this->read($options);
         return $objects[0];
     }
 
@@ -179,8 +187,13 @@ class MySQL extends Adapter {
     /**
      * @return mixed
      */
-    public function findAll() {
-        return new ModelCollection($this, $this->primaryKey, $this->read());
+    public function findAll($options = array()) {
+        // Build join conditions into $options
+        $this->modifyJoinOptions($options);
+
+        // finally, get the object
+        $objects = new ModelCollection($this, $this->primaryKey, $this->read($options));
+        return $objects;
     }
 
 
@@ -189,12 +202,15 @@ class MySQL extends Adapter {
      * @return mixed
      */
     public function findFirst($options = array()) {
-        $pk = $this->primaryKey;
-        $objects = $this->read(array(
-            "conditions" => @$options["conditions"],
-            "limit" => 1,
-            "order" => "`$pk` ASC"
-        ));
+        // Build join conditions into $options
+        $this->modifyJoinOptions($options);
+
+        // Modify options
+        $options["limit"] = 1;
+        $options["order"] = sprintf("`%s` ASC", $this->primaryKey);
+
+        // finally, get the object
+        $objects = $this->read($options);
         return $objects[0];
     }
 
@@ -204,12 +220,15 @@ class MySQL extends Adapter {
      * @return mixed
      */
     public function findLast($options = array()) {
-        $pk = $this->primaryKey;
-        $objects = $this->read(array(
-            "conditions" => @$options["conditions"],
-            "limit" => 1,
-            "order" => "`$pk` DESC"
-        ));
+        // Build join conditions into $options
+        $this->modifyJoinOptions($options);
+
+        // Modify options
+        $options["limit"] = 1;
+        $options["order"] = sprintf("`%s` DESC", $this->primaryKey);
+
+        // finally, get the object
+        $objects = $this->read($options);
         return $objects[0];
     }
 
@@ -218,10 +237,14 @@ class MySQL extends Adapter {
      * @param array $options
      */
     public function findOne($options = array()) {
-        $objects = $this->read(array(
-            "conditions" => @$options["conditions"],
-            "limit" => 1
-        ));
+        // Build join conditions into $options
+        $this->modifyJoinOptions($options);
+
+        // Modify options
+        $options["limit"] = 1;
+
+        // finally, get the object
+        $objects = $this->read($options);
         return $objects[0];
     }
 

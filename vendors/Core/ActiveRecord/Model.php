@@ -83,8 +83,10 @@ abstract class Model {
     public function __construct($fetched = false) {
         $this->fetched = $fetched;
 
+        // Set adapter to dob
         $adapters = new AdapterServiceContainer();
         $this->dbo = $adapters->getService($this->databaseProfile);
+
         $this->dbo->setModel(get_class($this));
         $this->dbo->setPrimaryKey($this->primaryKey);
         $this->dbo->setHasOne($this->hasOne);

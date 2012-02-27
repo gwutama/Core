@@ -42,6 +42,12 @@ abstract class Adapter {
     /**
      * @var
      */
+    protected $tableName;
+
+
+    /**
+     * @var
+     */
     protected $primaryKey;
 
 
@@ -66,6 +72,9 @@ abstract class Adapter {
         // Then create an instance of Core\ActiveRecord\QueryBuilder\Adaptername
         $builder = "Core\\ActiveRecord\\QueryBuilder\\".$adapter;
         $this->queryBuilder = new $builder($model);
+
+        // Sets the table name
+        $this->tableName = $this->getTableName();
     }
 
 
@@ -162,13 +171,13 @@ abstract class Adapter {
      * @param $primaryKey
      * @param $pos
      */
-    abstract public function findById($pos);
+    abstract public function findById($pos, $options = array());
 
 
     /**
      * @param $primaryKey
      */
-    abstract public function findAll();
+    abstract public function findAll($options = array());
 
 
     /**

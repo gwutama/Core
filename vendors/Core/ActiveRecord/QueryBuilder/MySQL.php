@@ -194,7 +194,7 @@ class MySQL extends QueryBuilder {
 
         // Build query
         // 1. Build (field1, field2, ..) and (?, ?, ..)
-        if(isset($options["fields"])) {
+        if( isset($options["fields"]) && is_array($options["fields"]) ) {
             $fields = implode(", ", $options["fields"]);
             $fields = strtolower($fields);
             $fields = preg_replace("/([\w0-9_]+)/", "`$1`", $fields);
