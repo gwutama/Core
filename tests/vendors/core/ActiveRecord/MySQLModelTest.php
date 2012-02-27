@@ -111,6 +111,13 @@ class MySQLModelTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(1, $obj->field3);
     }
 
+    public function testFindByIdNotExists()
+    {
+        $this->object->execute("TRUNCATE TABLE simple_mocks");
+        $obj = $this->object->findById(42);
+        $this->assertNull($obj);
+    }
+
     public function testFindAll()
     {
         $objs = $this->object->findAll();
@@ -129,12 +136,26 @@ class MySQLModelTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(1, $objs->get(2)->field3);
     }
 
+    public function testFindAllNotExists()
+    {
+        $this->object->execute("TRUNCATE TABLE simple_mocks");
+        $objs = $this->object->findAll();
+        $this->assertEquals(0, $objs->count());
+    }
+
     public function testFindFirst()
     {
         $obj = $this->object->findFirst();
         $this->assertEquals("value1-1", $obj->field1);
         $this->assertEquals("value2-1", $obj->field2);
         $this->assertEquals(1, $obj->field3);
+    }
+
+    public function testFindFirstNotExists()
+    {
+        $this->object->execute("TRUNCATE TABLE simple_mocks");
+        $obj = $this->object->findFirst();
+        $this->assertNull($obj);
     }
 
     public function testFindLast()
@@ -145,12 +166,26 @@ class MySQLModelTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(1, $obj->field3);
     }
 
+    public function testFindLastNotExists()
+    {
+        $this->object->execute("TRUNCATE TABLE simple_mocks");
+        $obj = $this->object->findLast();
+        $this->assertNull($obj);
+    }
+
     public function testFindOne()
     {
         $obj = $this->object->findOne();
         $this->assertEquals("value1-1", $obj->field1);
         $this->assertEquals("value2-1", $obj->field2);
         $this->assertEquals(1, $obj->field3);
+    }
+
+    public function testFindOneNotExists()
+    {
+        $this->object->execute("TRUNCATE TABLE simple_mocks");
+        $obj = $this->object->findOne();
+        $this->assertNull($obj);
     }
 
     public function testCreate()
