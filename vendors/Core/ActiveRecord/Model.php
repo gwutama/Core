@@ -3,7 +3,7 @@
 namespace Core\ActiveRecord;
 
 use \Core\ServiceContainer;
-use \Core\Config;
+use \Core\Storage\Config;
 use \Core\ActiveRecordAdapterNotFoundException;
 use \Core\ActiveRecordModelNoAdapterSetException;
 use \Core\ActiveRecordModelValidationException;
@@ -20,39 +20,11 @@ use \Core\Inflector;
 abstract class Model {
 
     /**
-     * Database object. PDO or PDO compliant.
+     * Whether data has been fetched or not.
      *
-     * @var string
+     * @var bool
      */
-    protected $dbo;
-
-    /**
-     * Primary key field
-     *
-     * @var string
-     */
-    protected $primaryKey = "id";
-
-    /**
-     * 1-1 relationship to other models.
-     *
-     * @var mixed
-     */
-    protected $hasOne;
-
-    /**
-     * 1-n relationship to other models.
-     *
-     * @var mixed
-     */
-    protected $hasMany;
-
-    /**
-     * n-1 relationship to other models.
-     *
-     * @var mixed
-     */
-    protected $belongsTo;
+    protected $fetched = false;
 
     /**
      * Query values are saved in an array. Can be array of model objects
@@ -63,18 +35,59 @@ abstract class Model {
     protected $data;
 
     /**
+     * Database object. PDO or PDO compliant.
+     */
+    protected static $dbo;
+
+    /**
+     * Primary key field
+     *
+     * @var string
+     */
+    public static $primaryKey = "id";
+
+    /**
+     * 1-1 relationship to other models.
+     *
+     * @var mixed
+     */
+    public static $hasOne;
+
+    /**
+     * 1-n relationship to other models.
+     *
+     * @var mixed
+     */
+    public static $hasMany;
+
+    /**
+     * n-1 relationship to other models.
+     *
+     * @var mixed
+     */
+    public static $belongsTo;
+
+    /**
      * Model profile. Defaults to "default".
      *
      * @var string
      */
-    protected $databaseProfile = "default";
+    public static $databaseProfile = "default";
 
     /**
-     * Whether data has been fetched or not.
+     * Valid fields for this model.
      *
-     * @var bool
+     * @var array
      */
-    protected $fetched = false;
+    public static $fields;
+
+
+    /**
+     * Tablename for this model.
+     *
+     * @var
+     */
+    public static $tableName;
 
 
     /**
@@ -83,15 +96,11 @@ abstract class Model {
     public function __construct($fetched = false) {
         $this->fetched = $fetched;
 
-        // Set adapter to dob
-        $adapters = new AdapterServiceContainer();
-        $this->dbo = $adapters->getService($this->databaseProfile);
-
-        $this->dbo->setModel(get_class($this));
-        $this->dbo->setPrimaryKey($this->primaryKey);
-        $this->dbo->setHasOne($this->hasOne);
-        $this->dbo->setHasMany($this->hasMany);
-        $this->dbo->setBelongsTo($this->belongsTo);
+        // Set adapter to dbo
+        if(static::$dbo == null) {
+            $adapters = new AdapterServiceContainer();
+            static::$dbo = $adapters->getService(static::$databaseProfile);
+        }
     }
 
 
@@ -101,7 +110,7 @@ abstract class Model {
      * @return string
      */
     public function getPrimaryKey() {
-        return $this->primaryKey;
+        return static::$primaryKey;
     }
 
 
@@ -116,13 +125,24 @@ abstract class Model {
 
 
     /**
+     * Returns the model name (without namespace).
+     */
+    public function getName() {
+        $class = get_class($this);
+        $class = str_replace("Models\\", "", $class);
+        $class = str_replace("\\", "", $class);
+        return $class;
+    }
+
+
+    /**
      * Retrieves an object from model by primary key.
      *
      * @param $pos
      */
     public function findById($pos, $options = array()) {
-        if($this->dbo) {
-            return $this->dbo->findById($pos, $options);
+        if(static::$dbo) {
+            return static::$dbo->findById($this->getName(), $pos, $options);
         }
         throw new ActiveRecordModelNoAdapterSetException();
     }
@@ -134,8 +154,8 @@ abstract class Model {
      * @param array $options
      */
     public function findAll($options = array()) {
-        if($this->dbo) {
-            return $this->dbo->findAll($options);
+        if(static::$dbo) {
+            return static::$dbo->findAll($this->getName(), $options);
         }
         throw new ActiveRecordModelNoAdapterSetException();
     }
@@ -147,8 +167,8 @@ abstract class Model {
      * @param array $options
      */
     public function findFirst($options = array()) {
-        if($this->dbo) {
-            return $this->dbo->findFirst($options);
+        if(static::$dbo) {
+            return static::$dbo->findFirst($this->getName(), $options);
         }
         throw new ActiveRecordModelNoAdapterSetException();
     }
@@ -160,8 +180,8 @@ abstract class Model {
      * @param array $options
      */
     public function findLast($options = array()) {
-        if($this->dbo) {
-            return $this->dbo->findLast($options);
+        if(static::$dbo) {
+            return static::$dbo->findLast($this->getName(), $options);
         }
         throw new ActiveRecordModelNoAdapterSetException();
     }
@@ -173,8 +193,8 @@ abstract class Model {
      * @param array $options
      */
     public function findOne($options = array()) {
-        if($this->dbo) {
-            return $this->dbo->findOne($options);
+        if(static::$dbo) {
+            return static::$dbo->findOne($this->getName(), $options);
         }
         throw new ActiveRecordModelNoAdapterSetException();
     }
@@ -184,13 +204,13 @@ abstract class Model {
      * Saves objects.
      */
     public function save($options = array()) {
-        if($this->dbo) {
+        if(static::$dbo) {
             if($this->fetched == false) {
-                $pkValue = $this->dbo->create($this->data, $options);
-                $this->__set($this->primaryKey, $pkValue);
+                $pkValue = static::$dbo->create($this->getName(), $this->data, $options);
+                $this->__set(static::$primaryKey, $pkValue);
             }
             else {
-                $this->dbo->update($this, $this->data, $options);
+                static::$dbo->update($this, $this->data, $options);
             }
         }
         else {
@@ -202,8 +222,8 @@ abstract class Model {
      * Deletes objects.
      */
     public function delete($options = array()) {
-        if($this->dbo) {
-            $this->dbo->delete($this, $options);
+        if(static::$dbo) {
+            static::$dbo->delete($this, $options);
         }
         else {
             throw new ActiveRecordModelNoAdapterSetException();
@@ -217,8 +237,8 @@ abstract class Model {
      * @param $statement
      */
     public function execute($statement) {
-        if($this->dbo) {
-            $this->dbo->execute($statement);
+        if(static::$dbo) {
+            static::$dbo->execute($statement);
         }
         else {
             throw new ActiveRecordModelNoAdapterSetException();
@@ -233,8 +253,8 @@ abstract class Model {
      * @return mixed
      */
     public function query($statement) {
-        if($this->dbo) {
-            return $this->dbo->query($statement);
+        if(static::$dbo) {
+            return static::$dbo->query($statement);
         }
         else {
             throw new ActiveRecordModelNoAdapterSetException();

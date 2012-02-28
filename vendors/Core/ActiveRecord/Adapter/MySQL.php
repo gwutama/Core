@@ -123,22 +123,24 @@ class MySQL extends Adapter {
      *
      * @return string
      */
-    private function buildJoinConditions($models = array(), &$joinedTables = array(),
+    private function buildJoinConditions($modelName, $models = array(), &$joinedTables = array(),
                                          &$references = array()) {
         if(count($models) == 0) {
-            $models = (array)$this->hasOne + (array)$this->hasMany;
+            $models = (array) static::getHasOne($modelName) + (array) static::getHasMany($modelName);
         }
+
+        $tableName = static::tableize($modelName);
 
         foreach($models as $model) {
             if(is_array($model) == false) {
                 $table = Inflector::tableize($model);
-                $reference = sprintf("`%s`.`%s` = `%s`.`%s_id`", $this->tableName,
-                    $this->primaryKey, $table, $this->tableName);
+                $reference = sprintf("`%s`.`%s` = `%s`.`%s_id`", $tableName,
+                    static::getPrimaryKey($modelName), $table, $tableName);
             }
             else {
                 $table = Inflector::tableize($model["model"]);
-                $reference = sprintf("`%s`.`%s` = `%s`.`%s`", $this->tableName,
-                    $this->primaryKey, $table, $model["reference"]);
+                $reference = sprintf("`%s`.`%s` = `%s`.`%s`", $tableName,
+                    static::getPrimaryKey($modelName), $table, $model["reference"]);
             }
             $references[] = $reference;
             $joinedTables[] = $table;
@@ -153,9 +155,9 @@ class MySQL extends Adapter {
     /**
      * @param array $options
      */
-    private function modifyJoinOptions(&$options = array()) {
+    private function modifyJoinOptions($modelName, &$options = array()) {
         // Build join conditions
-        $joinConditions = $this->buildJoinConditions(array(), $joinedTables);
+        $joinConditions = $this->buildJoinConditions($modelName, array(), $joinedTables);
 
         // modify options
         $options["join"] = array(
@@ -170,16 +172,16 @@ class MySQL extends Adapter {
      * @param $options array
      * @return mixed
      */
-    public function findById($pos, $options = array()) {
+    public function findById($modelName, $pos, $options = array()) {
         // Build join conditions into $options
-        $this->modifyJoinOptions($options);
+        $this->modifyJoinOptions($modelName, $options);
 
         // modify conditions
-        $pkField = $this->tableName.".".$this->primaryKey;
+        $pkField = sprintf("%s.%s", static::tableize($modelName), static::getPrimaryKey($modelName));
         $options["conditions"] = Op::eq($pkField, $pos);
 
         // finally, get the object.
-        $objects = $this->read($options);
+        $objects = $this->read($modelName, $options);
         if(count($objects)) {
             return $objects[0];
         }
@@ -190,12 +192,13 @@ class MySQL extends Adapter {
     /**
      * @return mixed
      */
-    public function findAll($options = array()) {
+    public function findAll($modelName, $options = array()) {
         // Build join conditions into $options
-        $this->modifyJoinOptions($options);
+        $this->modifyJoinOptions($modelName, $options);
 
         // finally, get the object
-        $objects = new ModelCollection($this, $this->primaryKey, $this->read($options));
+        $objects = new ModelCollection($modelName, $this, static::getPrimaryKey($modelName),
+                                       $this->read($modelName, $options));
         return $objects;
     }
 
@@ -204,16 +207,16 @@ class MySQL extends Adapter {
      * @param array $options
      * @return mixed
      */
-    public function findFirst($options = array()) {
+    public function findFirst($modelName, $options = array()) {
         // Build join conditions into $options
-        $this->modifyJoinOptions($options);
+        $this->modifyJoinOptions($modelName, $options);
 
         // Modify options
         $options["limit"] = 1;
-        $options["order"] = sprintf("`%s` ASC", $this->primaryKey);
+        $options["order"] = sprintf("`%s` ASC", static::getPrimaryKey($modelName));
 
         // finally, get the object
-        $objects = $this->read($options);
+        $objects = $this->read($modelName, $options);
         if(count($objects)) {
             return $objects[0];
         }
@@ -225,16 +228,16 @@ class MySQL extends Adapter {
      * @param array $options
      * @return mixed
      */
-    public function findLast($options = array()) {
+    public function findLast($modelName, $options = array()) {
         // Build join conditions into $options
-        $this->modifyJoinOptions($options);
+        $this->modifyJoinOptions($modelName, $options);
 
         // Modify options
         $options["limit"] = 1;
-        $options["order"] = sprintf("`%s` DESC", $this->primaryKey);
+        $options["order"] = sprintf("`%s` DESC", static::getPrimaryKey($modelName));
 
         // finally, get the object
-        $objects = $this->read($options);
+        $objects = $this->read($modelName, $options);
         if(count($objects)) {
             return $objects[0];
         }
@@ -245,15 +248,15 @@ class MySQL extends Adapter {
     /**
      * @param array $options
      */
-    public function findOne($options = array()) {
+    public function findOne($modelName, $options = array()) {
         // Build join conditions into $options
-        $this->modifyJoinOptions($options);
+        $this->modifyJoinOptions($modelName, $options);
 
         // Modify options
         $options["limit"] = 1;
 
         // finally, get the object
-        $objects = $this->read($options);
+        $objects = $this->read($modelName, $options);
         if(count($objects)) {
             return $objects[0];
         }
@@ -267,13 +270,14 @@ class MySQL extends Adapter {
      * @param $data
      * @param $options
      */
-    public function create($data, $options = array()) {
+    public function create($modelName, $data, $options = array()) {
         if(self::$dbh == null) {
             $this->connect();
         }
 
         // Build query
-        $query = $this->queryBuilder->insert($data, $options);
+        $table = static::tableize($modelName);
+        $query = QueryBuilder::insert($table, $data, $options);
 
         // Set $data to prepared statement bind variables
         Op::setBinds($data);
@@ -305,13 +309,14 @@ class MySQL extends Adapter {
      * @param $data
      * @param $options
      */
-    public function read($options = array()) {
+    public function read($modelName, $options = array()) {
         if(self::$dbh == null) {
             $this->connect();
         }
 
         // Build query
-        $query = $this->queryBuilder->select($options);
+        $table = static::tableize($modelName);
+        $query = QueryBuilder::select($table, $options);
 
         // Bind limit option if it is set
         if(isset($options["limit"])) {
@@ -337,7 +342,7 @@ class MySQL extends Adapter {
 
             // return as an object of the original model class
             return $stmt->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE,
-                $this->model, array(&$this, true)); // true: mark this object as fetched
+                "\\Models\\".$modelName, array(&$this, true)); // true: mark this object as fetched
         }
         catch(PDOException $e) {
             throw new ActiveRecordQueryException();
@@ -360,7 +365,9 @@ class MySQL extends Adapter {
         $pk = $model->getPrimaryKey();
         $pkValue = $model->{$pk};
         $options["conditions"] = Op::eq($pk, $pkValue);
-        $query = $this->queryBuilder->update($data, $options);
+
+        $table = static::tableize($model->getName());
+        $query = QueryBuilder::update($table, $data, $options);
 
         // Set $data to prepared statement bind variables
         Op::setBinds($data);
@@ -403,7 +410,9 @@ class MySQL extends Adapter {
         $pk = $models->getPrimaryKey();
         $pkValues = $models->getPrimaryKeyValues();
         $options["conditions"] = Op::in($pk, $pkValues);
-        $query = $this->queryBuilder->update($data, $options);
+
+        $table = static::tableize($models->getName());
+        $query = QueryBuilder::update($table, $data, $options);
 
         // Set $data to prepared statement bind variables
         Op::setBinds($data);
@@ -445,7 +454,9 @@ class MySQL extends Adapter {
         $pk = $model->getPrimaryKey();
         $pkValue = $model->{$pk};
         $options["conditions"] = Op::eq($pk, $pkValue);
-        $query = $this->queryBuilder->delete($options);
+
+        $table = static::tableize($model->getName());
+        $query = QueryBuilder::delete($table, $options);
 
         // Bind limit option if it is set
         if(isset($first["limit"])) {
@@ -484,7 +495,9 @@ class MySQL extends Adapter {
         $pk = $models->getPrimaryKey();
         $pkValues = $models->getPrimaryKeyValues();
         $options["conditions"] = Op::in($pk, $pkValues);
-        $query = $this->queryBuilder->delete($options);
+
+        $table = static::tableize($models->getName());
+        $query = QueryBuilder::delete($table, $options);
 
         // Bind limit option if it is set
         if(isset($options["limit"])) {

@@ -4,7 +4,7 @@ namespace Core\ActiveRecord\QueryBuilder;
 
 use \Core\ActiveRecord\QueryBuilder;
 
-class MySQL extends QueryBuilder {
+class MySQL implements QueryBuilder {
 
     /**
      * <p>
@@ -38,7 +38,7 @@ class MySQL extends QueryBuilder {
      * @param $options  Options. See example above.
      * @return string   SQL Query (prepared statement).
      */
-    public function insert($data = array(), $options = array()) {
+    public static function insert($table, $data = array(), $options = array()) {
         // Lowercase all $options keys then find for "select" option.
         if(isset($options["select"]) == false) {
             // First case: Standard insert query
@@ -96,10 +96,10 @@ class MySQL extends QueryBuilder {
 
         // Refer to first and second cases above.
         if(isset($options["select"]) == false) {
-            return trim(sprintf($query, $this->tableName, $fields, $binds, $onDuplicateKeyUpdate));
+            return trim(sprintf($query, $table, $fields, $binds, $onDuplicateKeyUpdate));
         }
         else {
-            return trim(sprintf($query, $this->tableName, $select));
+            return trim(sprintf($query, $table, $select));
         }
     }
 
@@ -126,7 +126,7 @@ class MySQL extends QueryBuilder {
      * @param $options
      * @return string
      */
-    public function select($options = array()) {
+    public static function select($table, $options = array()) {
         // Non join query
         // 1st %s: fields list
         // 2nd %s: table name
@@ -248,11 +248,11 @@ class MySQL extends QueryBuilder {
         }
 
         if($doJoin) {
-            return trim(sprintf($query, $fields, $this->tableName, $join,
+            return trim(sprintf($query, $fields, $table, $join,
                 $conditions, $group, $having, $order, $limit, $offset));
         }
         else {
-            return trim(sprintf($query, $fields, $this->tableName,
+            return trim(sprintf($query, $fields, $table,
                 $conditions, $group, $having, $order, $limit, $offset));
         }
     }
@@ -274,7 +274,7 @@ class MySQL extends QueryBuilder {
      * @param $options
      * @return string
      */
-    public function update($data, $options = array()) {
+    public static function update($table, $data, $options = array()) {
         // 1st %s : table name
         // 2nd %s : key-value pairs
         // 3rd %s : where conditions
@@ -320,7 +320,7 @@ class MySQL extends QueryBuilder {
             $limit = "";
         }
 
-        return trim(sprintf($query, $this->tableName, $sets, $conditions, $order, $limit));
+        return trim(sprintf($query, $table, $sets, $conditions, $order, $limit));
     }
 
 
@@ -338,7 +338,7 @@ class MySQL extends QueryBuilder {
      * @param $options
      * @return string
      */
-    public function delete($options = array()) {
+    public static function delete($table, $options = array()) {
         // [WHERE where_condition]
         // [ORDER BY ...]
         // [LIMIT row_count]
@@ -373,7 +373,7 @@ class MySQL extends QueryBuilder {
             $limit = "";
         }
 
-        return trim(sprintf($query, $this->tableName, $conditions, $order, $limit));
+        return trim(sprintf($query, $table, $conditions, $order, $limit));
     }
 }
 

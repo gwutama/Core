@@ -24,15 +24,30 @@ class ModelCollection implements \Iterator {
      */
     private $primaryKey;
 
+    /**
+     * Model name.
+     *
+     * @var string
+     */
+    private $modelName;
 
     /**
      * The constructor sets services if an array of models
      * is passed to the constructor.
      */
-    public function __construct(Adapter &$dbo, $primaryKey = "id", $models = array()) {
+    public function __construct($modelName, Adapter &$dbo, $primaryKey = "id", $models = array()) {
+        $this->modelName = $modelName;
         $this->dbo = $dbo;
         $this->primaryKey = $primaryKey;
         $this->models = $models;
+    }
+
+
+    /**
+     * Returns the model name.
+     */
+    public function getName() {
+        return $this->modelName;
     }
 
 

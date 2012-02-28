@@ -46,8 +46,6 @@ class MySQLModelTest extends \PHPUnit_Framework_TestCase
         $adapters = new AdapterServiceContainer();
         $adapter = $adapters->getService("default");
 
-        $adapter->setModel("SimpleMock");
-
         $adapter->execute("DROP TABLE IF EXISTS simple_mocks");
 
         $adapter->execute(

@@ -21,7 +21,7 @@ require_once 'vendors/Core/ActiveRecord/Operatorable.php';
 require_once 'vendors/Core/ActiveRecord/Operator/MySQL.php';
 require_once 'vendors/Core/ActiveRecord/Adapter.php';
 require_once 'vendors/Core/ActiveRecord/Adapter/MySQL.php';
-require_once 'tests/resources/Models/Mock.php';
+require_once 'tests/resources/Models/SimpleMock.php';
 
 class MySQLAdapterTest extends \PHPUnit_Framework_TestCase
 {
@@ -36,13 +36,10 @@ class MySQLAdapterTest extends \PHPUnit_Framework_TestCase
         $adapters = new AdapterServiceContainer();
         $this->object = $adapters->getService("default");
 
-        $this->object->setModel("\\Models\\Mock");
-        $this->object->setPrimaryKey("id");
-
-        $this->object->execute("DROP TABLE IF EXISTS mocks");
+        $this->object->execute("DROP TABLE IF EXISTS simple_mocks");
 
         $this->object->execute(
-            "CREATE TABLE mocks(
+            "CREATE TABLE simple_mocks(
                 id INT PRIMARY KEY AUTO_INCREMENT,
                 field1 VARCHAR(255),
                 field2 VARCHAR(255),
@@ -51,19 +48,19 @@ class MySQLAdapterTest extends \PHPUnit_Framework_TestCase
         );
 
         // Insert dummy records
-        $this->object->create(array(
+        $this->object->create("SimpleMock", array(
             "field1" => "value1-1",
             "field2" => "value2-1",
             "field3" => 1
         ));
 
-        $this->object->create(array(
+        $this->object->create("SimpleMock", array(
             "field1" => "value1-2",
             "field2" => "value2-2",
             "field3" => 1
         ));
 
-        $this->object->create(array(
+        $this->object->create("SimpleMock", array(
             "field1" => "value1-3",
             "field2" => "value2-3",
             "field3" => 1
@@ -72,23 +69,23 @@ class MySQLAdapterTest extends \PHPUnit_Framework_TestCase
 
     protected function tearDown()
     {
-        $this->object->execute("DROP TABLE mocks");
+        $this->object->execute("DROP TABLE simple_mocks");
         $this->object->disconnect();
     }
 
     public function testFindById()
     {
-        $obj = $this->object->findById(1);
+        $obj = $this->object->findById("SimpleMock", 1);
         $this->assertEquals("value1-1", $obj->field1);
         $this->assertEquals("value2-1", $obj->field2);
         $this->assertEquals(1, $obj->field3);
 
-        $obj = $this->object->findById(2);
+        $obj = $this->object->findById("SimpleMock", 2);
         $this->assertEquals("value1-2", $obj->field1);
         $this->assertEquals("value2-2", $obj->field2);
         $this->assertEquals(1, $obj->field3);
 
-        $obj = $this->object->findById(3);
+        $obj = $this->object->findById("SimpleMock", 3);
         $this->assertEquals("value1-3", $obj->field1);
         $this->assertEquals("value2-3", $obj->field2);
         $this->assertEquals(1, $obj->field3);
@@ -96,13 +93,13 @@ class MySQLAdapterTest extends \PHPUnit_Framework_TestCase
 
     public function testFindByIdNotExists()
     {
-        $obj = $this->object->findById(42);
+        $obj = $this->object->findById("SimpleMock", 42);
         $this->assertNull($obj);
     }
 
     public function testFindAll()
     {
-        $objs = $this->object->findAll();
+        $objs = $this->object->findAll("SimpleMock");
         $this->assertEquals(3, $objs->count());
 
         $this->assertEquals("value1-1", $objs->get(0)->field1);
@@ -120,14 +117,14 @@ class MySQLAdapterTest extends \PHPUnit_Framework_TestCase
 
     public function testFindAllNotExists()
     {
-        $this->object->execute("TRUNCATE TABLE mocks");
-        $objs = $this->object->findAll();
+        $this->object->execute("TRUNCATE TABLE simple_mocks");
+        $objs = $this->object->findAll("SimpleMock");
         $this->assertEquals(0, $objs->count());
     }
 
     public function testFindFirst()
     {
-        $obj = $this->object->findFirst();
+        $obj = $this->object->findFirst("SimpleMock");
         $this->assertEquals("value1-1", $obj->field1);
         $this->assertEquals("value2-1", $obj->field2);
         $this->assertEquals(1, $obj->field3);
@@ -135,14 +132,14 @@ class MySQLAdapterTest extends \PHPUnit_Framework_TestCase
 
     public function testFindFirstNotExists()
     {
-        $this->object->execute("TRUNCATE TABLE mocks");
-        $obj = $this->object->findFirst();
+        $this->object->execute("TRUNCATE TABLE simple_mocks");
+        $obj = $this->object->findFirst("SimpleMock");
         $this->assertNull($obj);
     }
 
     public function testFindLast()
     {
-        $obj = $this->object->findLast();
+        $obj = $this->object->findLast("SimpleMock");
         $this->assertEquals("value1-3", $obj->field1);
         $this->assertEquals("value2-3", $obj->field2);
         $this->assertEquals(1, $obj->field3);
@@ -150,14 +147,14 @@ class MySQLAdapterTest extends \PHPUnit_Framework_TestCase
 
     public function testFindLastNotExists()
     {
-        $this->object->execute("TRUNCATE TABLE mocks");
-        $obj = $this->object->findLast();
+        $this->object->execute("TRUNCATE TABLE simple_mocks");
+        $obj = $this->object->findLast("SimpleMock");
         $this->assertNull($obj);
     }
 
     public function testFindOne()
     {
-        $obj = $this->object->findOne();
+        $obj = $this->object->findOne("SimpleMock");
         $this->assertEquals("value1-1", $obj->field1);
         $this->assertEquals("value2-1", $obj->field2);
         $this->assertEquals(1, $obj->field3);
@@ -165,8 +162,8 @@ class MySQLAdapterTest extends \PHPUnit_Framework_TestCase
 
     public function testFindOneNotExists()
     {
-        $this->object->execute("TRUNCATE TABLE mocks");
-        $obj = $this->object->findOne();
+        $this->object->execute("TRUNCATE TABLE simple_mocks");
+        $obj = $this->object->findOne("SimpleMock");
         $this->assertNull($obj);
     }
 
@@ -174,20 +171,20 @@ class MySQLAdapterTest extends \PHPUnit_Framework_TestCase
     {
         // Insert dummy records
         for($i = 0; $i < 10; $i++) {
-            $this->object->create(array(
+            $this->object->create("SimpleMock", array(
                 "field1" => "value1-$i",
                 "field2" => "value2-$i",
                 "field3" => 1
             ));
         }
 
-        $objects = $this->object->findAll();
+        $objects = $this->object->findAll("SimpleMock");
         $this->assertEquals(13, $objects->count()); // 10 + 3 from before
     }
 
     public function testUpdate()
     {
-        $objects = $this->object->findAll();
+        $objects = $this->object->findAll("SimpleMock");
         $this->assertEquals(3, $objects->count());
         foreach($objects as $object) {
             $this->object->update($object, array(
@@ -197,7 +194,7 @@ class MySQLAdapterTest extends \PHPUnit_Framework_TestCase
             ));
         }
 
-        $objects = $this->object->findAll();
+        $objects = $this->object->findAll("SimpleMock");
         $this->assertEquals(3, $objects->count());
         $this->assertEquals("updated", $objects->get(0)->field1);
         $this->assertEquals("test", $objects->get(0)->field2);
@@ -214,7 +211,7 @@ class MySQLAdapterTest extends \PHPUnit_Framework_TestCase
 
     public function testUpdateAll()
     {
-        $objects = $this->object->findAll();
+        $objects = $this->object->findAll("SimpleMock");
         $this->assertEquals(3, $objects->count());
         $this->object->updateAll($objects, array(
             "field1" => "updated",
@@ -222,7 +219,7 @@ class MySQLAdapterTest extends \PHPUnit_Framework_TestCase
             "field3" => 42
         ));
 
-        $objects = $this->object->findAll();
+        $objects = $this->object->findAll("SimpleMock");
         $this->assertEquals(3, $objects->count());
         $this->assertEquals("updated", $objects->get(0)->field1);
         $this->assertEquals("test", $objects->get(0)->field2);
@@ -239,23 +236,23 @@ class MySQLAdapterTest extends \PHPUnit_Framework_TestCase
 
     public function testDelete()
     {
-        $objects = $this->object->findAll();
+        $objects = $this->object->findAll("SimpleMock");
         $this->assertEquals(3, $objects->count());
         foreach($objects as $object) {
             $this->object->delete($object);
         }
-        $objects = $this->object->findAll();
+        $objects = $this->object->findAll("SimpleMock");
         $this->assertEquals(0, $objects->count());
     }
 
     public function testDeleteAll()
     {
-        $objects = $this->object->findAll();
+        $objects = $this->object->findAll("SimpleMock");
         $this->assertEquals(3, $objects->count());
 
         $objects->delete();
 
-        $objects = $this->object->findAll();
+        $objects = $this->object->findAll("SimpleMock");
         $this->assertEquals(0, $objects->count());
     }
 }

@@ -12,148 +12,53 @@ use \Core\Inflector;
  */
 abstract class Adapter {
 
-
     /**
-     * Model name
-     *
-     * @var string
+     * @return array
      */
-    protected $model;
-
-
-    /**
-     * @var
-     */
-    protected $hasOne = array();
-
-
-    /**
-     * @var
-     */
-    protected $hasMany = array();
-
-
-    /**
-     * @var
-     */
-    protected $belongsTo = array();
-
-
-    /**
-     * @var
-     */
-    protected $tableName;
-
-
-    /**
-     * @var
-     */
-    protected $primaryKey;
-
-
-    /**
-     * @var QueryBuilder
-     */
-    protected $queryBuilder;
-
-
-    /**
-     * Sets the model name.
-     *
-     * @param $model    Model name.
-     */
-    public function setModel($model) {
-        $this->model = $model;
-
-        // Sets the query builder. For this we only need the adapter class name
-        $class = get_class($this);
-        $adapter = str_replace("Core\\ActiveRecord\\Adapter\\", "", $class);
-
-        // Then create an instance of Core\ActiveRecord\QueryBuilder\Adaptername
-        $builder = "Core\\ActiveRecord\\QueryBuilder\\".$adapter;
-        $this->queryBuilder = new $builder($model);
-
-        // Sets the table name
-        $this->tableName = $this->getTableName();
-    }
-
-
-    /**
-     * Returns the model name.
-     *
-     * @return Model name.
-     */
-    public function getModel() {
-        return $this->model;
-    }
-
-
-    /**
-     * @param array $models
-     */
-    public function setHasOne($models = array()) {
-        $this->hasOne = $models;
+    public static function getHasOne($model) {
+        $ref = new \ReflectionClass("\\Models\\".$model);
+        $hasOne = $ref->getProperty("hasOne");
+        if($hasOne == null) {
+            return null;
+        }
+        return $hasOne->getValue();
     }
 
 
     /**
      * @return array
      */
-    public function getHasOne() {
-        return $this->hasOne;
-    }
-
-
-    /**
-     * @param array $models
-     */
-    public function setHasMany($models = array()) {
-        $this->hasMany = $models;
-    }
-
-
-    /**
-     * @return array
-     */
-    public function getHasMany() {
-        return $this->hasMany;
-    }
-
-
-    /**
-     * @param array $models
-     */
-    public function setBelongsTo($models = array()) {
-        $this->belongsTo = $models;
+    public static function getHasMany($model) {
+        $ref = new \ReflectionClass("\\Models\\".$model);
+        $hasMany = $ref->getProperty("hasMany");
+        if($hasMany == null) {
+            return null;
+        }
+        return $hasMany->getValue();
     }
 
 
     /**
      * @return array
      */
-    public function getBelongsTo() {
-        return $this->belongsTo;
+    public static function getBelongsTo($model) {
+        $ref = new \ReflectionClass("\\Models\\".$model);
+        $belongsTo = $ref->getProperty("belongsTo");
+        if($belongsTo == null) {
+            return null;
+        }
+        return $belongsTo->getValue();
     }
 
 
     /**
      * Returns the table name, which is the pluralized model name in lowercase.
      */
-    public function getTableName() {
-        // Get model name but remove the "Models\" namspace.
-        $table = str_replace("Models\\", "", $this->model);
+    public static function tableize($model) {
+        // Get model name but remove the "Models\" namespace.
+        $table = str_replace("Models\\", "", $model);
         $table = Inflector::tableize($table);
         return $table;
-    }
-
-
-    /**
-     * Sets the primar key.
-     *
-     * @param $key
-     */
-    public function setPrimaryKey($key) {
-        $this->primaryKey = $key;
     }
 
 
@@ -162,8 +67,13 @@ abstract class Adapter {
      *
      * @return mixed
      */
-    public function getPrimaryKey() {
-        return $this->primaryKey;
+    public static function getPrimaryKey($model) {
+        $ref = new \ReflectionClass("\\Models\\".$model);
+        $primaryKey = $ref->getProperty("primaryKey");
+        if($primaryKey == null) {
+            return "id";
+        }
+        return $primaryKey->getValue();
     }
 
 
@@ -171,45 +81,45 @@ abstract class Adapter {
      * @param $primaryKey
      * @param $pos
      */
-    abstract public function findById($pos, $options = array());
+    abstract public function findById($modelName, $pos, $options = array());
 
 
     /**
      * @param $primaryKey
      */
-    abstract public function findAll($options = array());
-
-
-    /**
-     * @param $primaryKey
-     * @param array $options
-     */
-    abstract public function findFirst($options = array());
+    abstract public function findAll($modelName, $options = array());
 
 
     /**
      * @param $primaryKey
      * @param array $options
      */
-    abstract public function findLast($options = array());
+    abstract public function findFirst($modelName, $options = array());
+
+
+    /**
+     * @param $primaryKey
+     * @param array $options
+     */
+    abstract public function findLast($modelName, $options = array());
 
 
     /**
      * @param array $options
      */
-    abstract public function findOne($options = array());
+    abstract public function findOne($modelName, $options = array());
 
 
     /**
      * Base for create operation.
      */
-    abstract public function create($data, $options = array());
+    abstract public function create($modelName, $data, $options = array());
 
 
     /**
      * Base for read operation.
      */
-    abstract public function read($options = array());
+    abstract public function read($modelName, $options = array());
 
 
     /**
