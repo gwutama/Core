@@ -102,7 +102,6 @@ class MySQLModelSingleRelationshipTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals("test single", $single->field);
         $this->assertEquals(1, $single->mocksId);
 
-        /*
         $mock = $this->mock->findById(1);
         $this->assertEquals(1, $mock->id);
         $this->assertEquals("value1-1", $mock->field1);
@@ -111,7 +110,6 @@ class MySQLModelSingleRelationshipTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals("test single", $mock->singleField);
         $this->assertEquals(1, $mock->singleId);
         $this->assertEquals(1, $mock->singleMocksId);
-        */
     }
 
     public function testFindById2()
@@ -125,7 +123,6 @@ class MySQLModelSingleRelationshipTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals("test single 2", $single->field);
         $this->assertEquals(2, $single->mocksId);
 
-        /*
         $mock = $this->mock->findById(2);
         $this->assertEquals(2, $mock->id);
         $this->assertEquals("value1-2", $mock->field1);
@@ -134,8 +131,64 @@ class MySQLModelSingleRelationshipTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals("test single 2", $mock->singleField);
         $this->assertEquals(2, $mock->singleId);
         $this->assertEquals(2, $mock->singleMocksId);
-        */
     }
+
+    public function testFindById3()
+    {
+        $mock = $this->mock->findById(1, array(
+            "fields" => array("id", "field1", "field2", "field3")
+        ));
+        $this->assertEquals(1, $mock->id);
+        $this->assertEquals("value1-1", $mock->field1);
+        $this->assertEquals("value2-1", $mock->field2);
+        $this->assertEquals(1, $mock->field3);
+        $this->assertNull($mock->singleField);
+        $this->assertNull($mock->singleId);
+        $this->assertNull($mock->singleMocksId);
+    }
+
+    public function testFindById4()
+    {
+        $mock = $this->mock->findById(1, array(
+            "fields" => array("id", "field2")
+        ));
+        $this->assertEquals(1, $mock->id);
+        $this->assertNull($mock->field1);
+        $this->assertEquals("value2-1", $mock->field2);
+        $this->assertNull($mock->field3);
+        $this->assertNull($mock->singleField);
+        $this->assertNull($mock->singleId);
+        $this->assertNull($mock->singleMocksId);
+    }
+
+    public function testFindById5()
+    {
+        $mock = $this->mock->findById(2, array(
+            "fields" => array("field2")
+        ));
+        $this->assertNull($mock->id);
+        $this->assertNull($mock->field1);
+        $this->assertEquals("value2-2", $mock->field2);
+        $this->assertNull($mock->field3);
+        $this->assertNull($mock->singleField);
+        $this->assertNull($mock->singleId);
+        $this->assertNull($mock->singleMocksId);
+    }
+
+    public function testFindById6()
+    {
+        $mock = $this->mock->findById(2, array(
+            "fields" => array("singles.field", "singles.id", "singles.mocks_id")
+        ));
+        $this->assertNull($mock->id);
+        $this->assertNull($mock->field1);
+        $this->assertNull($mock->field2);
+        $this->assertNull($mock->field3);
+        $this->assertEquals("test single 2", $mock->singleField);
+        $this->assertEquals(2, $mock->singleId);
+        $this->assertEquals(2, $mock->singleMocksId);
+    }
+
 
 }
 
