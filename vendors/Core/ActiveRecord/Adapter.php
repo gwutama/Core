@@ -78,6 +78,29 @@ abstract class Adapter {
 
 
     /**
+     * Returns field names of a model.
+     *
+     * @static
+     * @param $model
+     */
+    public static function getFields($model) {
+        // We don't need the type and whether nullable or not.
+        // We only need the field name.
+        $ref = new \ReflectionClass("\\Models\\".$model);
+        $fields = $ref->getProperty("fields");
+
+        if($fields == null) {
+            return array();
+        }
+
+        $val = $fields->getValue();
+
+        $allFields = array_keys($val);
+        return $allFields;
+    }
+
+
+    /**
      * @param $primaryKey
      * @param $pos
      */

@@ -166,7 +166,7 @@ class MySQL implements QueryBuilder {
             // build something like this (foo, bar, baz)
             if(is_array($options["join"]["tables"])) {
                 $joinTables = "(".implode(", ", $options["join"]["tables"]).") ";
-                $joinTables = strtolower($joinTables);
+                //$joinTables = strtolower($joinTables);
             }
             else {
                 // otherwise just use the value
@@ -196,8 +196,12 @@ class MySQL implements QueryBuilder {
         // 1. Build (field1, field2, ..) and (?, ?, ..)
         if( isset($options["fields"]) && is_array($options["fields"]) ) {
             $fields = implode(", ", $options["fields"]);
-            $fields = strtolower($fields);
+            //$fields = strtolower($fields);
             $fields = preg_replace("/([\w0-9_]+)/", "`$1`", $fields);
+
+            // Remove backticks around AS keyword
+            // @todo: better solution
+            $fields = str_replace("`AS`", "AS", $fields);
         }
         else {
             $fields = "*";

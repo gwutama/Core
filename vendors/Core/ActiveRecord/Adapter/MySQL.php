@@ -124,11 +124,7 @@ class MySQL extends Adapter {
      * @return string
      */
     private function buildJoinConditions($modelName, $models = array(), &$joinedTables = array(),
-                                         &$references = array()) {
-        if(count($models) == 0) {
-            $models = (array) static::getHasOne($modelName) + (array) static::getHasMany($modelName);
-        }
-
+                                         &$selectedFields = array(), &$references = array()) {
         $tableName = static::tableize($modelName);
 
         foreach($models as $model) {
@@ -144,6 +140,12 @@ class MySQL extends Adapter {
             }
             $references[] = $reference;
             $joinedTables[] = $table;
+
+            // Append selected fields for this model
+            foreach(static::getFields($model) as $field) {
+                $selectedFields[] = sprintf("%s.%s AS %s_%s", $table, $field,
+                                            Inflector::singularize($table), $field);
+            }
         }
 
         $str = implode(" AND", $references);
@@ -156,10 +158,41 @@ class MySQL extends Adapter {
      * @param array $options
      */
     private function modifyJoinOptions($modelName, &$options = array()) {
+        $selectedFields = array();
+
+        // Try to determine which fields are selected
+        $models = array();
+        $table = static::tableize($modelName);
+
+        if(isset($options["fields"]) && is_array($options["fields"]) && count($options["fields"]) > 0) {
+            $fields = $options["fields"];
+            foreach($fields as $field) {
+                if(preg_match("/^[\w]+$/", $field)) {
+                    $selectedFields[] = sprintf("%s.%s", $table, $field);
+                }
+                elseif(preg_match("/^([\w]+)\.[\w]+$/", $field, $matches)) {
+                    $model = Inflector::classify($matches[1]);
+                    if(!in_array($model, $models)) {
+                        $models[] = $model;
+                    }
+                }
+            }
+        }
+        else {
+            // append fields of current table to the selected fields.
+            foreach(static::getFields($modelName) as $field) {
+                $selectedFields[] = sprintf("%s.%s", $table, $field);
+            }
+
+            $models = (array) static::getHasOne($modelName) + (array) static::getHasMany($modelName);
+        }
+
         // Build join conditions
-        $joinConditions = $this->buildJoinConditions($modelName, array(), $joinedTables);
+        $joinConditions = $this->buildJoinConditions($modelName, $models,
+                                                     $joinedTables, $selectedFields);
 
         // modify options
+        $options["fields"] = $selectedFields;
         $options["join"] = array(
             "tables" => $joinedTables,
             "conditions" => $joinConditions
