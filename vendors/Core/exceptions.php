@@ -101,6 +101,12 @@ class ActiveRecordModelNoAdapterSetException extends Exception {}
 
 
 /**
+ * Gets thrown when invalid finder method has been called.
+ */
+class ActiveRecordModelFinderException extends Exception {}
+
+
+/**
  * Gets thrown when file cannot be found.
  */
 class FileNotFoundException extends Exception {}

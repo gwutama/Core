@@ -7,6 +7,7 @@ use \Core\Storage\Config;
 use \Core\ActiveRecordAdapterNotFoundException;
 use \Core\ActiveRecordModelNoAdapterSetException;
 use \Core\ActiveRecordModelValidationException;
+use \Core\ActiveRecordModelFinderException;
 use \Core\Inflector;
 
 /**
@@ -136,67 +137,120 @@ abstract class Model {
 
 
     /**
+     * Dynamic finder method.
+     *
+     * @return null
+     * @throws \Core\ActiveRecordModelNoAdapterSetException
+     */
+    public function find() {
+        $args = func_get_args();
+        $numArgs = func_num_args();
+
+        // at least one parameter should be passed
+        if($numArgs == 0) {
+            throw new ActiveRecordModelFinderException("Insufficient number of finder parameter.");
+        }
+
+        $find = $args[0]; // what to find?
+
+        // Check whether options have been set.
+        // Options are always in the second parameter and is an array.
+        if($numArgs == 2 && is_array($args[1])) {
+            $options = $args[1];
+        }
+        else {
+            $options = array();
+        }
+
+        // Throw exception if adapter has not been set
+        if(!static::$dbo) {
+            throw new ActiveRecordModelNoAdapterSetException();
+        }
+
+        // Execute finder method
+        if(is_int($find)) {
+            return static::$dbo->findById($this->getName(), $find, $options);
+        }
+        elseif($find == "all") {
+            return static::$dbo->findAll($this->getName(), $options);
+        }
+        elseif($find == "first") {
+            return static::$dbo->findFirst($this->getName(), $options);
+        }
+        elseif($find == "last") {
+            return static::$dbo->findLast($this->getName(), $options);
+        }
+        elseif($find == "one") {
+            return static::$dbo->findOne($this->getName(), $options);
+        }
+
+        // method not found. throw exception.
+        throw new ActiveRecordModelFinderException("Invalid finder: $find.");
+    }
+
+
+    /**
      * Retrieves an object from model by primary key.
      *
+     * @static
      * @param $pos
      */
-    public function findById($pos, $options = array()) {
-        if(static::$dbo) {
-            return static::$dbo->findById($this->getName(), $pos, $options);
-        }
-        throw new ActiveRecordModelNoAdapterSetException();
+    public static function findById($pos, $options = array()) {
+        $reflection = new \ReflectionClass(get_called_class());
+        $model = $reflection->newInstance();
+        return call_user_func_array(array($model, "find"), array($pos, $options));
     }
 
 
     /**
      * Retrieves all objects from model.
      *
+     * @static
      * @param array $options
      */
-    public function findAll($options = array()) {
-        if(static::$dbo) {
-            return static::$dbo->findAll($this->getName(), $options);
-        }
-        throw new ActiveRecordModelNoAdapterSetException();
+    public static function findAll($options = array()) {
+        $reflection = new \ReflectionClass(get_called_class());
+        $model = $reflection->newInstance();
+        return call_user_func_array(array($model, "find"), array("all", $options));
     }
 
 
     /**
      * Retrieves first object from model.
      *
+     * @static
      * @param array $options
      */
-    public function findFirst($options = array()) {
-        if(static::$dbo) {
-            return static::$dbo->findFirst($this->getName(), $options);
-        }
-        throw new ActiveRecordModelNoAdapterSetException();
+    public static function findFirst($options = array()) {
+        $reflection = new \ReflectionClass(get_called_class());
+        $model = $reflection->newInstance();
+        return call_user_func_array(array($model, "find"), array("first", $options));
     }
 
 
     /**
      * Retrieves last object from model.
      *
+     * @static
      * @param array $options
      */
-    public function findLast($options = array()) {
-        if(static::$dbo) {
-            return static::$dbo->findLast($this->getName(), $options);
-        }
-        throw new ActiveRecordModelNoAdapterSetException();
+    public static function findLast($options = array()) {
+        $reflection = new \ReflectionClass(get_called_class());
+        $model = $reflection->newInstance();
+        return call_user_func_array(array($model, "find"), array("last", $options));
     }
 
 
     /**
      * Retrieves an object from model.
      *
+     * @static
      * @param array $options
      */
-    public function findOne($options = array()) {
-        if(static::$dbo) {
-            return static::$dbo->findOne($this->getName(), $options);
-        }
-        throw new ActiveRecordModelNoAdapterSetException();
+    public static function findOne($options = array()) {
+        $reflection = new \ReflectionClass(get_called_class());
+        $model = $reflection->newInstance();
+        return call_user_func_array(array($model, "find"), array("one", $options));
     }
 
 
