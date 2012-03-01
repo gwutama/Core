@@ -190,15 +190,28 @@ abstract class Model {
 
 
     /**
+     * Returns an instance of this model.
+     *
+     * @static
+     */
+    protected static function newInstance() {
+        $reflection = new \ReflectionClass(get_called_class());
+        $model = $reflection->newInstance();
+        return $model;
+    }
+
+
+    /**
      * Retrieves an object from model by primary key.
      *
      * @static
      * @param $pos
      */
     public static function findById($pos, $options = array()) {
-        $reflection = new \ReflectionClass(get_called_class());
-        $model = $reflection->newInstance();
-        return call_user_func_array(array($model, "find"), array($pos, $options));
+        return call_user_func_array(
+            array(static::newInstance(), "find"),
+            array($pos, $options)
+        );
     }
 
 
@@ -209,9 +222,10 @@ abstract class Model {
      * @param array $options
      */
     public static function findAll($options = array()) {
-        $reflection = new \ReflectionClass(get_called_class());
-        $model = $reflection->newInstance();
-        return call_user_func_array(array($model, "find"), array("all", $options));
+        return call_user_func_array(
+            array(static::newInstance(), "find"),
+            array("all", $options)
+        );
     }
 
 
@@ -222,9 +236,10 @@ abstract class Model {
      * @param array $options
      */
     public static function findFirst($options = array()) {
-        $reflection = new \ReflectionClass(get_called_class());
-        $model = $reflection->newInstance();
-        return call_user_func_array(array($model, "find"), array("first", $options));
+        return call_user_func_array(
+            array(static::newInstance(), "find"),
+            array("first", $options)
+        );
     }
 
 
@@ -235,9 +250,10 @@ abstract class Model {
      * @param array $options
      */
     public static function findLast($options = array()) {
-        $reflection = new \ReflectionClass(get_called_class());
-        $model = $reflection->newInstance();
-        return call_user_func_array(array($model, "find"), array("last", $options));
+        return call_user_func_array(
+            array(static::newInstance(), "find"),
+            array("last", $options)
+        );
     }
 
 
@@ -248,9 +264,10 @@ abstract class Model {
      * @param array $options
      */
     public static function findOne($options = array()) {
-        $reflection = new \ReflectionClass(get_called_class());
-        $model = $reflection->newInstance();
-        return call_user_func_array(array($model, "find"), array("one", $options));
+        return call_user_func_array(
+            array(static::newInstance(), "find"),
+            array("one", $options)
+        );
     }
 
 
