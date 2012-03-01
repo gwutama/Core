@@ -198,6 +198,26 @@ class MySQLModelStaticTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(13, $objects->count()); // 10 + 3 from before
     }
 
+    public function testCreateWithInvalidKeys()
+    {
+        $mock = new SimpleMock();
+        $mock->id = 42;
+        $mock->field1 = "field1";
+        $mock->field2 = "field2";
+        $mock->field3 = 69;
+        $mock->field4 = "field4"; //not exists
+        $mock->field5 = "field5"; //not exists
+        $mock->save();
+
+        $obj = SimpleMock::findById(42);
+        $this->assertEquals(42, $obj->id);
+        $this->assertEquals("field1", $obj->field1);
+        $this->assertEquals("field2", $obj->field2);
+        $this->assertEquals(69, $obj->field3);
+        $this->assertNull($obj->field4); // not exists
+        $this->assertNull($obj->field5); // not exists
+    }
+
     public function testUpdate()
     {
         $objects = SimpleMock::findAll();

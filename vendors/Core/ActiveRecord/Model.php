@@ -276,18 +276,30 @@ abstract class Model {
      */
     public function save($options = array()) {
         if(static::$dbo) {
+            // @todo: separate fields by models and their relationships
+            // for now only for this model.
+            $fields = array_keys((array) static::$fields); // fields of this model
+            $data = array();
+            foreach((array) $this->data as $key=>$value) {
+                if(in_array($key, $fields)) {
+                    $data[$key] = $value;
+                }
+            }
+
+            // Create if hasn't fetched. Otherwise update.
             if($this->fetched == false) {
-                $pkValue = static::$dbo->create($this->getName(), $this->data, $options);
+                $pkValue = static::$dbo->create($this->getName(), $data, $options);
                 $this->__set(static::$primaryKey, $pkValue);
             }
             else {
-                static::$dbo->update($this, $this->data, $options);
+                static::$dbo->update($this, $data, $options);
             }
         }
         else {
             throw new ActiveRecordModelNoAdapterSetException();
         }
     }
+
 
     /**
      * Deletes objects.
@@ -340,7 +352,10 @@ abstract class Model {
      */
     public function __get($key) {
         $key = Inflector::underscore($key);
-        return @$this->data[$key];
+        if(isset($this->data[$key])) {
+            return $this->data[$key];
+        }
+        return null;
     }
 
 
