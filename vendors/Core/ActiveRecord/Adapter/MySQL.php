@@ -66,7 +66,9 @@ class MySQL extends Adapter {
      * The destructor disconnects the database handler.
      */
     public function __destruct() {
-        $this->disconnect();
+        if(static::$dbh) {
+            $this->disconnect();
+        }
     }
 
 
@@ -76,8 +78,8 @@ class MySQL extends Adapter {
     public function connect() {
         try {
             // Allow only one instance
-            if(self::$dbh == null) {
-                self::$dbh = @new PDO($this->dsn, $this->username, $this->password,
+            if(static::$dbh == null) {
+                static::$dbh = new PDO($this->dsn, $this->username, $this->password,
                     array(PDO::ATTR_PERSISTENT => $this->persistent));
             }
         }
