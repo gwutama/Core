@@ -1,6 +1,6 @@
 <?php
 
-namespace Core;
+namespace Core\Service;
 
 if(!class_exists("\\Core\\Mock") && !class_exists("\\Core\\Mock2") && !class_exists("\\Core\\Mock3")) {
     class Mock {
@@ -20,7 +20,7 @@ if(!class_exists("\\Core\\Mock") && !class_exists("\\Core\\Mock2") && !class_exi
     class Mock3 extends Mock2 {}
 }
 
-require_once 'vendors/Core/Service.php';
+require_once 'vendors/Core/Service/Service.php';
 
 /**
  * Test class for Service.
@@ -30,11 +30,11 @@ class ServiceTest extends \PHPUnit_Framework_TestCase
 {
     public function testGetInstance()
     {
-        $service = new Service("\\Core\\Mock");
+        $service = new Service("\\Core\\Service\\Mock");
         $obj = $service->getInstance();
         $this->assertTrue($obj instanceof Mock);
 
-        $service = new Service("\\Core\\Mock2", array(
+        $service = new Service("\\Core\\Service\\Mock2", array(
             "param1" => "value1",
             "param2" => "value2",
             "param3" => "value3"
@@ -45,7 +45,7 @@ class ServiceTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals("value2", $obj->param2);
         $this->assertEquals("value3", $obj->param3);
 
-        $service = new Service("\\Core\\Mock3", array(
+        $service = new Service("\\Core\\Service\\Mock3", array(
             "param1" => "value1",
             "param2" => "value2",
             "param3" => "value3"

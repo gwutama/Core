@@ -1,7 +1,8 @@
 <?php
-namespace Core;
+namespace Core\Service;
 
-if(!class_exists("\\Core\\MockClass") && !class_exists("\\Core\\MockClass2") && !class_exists("\\Core\\MockClass3")) {
+if(!class_exists("\\Core\\Service\\MockClass") && !class_exists("\\Core\\Service\\MockClass2")
+    && !class_exists("\\Core\\Service\\MockClass3")) {
     class MockClass {
         public $param1;
         public $param2;
@@ -19,7 +20,7 @@ if(!class_exists("\\Core\\MockClass") && !class_exists("\\Core\\MockClass2") && 
     class MockClass3 extends MockClass2 {}
 }
 
-require_once 'vendors/Core/ServiceContainer.php';
+require_once 'vendors/Core/Service/ServiceContainer.php';
 
 /**
  * Test class for ServiceContainer.
@@ -39,13 +40,13 @@ class ServiceContainerTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->object = new ServiceContainer;
-        $this->object->register("\\Core\\MockClass", array(), array(), "MockClass");
-        $this->object->register("\\Core\\MockClass2", array(
+        $this->object->register("\\Core\\Service\\MockClass", array(), array(), "MockClass");
+        $this->object->register("\\Core\\Service\\MockClass2", array(
             "param1" => "value1",
             "param2" => "value2",
             "param3" => "value3"
         ), array(), "MockClass2");
-        $this->object->register("\\Core\\MockClass3", array(
+        $this->object->register("\\Core\\Service\\MockClass3", array(
             "param1" => "foo",
             "param2" => "bar",
             "param3" => array(1,2,3)
@@ -64,7 +65,7 @@ class ServiceContainerTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertTrue($this->object->hasService("MockClass"));
         $this->assertTrue($this->object->hasService("MockClass2"));
-        $this->assertTrue($this->object->hasService("\\Core\\MockClass3"));
+        $this->assertTrue($this->object->hasService("\\Core\\Service\\MockClass3"));
         $this->assertFalse($this->object->hasService("MockClass4"));
         $this->assertFalse($this->object->hasService("Inexists"));
     }
@@ -73,7 +74,7 @@ class ServiceContainerTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertTrue($this->object->getService("MockClass") instanceof MockClass);
         $this->assertTrue($this->object->getService("MockClass2") instanceof MockClass2);
-        $this->assertTrue($this->object->getService("\\Core\\MockClass3") instanceof MockClass3);
+        $this->assertTrue($this->object->getService("\\Core\\Service\\MockClass3") instanceof MockClass3);
     }
 
     /**
@@ -90,13 +91,13 @@ class ServiceContainerTest extends \PHPUnit_Framework_TestCase
         $this->object->clear();
         $this->assertEquals(0, $this->object->count());
 
-        $this->object->register("\\Core\\MockClass", array(), array(), "MockClass");
-        $this->object->register("\\Core\\MockClass2", array(
+        $this->object->register("\\Core\\Service\\MockClass", array(), array(), "MockClass");
+        $this->object->register("\\Core\\Service\\MockClass2", array(
             "param1" => "value1",
             "param2" => "value2",
             "param3" => "value3"
         ), array(), "MockClass2");
-        $this->object->register("\\Core\\MockClass3", array(
+        $this->object->register("\\Core\\Service\\MockClass3", array(
             "param1" => "foo",
             "param2" => "bar",
             "param3" => array(1,2,3)
@@ -107,11 +108,11 @@ class ServiceContainerTest extends \PHPUnit_Framework_TestCase
         $this->object->register(null);
         $this->assertEquals(3, $this->object->count());
 
-        $this->object->register("\\Core\\MockClass4", array(), array(), "MockClass4");
+        $this->object->register("\\Core\\Service\\MockClass4", array(), array(), "MockClass4");
         $this->assertEquals(4, $this->object->count());
 
         // same registered service
-        $this->object->register("\\Core\\MockClass", array(), array(), "MockClass");
+        $this->object->register("\\Core\\Service\\MockClass", array(), array(), "MockClass");
         $this->assertEquals(4, $this->object->count());
     }
 

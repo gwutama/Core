@@ -1,7 +1,7 @@
 <?php
 
 namespace Core\ActiveRecord;
-use \Core\ServiceContainer;
+use \Core\Service\ServiceContainer;
 use \Core\Storage\Config;
 
 class AdapterServiceContainer extends ServiceContainer {
