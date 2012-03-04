@@ -2,8 +2,9 @@
 
 namespace Core\ActiveRecord;
 use Core\ActiveRecord\Operator\MySQL as Op;
+use Core\Utility\ObjectCollection;
 
-class ModelCollection implements \Iterator {
+class ModelCollection extends ObjectCollection {
 
     /**
      * Database Object
@@ -11,11 +12,6 @@ class ModelCollection implements \Iterator {
      * @var Adapter
      */
     private $dbo;
-
-    /**
-     * @var array
-     */
-    private $models = array();
 
     /**
      * Primary key of all models. Defaults to id.
@@ -39,7 +35,7 @@ class ModelCollection implements \Iterator {
         $this->modelName = $modelName;
         $this->dbo = $dbo;
         $this->primaryKey = $primaryKey;
-        $this->models = $models;
+        $this->objects = $models;
     }
 
 
@@ -78,7 +74,7 @@ class ModelCollection implements \Iterator {
      * @return mixed
      */
     public function get($key) {
-        return @$this->models[$key];
+        return @$this->objects[$key];
     }
 
 
@@ -87,7 +83,7 @@ class ModelCollection implements \Iterator {
      */
     public function getPrimaryKeyValues() {
         $tmp = array();
-        foreach($this->models as $model) {
+        foreach($this->objects as $model) {
             $tmp[] = $model->{$this->primaryKey};
         }
         return $tmp;
@@ -100,7 +96,7 @@ class ModelCollection implements \Iterator {
      * @param Model $model
      */
     public function append(Model &$model) {
-        $this->models[] = $model;
+        $this->objects[] = $model;
     }
 
 
@@ -119,64 +115,6 @@ class ModelCollection implements \Iterator {
         $this->dbo->updateAll($this, $data, $options);
     }
 
-
-    /**
-     * Iterator rewind().
-     */
-    public function rewind() {
-        reset($this->models);
-    }
-
-
-    /**
-     * Iterator current().
-     *
-     * @return mixed
-     */
-    public function current() {
-        return current($this->models);
-    }
-
-
-    /**
-     * Iterator next().
-     *
-     * @return mixed
-     */
-    public function next() {
-        return next($this->models);
-    }
-
-
-    /**
-     * Iterator key().
-     *
-     * @return mixed
-     */
-    public function key() {
-        return key($this->models);
-    }
-
-
-    /**
-     * Iterator valid().
-     *
-     * @return bool
-     */
-    public function valid() {
-        $key = key($this->models);
-        return ($key !== null && $key !== false);
-    }
-
-
-    /**
-     * Returns the number of models.
-     *
-     * @return int
-     */
-    public function count() {
-        return count($this->models);
-    }
 }
 
 ?>
