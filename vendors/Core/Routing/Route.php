@@ -2,6 +2,12 @@
 
 namespace Core\Routing;
 
+use \Core\Storage\Config;
+use \Core\ActionNotFoundException;
+use \Core\ControllerNotFoundException;
+use \Core\FileNotFoundException;
+use \Core\Exception;
+
 /**
 * <h1>Class Route</h1>
 * 
@@ -45,7 +51,7 @@ class Route {
                     "not found in class <em>$controller</em>.");
             }
         }
-        catch(\FileNotFoundException $e) {
+        catch(FileNotFoundException $e) {
             throw new ControllerNotFoundException("Controller file".
                 "<em>$controllerClass</em> not found in <em>Controllers/</em>.");
         }
@@ -64,7 +70,7 @@ class Route {
             $app->renderTemplate();
             $app->$action(new Request);
         }
-        catch(CoreException $e) {
+        catch(Exception $e) {
             $e->render();
         }
     }

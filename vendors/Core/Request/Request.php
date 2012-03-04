@@ -1,6 +1,6 @@
 <?php
 
-namespace Core;
+namespace Core\Request;
 
 /**
  * <h1>Class Request</h1>

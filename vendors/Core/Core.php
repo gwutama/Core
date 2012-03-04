@@ -1,6 +1,10 @@
 <?php
 
 namespace Core;
+use Core\Utility\Spyc;
+use Core\Storage\Config;
+use Core\Routing\Route;
+use Core\Routing\RouteParser;
 
 // Include exceptions
 include "../../vendors/core/exceptions.php";
