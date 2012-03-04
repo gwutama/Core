@@ -2,11 +2,11 @@
 
 namespace Core\Routing;
 
-use \Core\Storage\Config;
-use \Core\ActionNotFoundException;
-use \Core\ControllerNotFoundException;
-use \Core\FileNotFoundException;
-use \Core\Exception;
+use Core\Storage\Config;
+use Core\ActionNotFoundException;
+use Core\ControllerNotFoundException;
+use Core\FileNotFoundException;
+use Core\Exception;
 
 /**
 * <h1>Class Route</h1>
@@ -57,7 +57,7 @@ class Route {
         }
 
         // Register template object.
-        $app->register("\\Core\\Template", array(
+        $app->register("\\Core\\Template\\Template", array(
             "controller" => $controller,
             "action" => $action,
             "baseDir" => Config::get("global.template.baseDir").$app->getTheme()."/",

@@ -2,8 +2,8 @@
 
 namespace Core\Service;
 
-use \Core\Utility\ObjectCollection;
-use \Core\ServiceNotAvailableException;
+use Core\Utility\ObjectCollection;
+use Core\ServiceNotAvailableException;
 
 /**
  * <h1>Class ServiceContainer</h1>

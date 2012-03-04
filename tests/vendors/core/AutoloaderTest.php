@@ -11,7 +11,7 @@ define("DS", DIRECTORY_SEPARATOR);
 
 use Core\Autoloader;
 use Core\Storage\Config;
-use Core\Template;
+use Core\Template\Template;
 
 /**
  * Test class for Autoloader.

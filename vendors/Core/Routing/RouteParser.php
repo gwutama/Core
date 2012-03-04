@@ -2,7 +2,7 @@
 
 namespace Core\Routing;
 
-use \Core\InvalidRouteException;
+use Core\InvalidRouteException;
 
 /**
  * <h1>Class RouteParser</h1>

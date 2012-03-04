@@ -2,13 +2,15 @@
 
 namespace Helpers;
 
+use Core\Template\TemplateHelper;
+
 /**
  * 
  * Enter description here ...
  * @author Galuh Utama
  *
  */
-class Html implements \Core\TemplateHelper {
+class Html implements TemplateHelper {
 
     /**
      * (non-PHPdoc)

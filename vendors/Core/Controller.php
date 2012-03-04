@@ -1,6 +1,8 @@
 <?php
 
 namespace Core;
+use Core\Request\Request;
+use Core\Service\ServiceContainer;
 
 /**
 * <h1>Class Controller</h1>
@@ -128,7 +130,7 @@ abstract class Controller extends ServiceContainer {
      */
     public function set($var, $value) {
         if(!$this->template) {
-            $this->template = $this->getService("\\Core\\Template");
+            $this->template = $this->getService("\\Core\\Template\\Template");
         }
 
         $this->template->$var = $value;
@@ -145,7 +147,7 @@ abstract class Controller extends ServiceContainer {
      */
     public function get($var) {
         if(!$this->template) {
-            $this->template = $this->getService("\\Core\\Template");
+            $this->template = $this->getService("\\Core\\Template\\Template");
         }
 
         return $this->template->$var;
@@ -171,7 +173,7 @@ abstract class Controller extends ServiceContainer {
      */
     public function renderTemplate() {
         if(!$this->template) {
-            $this->template = $this->getService("\\Core\\Template");
+            $this->template = $this->getService("\\Core\\Template\\Template");
         }
 
         if($this->output == "html") {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Core;
+namespace Core\Template;
 
 /**
 * <h1>Class Template</h1>

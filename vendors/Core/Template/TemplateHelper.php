@@ -1,6 +1,6 @@
 <?php
 
-namespace Core;
+namespace Core\Template;
 
 /**
 * <h1>Interface TemplateHelper</h1>

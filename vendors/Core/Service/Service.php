@@ -1,7 +1,7 @@
 <?php
 
 namespace Core\Service;
-use \Core\CannotCreateServiceException;
+use Core\CannotCreateServiceException;
 
 /**
  * <h1>Class Service</h1>
