@@ -1,13 +1,13 @@
 <?php
 namespace Core\ActiveRecord;
 use Core\ActiveRecord\Adapter\MySQL;
-use Core\Spyc;
+use Core\Utility\Spyc;
 use Core\Storage\Config;
 use Core\Storage\ConfigNode;
 use Models\Mock;
 use Models\Single;
 
-require_once 'vendors/Core/Spyc.php';
+require_once 'vendors/Core/Utility/Spyc.php';
 require_once 'vendors/Core/Storage/Storageable.php';
 require_once 'vendors/Core/Storage/Storage.php';
 require_once 'vendors/Core/Storage/StorageNode.php';

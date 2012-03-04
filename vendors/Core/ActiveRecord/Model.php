@@ -8,7 +8,7 @@ use \Core\ActiveRecordAdapterNotFoundException;
 use \Core\ActiveRecordModelNoAdapterSetException;
 use \Core\ActiveRecordModelValidationException;
 use \Core\ActiveRecordModelFinderException;
-use \Core\Inflector;
+use \Core\Utility\Inflector;
 
 /**
  * <h1>Class Model</h1>

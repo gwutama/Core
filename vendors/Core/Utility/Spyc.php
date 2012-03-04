@@ -23,7 +23,7 @@
  * @package Spyc
  */
 
-namespace Core;
+namespace Core\Utility;
 
 class Spyc
 {

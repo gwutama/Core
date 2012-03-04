@@ -1,7 +1,7 @@
 <?php
 
 namespace Core\ActiveRecord;
-use \Core\Inflector;
+use \Core\Utility\Inflector;
 
 /**
  * <h1>Interface Adapter</h1>

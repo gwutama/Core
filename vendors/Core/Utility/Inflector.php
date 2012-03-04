@@ -1,6 +1,6 @@
 <?php
 
-namespace Core;
+namespace Core\Utility;
 
 /**
  * <h1>Class Inflector</h1>

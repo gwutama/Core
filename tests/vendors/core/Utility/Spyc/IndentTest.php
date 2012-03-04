@@ -1,7 +1,7 @@
 <?php
 
-require_once 'vendors/Core/Spyc.php';
-use Core\Spyc;
+require_once 'vendors/Core/Utility/Spyc.php';
+use Core\Utility\Spyc;
 
 class IndentTest extends PHPUnit_Framework_TestCase
 {

@@ -5,12 +5,12 @@ require_once 'vendors/Core/Storage/Storage.php';
 require_once 'vendors/Core/Storage/StorageNode.php';
 require_once 'vendors/Core/Storage/Config.php';
 require_once 'vendors/Core/Storage/ConfigNode.php';
-require_once 'vendors/Core/Spyc.php';
+require_once 'vendors/Core/Utility/Spyc.php';
 require_once 'vendors/Core/exceptions.php';
 
 use Core\Storage\Config;
 use Core\Storage\ConfigNode;
-use Core\Spyc;
+use Core\Utility\Spyc;
 use Core\InvalidConfigKeyException;
 
 

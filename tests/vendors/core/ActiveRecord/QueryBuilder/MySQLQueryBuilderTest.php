@@ -7,7 +7,7 @@ require_once 'vendors/Core/ActiveRecord/Operator/MySQL.php';
 require_once 'vendors/Core/ActiveRecord/QueryBuilder.php';
 require_once 'vendors/Core/ActiveRecord/QueryBuilder/MySQL.php';
 require_once 'vendors/Core/exceptions.php';
-require_once 'vendors/Core/Inflector.php';
+require_once 'vendors/Core/Utility/Inflector.php';
 
 use Core\ActiveRecord\QueryBuilder\MySQL as Builder;
 use Core\ActiveRecord\Operator\MySQL as Op;

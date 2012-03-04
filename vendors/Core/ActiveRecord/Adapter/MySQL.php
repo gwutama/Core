@@ -9,7 +9,7 @@ use \Core\ActiveRecord\Model;
 use \Core\ActiveRecord\ModelCollection;
 use \Core\ActiveRecordAdapterConnectionException;
 use \Core\ActiveRecordQueryException;
-use \Core\Inflector;
+use \Core\Utility\Inflector;
 use \PDO;
 use \PDOException;
 

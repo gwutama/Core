@@ -1,8 +1,8 @@
 <?php
 
-require_once 'vendors/Core/Inflector.php';
+require_once 'vendors/Core/Utility/Inflector.php';
 
-use Core\Inflector;
+use Core\Utility\Inflector;
 
 /**
  * Test class for RouteParser.
