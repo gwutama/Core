@@ -22,6 +22,9 @@ abstract class Exception extends \Exception {
 }
 
 
+class InvalidArgumentException extends Exception {}
+
+
 /**
  * Gets thrown when a controller is not found.
  */
