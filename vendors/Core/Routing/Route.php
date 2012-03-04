@@ -1,6 +1,6 @@
 <?php
 
-namespace Core;
+namespace Core\Routing;
 
 /**
 * <h1>Class Route</h1>

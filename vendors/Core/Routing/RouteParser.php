@@ -1,6 +1,8 @@
 <?php
 
-namespace Core;
+namespace Core\Routing;
+
+use \Core\InvalidRouteException;
 
 /**
  * <h1>Class RouteParser</h1>

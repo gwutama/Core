@@ -1,11 +1,11 @@
 <?php
 
-require_once 'vendors/Core/RouteParser.php';
-require_once 'vendors/Core/RoutingObject.php';
+require_once 'vendors/Core/Routing/RouteParser.php';
+require_once 'vendors/Core/Routing/RoutingObject.php';
 require_once 'vendors/Core/exceptions.php';
 
-use Core\RouteParser;
-use Core\RoutingObject;
+use Core\Routing\RouteParser;
+use Core\Routing\RoutingObject;
 
 /**
  * Test class for RouteParser.
