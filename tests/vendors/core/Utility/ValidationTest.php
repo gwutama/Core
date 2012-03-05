@@ -32,7 +32,8 @@ class CustomValidator {
     /**
      * Makes sure that a given $email address is valid and unique
      *
-     * @param string $email
+     * @param $check
+     * @internal param string $email
      * @return boolean
      */
     static function customValidate($check) {
@@ -61,6 +62,7 @@ class TestNlValidation {
     /**
      * ssn function for testing ssn pass through
      *
+     * @param $check
      * @return void
      */
     static function ssn($check) {

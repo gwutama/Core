@@ -77,7 +77,8 @@ class MySQL implements Operatorable {
      *
      * @static
      * @abstract
-     * @param $array
+     * @internal param $array
+     * @return string
      */
     public static function bAnd() {
         $args = func_get_args();
@@ -108,7 +109,8 @@ class MySQL implements Operatorable {
      *
      * @static
      * @abstract
-     * @param $array
+     * @internal param $array
+     * @return string
      */
     public static function bOr() {
         $args = func_get_args();
@@ -139,7 +141,10 @@ class MySQL implements Operatorable {
      *
      * @static
      * @abstract
-     * @param $array
+     * @param $first
+     * @param $second
+     * @internal param $array
+     * @return string
      */
     public static function bNot($first, $second) {
         if(!$first) {
@@ -159,6 +164,7 @@ class MySQL implements Operatorable {
      * @abstract
      * @param $first
      * @param $second
+     * @return string
      */
     public static function eq($first, $second) {
         $bind = self::setBind($first, $second);
@@ -174,6 +180,7 @@ class MySQL implements Operatorable {
      * @abstract
      * @param $first
      * @param $second
+     * @return string
      */
     public static function neq($first, $second) {
         $bind = self::setBind($first, $second);
@@ -189,6 +196,7 @@ class MySQL implements Operatorable {
      * @abstract
      * @param $first
      * @param $second
+     * @return string
      */
     public static function lt($first, $second) {
         $bind = self::setBind($first, $second);
@@ -204,6 +212,7 @@ class MySQL implements Operatorable {
      * @abstract
      * @param $first
      * @param $second
+     * @return string
      */
     public static function gt($first, $second) {
         $bind = self::setBind($first, $second);
@@ -219,6 +228,7 @@ class MySQL implements Operatorable {
      * @abstract
      * @param $first
      * @param $second
+     * @return string
      */
     public static function lte($first, $second) {
         $bind = self::setBind($first, $second);
@@ -234,6 +244,7 @@ class MySQL implements Operatorable {
      * @abstract
      * @param $first
      * @param $second
+     * @return string
      */
     public static function gte($first, $second) {
         $bind = self::setBind($first, $second);
@@ -249,6 +260,7 @@ class MySQL implements Operatorable {
      * @abstract
      * @param $field
      * @param $array
+     * @return string
      */
     public static function in($field, $array) {
         if(!$field) {
@@ -268,6 +280,7 @@ class MySQL implements Operatorable {
      * @abstract
      * @param $field
      * @param $array
+     * @return string
      */
     public static function nin($field, $array) {
         if(!$field) {

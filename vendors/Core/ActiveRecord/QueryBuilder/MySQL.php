@@ -34,8 +34,9 @@ class MySQL implements QueryBuilder {
      * );
      * </code>
      *
-     * @param $data     Data to insert. Array of key => value pairs.
-     * @param $options  Options. See example above.
+     * @param $table
+     * @param array|\Core\ActiveRecord\QueryBuilder\Data $data Data to insert. Array of key => value pairs.
+     * @param array|\Core\ActiveRecord\QueryBuilder\Options $options Options. See example above.
      * @return string   SQL Query (prepared statement).
      */
     public static function insert($table, $data = array(), $options = array()) {
@@ -122,8 +123,9 @@ class MySQL implements QueryBuilder {
      * [ASC | DESC], ...]
      * [LIMIT {[offset,] row_count | row_count OFFSET offset}]
      *
-     * @param $data
-     * @param $options
+     * @param $table
+     * @param array $options
+     * @internal param $data
      * @return string
      */
     public static function select($table, $options = array()) {
@@ -274,8 +276,9 @@ class MySQL implements QueryBuilder {
      *
      * see http://dev.mysql.com/doc/refman/5.0/en/update.html
      *
+     * @param $table
      * @param $data
-     * @param $options
+     * @param array $options
      * @return string
      */
     public static function update($table, $data, $options = array()) {
@@ -339,7 +342,8 @@ class MySQL implements QueryBuilder {
      *
      * see http://dev.mysql.com/doc/refman/5.0/en/delete.html
      *
-     * @param $options
+     * @param $table
+     * @param array $options
      * @return string
      */
     public static function delete($table, $options = array()) {

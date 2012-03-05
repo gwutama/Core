@@ -56,9 +56,9 @@ class AutoloaderTest extends PHPUnit_Framework_TestCase
 
     public function testLoader()
     {
-        $foo = new Config;
+        new Config;
         //$foo = new \Controllers\Home("Foo", "bar");
-        $foo = new Template("foo", "bar", "baz");
+        new Template("foo", "bar", "baz");
     }
 
     /**
@@ -66,7 +66,7 @@ class AutoloaderTest extends PHPUnit_Framework_TestCase
      */
     public function testLoaderException()
     {
-        $foo = new NotAvailable;
+        new NotAvailable;
     }
 }
 ?>

@@ -36,7 +36,9 @@ class RouteParser {
     /**
      * Loads custom routes, probably from configs/routes.php
      *
-     * @param $routes	Array of custom routes
+     * @param $routes    Array of custom routes
+     * @param string $defaultController
+     * @param string $defaultAction
      */
     public function __construct($routes, $defaultController = "Home", $defaultAction = "index") {
         $this->routes = $routes;
@@ -191,7 +193,7 @@ class RouteParser {
         //         values into $params.
         $params = array();
         $len = strlen($route);
-        $tokens = array();
+        //$tokens = array();
 
         // 1. Get parameter names from routing first
         for($i = 0; $i < $len; $i++) {

@@ -13,6 +13,8 @@ class ConfigNode extends Node {
 
     /**
      * Sets a child into node.
+     * @param \Core\Utility\Node $object
+     * @param null $key
      */
     public function setChild(Node $object, $key = null) {
         parent::setChild($object, $key);

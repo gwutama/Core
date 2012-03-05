@@ -30,6 +30,10 @@ class ModelCollection extends ObjectCollection {
     /**
      * The constructor sets services if an array of models
      * is passed to the constructor.
+     * @param $modelName
+     * @param \Core\ActiveRecord\Adapter $dbo
+     * @param string $primaryKey
+     * @param array $models
      */
     public function __construct($modelName, Adapter &$dbo, $primaryKey = "id", $models = array()) {
         $this->modelName = $modelName;
@@ -41,6 +45,7 @@ class ModelCollection extends ObjectCollection {
 
     /**
      * Returns the model name.
+     * @return string
      */
     public function getName() {
         return $this->modelName;
@@ -60,7 +65,8 @@ class ModelCollection extends ObjectCollection {
     /**
      * Gets the primary key for all models.
      *
-     * @param $key
+     * @internal param $key
+     * @return string
      */
     public function getPrimaryKey() {
         return $this->primaryKey;
@@ -80,6 +86,7 @@ class ModelCollection extends ObjectCollection {
 
     /**
      * Returns primary key values of all models.
+     * @return array
      */
     public function getPrimaryKeyValues() {
         $tmp = array();
@@ -102,6 +109,7 @@ class ModelCollection extends ObjectCollection {
 
     /**
      * Deletes collection.
+     * @param array $options
      */
     public function delete($options = array()) {
         $this->dbo->deleteAll($this, $options);
@@ -110,6 +118,8 @@ class ModelCollection extends ObjectCollection {
 
     /**
      * Updates collection.
+     * @param $data
+     * @param array $options
      */
     public function save($data, $options = array()) {
         $this->dbo->updateAll($this, $data, $options);

@@ -182,10 +182,12 @@ class Template {
      * page title to "SSF > {controller_name} > {action_name}".
      * This however can be omitted by setting the layout title with setTitle().
      *
-     * @see 	Core_Template::setTitle()
-     * @param 	string 		$controller		The controller name.
-     * @param 	string 		$action			The action name.
-     * @param 	string 		$baseDir		The base directory for views.
+     * @see     Core_Template::setTitle()
+     * @param     string         $controller        The controller name.
+     * @param     string         $action            The action name.
+     * @param     string         $baseDir        The base directory for views.
+     * @param string $overrideBaseDir
+     * @param array $helpers
      */
     public function __construct($controller, $action, $baseDir, $overrideBaseDir = "", $helpers = array("Html")) {
         $this->controller = $controller;
@@ -316,8 +318,8 @@ class Template {
      * @param 	TemplateHelper	$helper		The template helper.
      */
     public function registerHelper(TemplateHelper $helper) {
-        $helperName = "\\Helpers\\".$helper->getName();
-        $this->helpers[lcfirst($helper->getName())] = $helper;
+        $helperName = lcfirst($helper->getName());
+        $this->helpers[$helperName] = $helper;
     }
 
 
@@ -366,6 +368,7 @@ class Template {
      * @param	string	$file	Template file.
      * @param	array	$vars	Variables to be parsed.
      * @param	string	$type	Template types. Either "template" or "layout".
+     * @return string
      * @throws 	TemplateNotFoundException
      * @throws 	LayoutNotFoundException
      * @retun	string

@@ -99,6 +99,8 @@ abstract class ObjectCollection implements \Iterator {
 
     /**
      * Sets an object into collection.
+     * @param $object
+     * @param null $key
      */
     public function setObject($object, $key = null) {
         if($key) {

@@ -93,6 +93,7 @@ abstract class Model {
 
     /**
      * Sets the driver DBO object.
+     * @param bool $fetched
      */
     public function __construct($fetched = false) {
         $this->fetched = $fetched;
@@ -127,6 +128,7 @@ abstract class Model {
 
     /**
      * Returns the model name (without namespace).
+     * @return mixed|string
      */
     public function getName() {
         $class = get_class($this);
@@ -193,6 +195,7 @@ abstract class Model {
      * Returns an instance of this model.
      *
      * @static
+     * @return mixed
      */
     protected static function newInstance() {
         $reflection = new \ReflectionClass(get_called_class());
@@ -206,6 +209,8 @@ abstract class Model {
      *
      * @static
      * @param $pos
+     * @param array $options
+     * @return mixed
      */
     public static function findById($pos, $options = array()) {
         return call_user_func_array(
@@ -220,6 +225,7 @@ abstract class Model {
      *
      * @static
      * @param array $options
+     * @return mixed
      */
     public static function findAll($options = array()) {
         return call_user_func_array(
@@ -234,6 +240,7 @@ abstract class Model {
      *
      * @static
      * @param array $options
+     * @return mixed
      */
     public static function findFirst($options = array()) {
         return call_user_func_array(
@@ -248,6 +255,7 @@ abstract class Model {
      *
      * @static
      * @param array $options
+     * @return mixed
      */
     public static function findLast($options = array()) {
         return call_user_func_array(
@@ -262,6 +270,7 @@ abstract class Model {
      *
      * @static
      * @param array $options
+     * @return mixed
      */
     public static function findOne($options = array()) {
         return call_user_func_array(
@@ -273,6 +282,7 @@ abstract class Model {
 
     /**
      * Saves objects.
+     * @param array $options
      */
     public function save($options = array()) {
         if(static::$dbo) {
@@ -303,6 +313,7 @@ abstract class Model {
 
     /**
      * Deletes objects.
+     * @param array $options
      */
     public function delete($options = array()) {
         if(static::$dbo) {
@@ -349,6 +360,7 @@ abstract class Model {
      * Magic method to retrieve query result by key.
      *
      * @param $key      Object key.
+     * @return null
      */
     public function __get($key) {
         $key = Inflector::underscore($key);
@@ -390,6 +402,7 @@ abstract class Model {
 
     /**
      * Validates all constraints and returns error messages.
+     * @return array
      */
     public function getValidationErrors() {
         $errors = array();

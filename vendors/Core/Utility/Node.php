@@ -78,6 +78,8 @@ class Node extends ObjectCollection {
 
     /**
      * Sets a child into node.
+     * @param \Core\Utility\Node $object
+     * @param null $key
      */
     public function setChild(Node $object, $key = null) {
         $this->setObject($object, $key);

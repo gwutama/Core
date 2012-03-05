@@ -56,6 +56,7 @@ class Service {
      *
      * @param $name
      * @param array $options
+     * @param array $callbacks
      */
     public function __construct($name, $options = array(), $callbacks = array()) {
         $this->name = $name;
@@ -111,6 +112,7 @@ class Service {
 
     /**
      * Gets the object instance.
+     * @return object
      */
     public function getInstance() {
         if($this->isSingleton == true) {

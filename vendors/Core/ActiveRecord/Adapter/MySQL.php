@@ -123,6 +123,11 @@ class MySQL extends Adapter {
     /**
      * Builds join conditions.
      *
+     * @param $modelName
+     * @param array $models
+     * @param array $joinedTables
+     * @param array $selectedFields
+     * @param array $references
      * @return string
      */
     private function buildJoinConditions($modelName, $models = array(), &$joinedTables = array(),
@@ -157,6 +162,7 @@ class MySQL extends Adapter {
 
 
     /**
+     * @param $modelName
      * @param array $options
      */
     private function modifyJoinOptions($modelName, &$options = array()) {
@@ -203,6 +209,7 @@ class MySQL extends Adapter {
 
 
     /**
+     * @param $modelName
      * @param $pos
      * @param $options array
      * @return mixed
@@ -225,6 +232,8 @@ class MySQL extends Adapter {
 
 
     /**
+     * @param $modelName
+     * @param array $options
      * @return mixed
      */
     public function findAll($modelName, $options = array()) {
@@ -239,6 +248,7 @@ class MySQL extends Adapter {
 
 
     /**
+     * @param $modelName
      * @param array $options
      * @return mixed
      */
@@ -260,6 +270,7 @@ class MySQL extends Adapter {
 
 
     /**
+     * @param $modelName
      * @param array $options
      * @return mixed
      */
@@ -281,7 +292,9 @@ class MySQL extends Adapter {
 
 
     /**
+     * @param $modelName
      * @param array $options
+     * @return null
      */
     public function findOne($modelName, $options = array()) {
         // Build join conditions into $options
@@ -302,8 +315,10 @@ class MySQL extends Adapter {
     /**
      * Creates new records.
      *
+     * @param $modelName
      * @param $data
-     * @param $options
+     * @param array $options
+     * @return mixed
      */
     public function create($modelName, $data, $options = array()) {
         if(self::$dbh == null) {
@@ -341,8 +356,10 @@ class MySQL extends Adapter {
     /**
      * Selects records from database.
      *
-     * @param $data
-     * @param $options
+     * @param $modelName
+     * @param array $options
+     * @internal param $data
+     * @return mixed
      */
     public function read($modelName, $options = array()) {
         if(self::$dbh == null) {
@@ -388,8 +405,9 @@ class MySQL extends Adapter {
     /**
      * Updates records.
      *
+     * @param \Core\ActiveRecord\Model $model
      * @param $data
-     * @param $options
+     * @param array $options
      */
     public function update(Model $model, $data, $options = array()) {
         if(self::$dbh == null) {
@@ -434,6 +452,7 @@ class MySQL extends Adapter {
      * Updates multiple records.
      *
      * @param \Core\ActiveRecord\ModelCollection $models
+     * @param $data
      * @param array $options
      */
     public function updateAll(ModelCollection $models, $data, $options = array()) {
@@ -478,7 +497,8 @@ class MySQL extends Adapter {
     /**
      * Deletes records from database.
      *
-     * @param $options
+     * @param \Core\ActiveRecord\Model $model
+     * @param array $options
      */
     public function delete(Model $model, $options = array()) {
         if(self::$dbh == null) {
@@ -561,6 +581,7 @@ class MySQL extends Adapter {
      * Returns the PDO type for specific values.
      *
      * @param $value
+     * @return mixed
      */
     private function pdoType($value) {
         if(is_bool($value)) {

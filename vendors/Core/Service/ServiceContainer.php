@@ -62,6 +62,7 @@ class ServiceContainer extends ObjectCollection {
      * Returns a service with an attribute call.
      *
      * @param $name
+     * @return null
      */
     public function __get($name) {
         return $this->getService($name);
@@ -73,6 +74,7 @@ class ServiceContainer extends ObjectCollection {
      *
      * @param $name
      * @param array $args
+     * @return null
      */
     public function __call($name, $args = array()) {
         if(preg_match("/get([\w]+)Service/", $name, $matches)) {

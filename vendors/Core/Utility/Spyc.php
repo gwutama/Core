@@ -144,6 +144,7 @@ class Spyc
      * @access private
      * @return string
      * @param $value The string you wish to fold
+     * @param $indent
      */
     private function _doFolding($value, $indent)
     {
@@ -267,7 +268,7 @@ class Spyc
         $line = trim($line);
         if (!$line) return array();
 
-        $array = array();
+        //$array = array();
 
         $group = $this->nodeContainsGroup($line);
         if ($group) {
@@ -398,6 +399,7 @@ class Spyc
     /**
      * Used in inlines to check for more inlines or quoted strings
      * @access private
+     * @param $inline
      * @return array
      */
     private function _inlineEscape($inline)

@@ -115,6 +115,7 @@ abstract class Controller extends ServiceContainer {
 
     /**
      * Default action.
+     * @param \Core\Request\Request $request
      */
     public function index(Request $request) {
     }

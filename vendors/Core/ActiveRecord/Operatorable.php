@@ -9,7 +9,7 @@ interface Operatorable {
      *
      * @static
      * @abstract
-     * @param $array
+     * @internal param $array
      */
     public static function bAnd();
 
@@ -19,7 +19,7 @@ interface Operatorable {
      *
      * @static
      * @abstract
-     * @param $array
+     * @internal param $array
      */
     public static function bOr();
 
@@ -29,7 +29,9 @@ interface Operatorable {
      *
      * @static
      * @abstract
-     * @param $array
+     * @param $first
+     * @param $second
+     * @internal param $array
      */
     public static function bNot($first, $second);
 

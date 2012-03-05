@@ -9,6 +9,7 @@ abstract class Storage implements Storageable {
      *
      * @static
      * @param $key  Storage key. Must be string.
+     * @return bool
      */
     public static function validKey($key) {
         if(is_string($key) && preg_match("/^[a-zA-Z0-9\.]+$/", $key)) {
@@ -23,6 +24,8 @@ abstract class Storage implements Storageable {
      *
      * @static
      * @param $array
+     * @param bool $setArrayAsArray
+     * @param string $parent
      */
     public static function setArray($array, $setArrayAsArray = false, $parent = "") {
         foreach((array) $array as $key=>$value) {

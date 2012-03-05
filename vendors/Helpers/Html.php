@@ -15,6 +15,7 @@ class Html implements TemplateHelper {
     /**
      * (non-PHPdoc)
      * @see TemplateHelper::getName()
+     * @return string
      */
     public function getName() {
         return "htmlHelper";
@@ -25,6 +26,7 @@ class Html implements TemplateHelper {
      *
      * Enter description here ...
      * @param unknown_type $timestamp
+     * @return mixed
      */
     public function formatTimestamp($timestamp) {
         return DateTime::createFromFormat("Y-m-d H:i:s", $timestamp)->format("d-m-Y H:i:s");
@@ -35,8 +37,9 @@ class Html implements TemplateHelper {
      *
      * Enter description here ...
      * @param unknown_type $controller
-     * @param unknown_type $action
-     * @param unknown_type $parameters
+     * @param \Helpers\unknown_type|string $action
+     * @param array|\Helpers\unknown_type $parameters
+     * @return string
      */
     public function urlFor($controller, $action="index", $parameters = array()) {
         $params = "";
@@ -58,7 +61,8 @@ class Html implements TemplateHelper {
      *
      * Enter description here ...
      * @param unknown_type $file
-     * @param unknown_type $attributes
+     * @param array|\Helpers\unknown_type $attributes
+     * @return string
      */
     public function image($file, $attributes=array()) {
         $file = sprintf("%s/images/%s", RELATIVE_URL, $file);
@@ -72,7 +76,8 @@ class Html implements TemplateHelper {
      *
      * Enter description here ...
      * @param unknown_type $file
-     * @param unknown_type $attributes
+     * @param array|\Helpers\unknown_type $attributes
+     * @return string
      */
     public function style($file, $attributes=array()) {
         $file = sprintf("%s/css/%s", RELATIVE_URL, $file);
@@ -86,7 +91,8 @@ class Html implements TemplateHelper {
      *
      * Enter description here ...
      * @param unknown_type $file
-     * @param unknown_type $attributes
+     * @param array|\Helpers\unknown_type $attributes
+     * @return string
      */
     public function script($file, $attributes=array()) {
         $file = sprintf("%s/js/%s", RELATIVE_URL, $file);
@@ -99,7 +105,8 @@ class Html implements TemplateHelper {
     /**
      *
      * Enter description here ...
-     * @param unknown_type $attribute
+     * @param array|\Helpers\unknown_type $attribute
+     * @return string
      */
     private function buildAttributes($attribute=array()) {
         $attr = "";

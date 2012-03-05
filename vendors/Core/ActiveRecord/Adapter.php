@@ -13,6 +13,7 @@ use \Core\Utility\Inflector;
 abstract class Adapter {
 
     /**
+     * @param $model
      * @return array
      */
     public static function getHasOne($model) {
@@ -26,6 +27,7 @@ abstract class Adapter {
 
 
     /**
+     * @param $model
      * @return array
      */
     public static function getHasMany($model) {
@@ -39,6 +41,7 @@ abstract class Adapter {
 
 
     /**
+     * @param $model
      * @return array
      */
     public static function getBelongsTo($model) {
@@ -53,6 +56,8 @@ abstract class Adapter {
 
     /**
      * Returns the table name, which is the pluralized model name in lowercase.
+     * @param $model
+     * @return mixed
      */
     public static function tableize($model) {
         // Get model name but remove the "Models\" namespace.
@@ -65,6 +70,7 @@ abstract class Adapter {
     /**
      * Returns the primary key.
      *
+     * @param $model
      * @return mixed
      */
     public static function getPrimaryKey($model) {
@@ -82,6 +88,7 @@ abstract class Adapter {
      *
      * @static
      * @param $model
+     * @return array
      */
     public static function getFields($model) {
         // We don't need the type and whether nullable or not.
@@ -101,33 +108,40 @@ abstract class Adapter {
 
 
     /**
-     * @param $primaryKey
+     * @param $modelName
      * @param $pos
+     * @param array $options
+     * @internal param $primaryKey
      */
     abstract public function findById($modelName, $pos, $options = array());
 
 
     /**
-     * @param $primaryKey
+     * @param $modelName
+     * @param array $options
+     * @internal param $primaryKey
      */
     abstract public function findAll($modelName, $options = array());
 
 
     /**
-     * @param $primaryKey
+     * @param $modelName
      * @param array $options
+     * @internal param $primaryKey
      */
     abstract public function findFirst($modelName, $options = array());
 
 
     /**
-     * @param $primaryKey
+     * @param $modelName
      * @param array $options
+     * @internal param $primaryKey
      */
     abstract public function findLast($modelName, $options = array());
 
 
     /**
+     * @param $modelName
      * @param array $options
      */
     abstract public function findOne($modelName, $options = array());
@@ -135,36 +149,51 @@ abstract class Adapter {
 
     /**
      * Base for create operation.
+     * @param $modelName
+     * @param $data
+     * @param array $options
      */
     abstract public function create($modelName, $data, $options = array());
 
 
     /**
      * Base for read operation.
+     * @param $modelName
+     * @param array $options
      */
     abstract public function read($modelName, $options = array());
 
 
     /**
      * Base for update operation.
+     * @param \Core\ActiveRecord\Model $model
+     * @param $data
+     * @param array $options
      */
     abstract public function update(Model $model, $data, $options = array());
 
 
     /**
      * Base for multiple update operation.
+     * @param \Core\ActiveRecord\ModelCollection $model
+     * @param $data
+     * @param array $options
      */
     abstract public function updateAll(ModelCollection $model, $data, $options = array());
 
 
     /**
      * Base for delete operation.
+     * @param \Core\ActiveRecord\Model $model
+     * @param array $options
      */
     abstract public function delete(Model $model, $options = array());
 
 
     /**
      * Base for multiple delete operation.
+     * @param \Core\ActiveRecord\ModelCollection $models
+     * @param array $options
      */
     abstract public function deleteAll(ModelCollection $models, $options = array());
 

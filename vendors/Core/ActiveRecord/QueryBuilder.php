@@ -6,6 +6,7 @@ interface QueryBuilder {
 
     /**
      * @abstract
+     * @param $table
      * @param array $data
      * @param array $options
      */
@@ -14,6 +15,7 @@ interface QueryBuilder {
 
     /**
      * @abstract
+     * @param $table
      * @param array $options
      */
     public static function select($table, $options = array());
@@ -21,6 +23,7 @@ interface QueryBuilder {
 
     /**
      * @abstract
+     * @param $table
      * @param $data
      * @param array $options
      */
@@ -29,6 +32,7 @@ interface QueryBuilder {
 
     /**
      * @abstract
+     * @param $table
      * @param array $options
      */
     public static function delete($table, $options = array());
