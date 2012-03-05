@@ -1,13 +1,13 @@
 <?php
 
-namespace Core\Storage;
+namespace Core\Utility;
 
 /**
- * <h1>Class BaseStorageNode</h1>
+ * <h1>Class Node</h1>
  *
- * Basic representation of a storage node.
+ * Basic representation of a node.
  */
-abstract class StorageNode {
+class Node extends ObjectCollection {
 
     /**
      * The storage key.
@@ -73,6 +73,45 @@ abstract class StorageNode {
      */
     public function getValue() {
         return $this->value;
+    }
+
+
+    /**
+     * Sets a child into node.
+     */
+    public function setChild(Node $object, $key = null) {
+        $this->setObject($object, $key);
+    }
+
+
+    /**
+     * Returns a child if exists. Null if inexists.
+     *
+     * @param $key
+     * @return null
+     */
+    public function &getChild($key) {
+        return $this->getObject($key);
+    }
+
+
+    /**
+     * Setter for children.
+     *
+     * @param array $children
+     */
+    public function setChildren($children = array()) {
+        $this->objects = $children;
+    }
+
+
+    /**
+     * Returns the children.
+     *
+     * @return array
+     */
+    public function &getChildren() {
+        return $this->objects;
     }
 
 }

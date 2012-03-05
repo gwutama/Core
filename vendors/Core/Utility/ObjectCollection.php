@@ -89,7 +89,7 @@ abstract class ObjectCollection implements \Iterator {
      * @param $key
      * @return null
      */
-    public function getObject($key) {
+    public function &getObject($key) {
         if($this->hasObject($key)) {
             return $this->objects[$key];
         }
